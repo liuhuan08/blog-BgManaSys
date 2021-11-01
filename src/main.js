@@ -5,6 +5,8 @@ import store from "./store";
 
 import "./assets/css/normalize.css"; // 重置样式表
 
+import "./assets/iconfonts/iconfont.css" // 字体图标样式
+
 Vue.config.productionTip = false;
 
 new Vue({

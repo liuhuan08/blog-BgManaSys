@@ -1,13 +1,13 @@
 <template>
     <div>
-        右侧头部
+        <p @click="$store.state.isCollapse = !$store.state.isCollapse">右侧头部</p>
     </div>
 </template>
 
 <script>
-    export default {
-        
-    }
+export default {
+    
+}
 </script>
 
 <style lang="less" scoped>

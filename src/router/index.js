@@ -19,11 +19,11 @@ const routes = [
 	},
 	{
 		path: "/blogger",
-		redirect: "/blogger-info",
+		redirect: "/blogger/blogger-info",
 		name: "Blogger",
 		component: Index,
 		children: [{
-				path: "/blogger-info",
+				path: "/blogger/blogger-info",
 				name: "BloggerInfo",
 				component: () => import("../views/bloggerInfo/BloggerInfo.vue")
 			}
@@ -31,19 +31,19 @@ const routes = [
 	},
 	{
 		path: "/article",
-		redirect: "/article-list",
+		redirect: "/article/article-list",
 		name: "Article",
 		component: Index,
 		children: [{
-				path: "/article-list",
+				path: "/article/article-list",
 				name: "ArticleList",
 				component: () => import("../views/articleManage/ArticleList.vue")
 			}, {
-				path: "/article-modify",
+				path: "/article/article-modify",
 				name: "ArticleModify",
 				component: () => import("../views/articleManage/ArticleModify.vue")
 			}, {
-				path: "/add-article",
+				path: "/article/add-article",
 				name: "AddArticle",
 				component: () => import("../views/articleManage/AddArticle.vue")
 			}
@@ -51,11 +51,11 @@ const routes = [
 	},
 	{
 		path: "/image",
-		redirect: "/image-manage",
+		redirect: "/image/image-manage",
 		name: "Image",
 		component: Index,
 		children: [{
-				path: "/image-manage",
+				path: "/image/image-manage",
 				name: "ImageManage",
 				component: () => import("../views/imageManage/ImageManage.vue")
 			}

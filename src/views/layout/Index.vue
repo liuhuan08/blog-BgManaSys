@@ -29,13 +29,13 @@ export default {
     height: 100%;
 
     .left-nav{
-        width: 300px;
+        width: 250px;
         height: 100%;
-        background-color: #ccc;
+        background-color: #393e46;
     }
 
     .right-side{
-        width: calc(~"100% - 300px");
+        width: calc(~"100% - 250px");
         height: 100%;
     }
 }
