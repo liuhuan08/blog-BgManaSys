@@ -1,6 +1,6 @@
 <template>
     <div>
-        <router-view/>
+        文章修改
     </div>
 </template>
 

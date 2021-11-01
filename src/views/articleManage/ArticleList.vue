@@ -1,6 +1,6 @@
 <template>
     <div>
-        <router-view/>
+        文章列表
     </div>
 </template>
 

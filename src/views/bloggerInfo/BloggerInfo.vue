@@ -1,6 +1,6 @@
 <template>
     <div>
-        <router-view/>
+        博主信息
     </div>
 </template>
 

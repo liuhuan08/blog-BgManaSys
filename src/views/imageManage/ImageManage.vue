@@ -1,6 +1,6 @@
 <template>
     <div>
-        <router-view/>
+        图片管理
     </div>
 </template>
 
