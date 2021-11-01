@@ -1,4 +1,4 @@
-# blog-dev1.0
+# blog-manageSys1.0
 
 ## Project setup
 ```
