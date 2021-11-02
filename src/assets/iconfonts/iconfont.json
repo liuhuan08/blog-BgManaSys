@@ -6,6 +6,41 @@
   "description": "",
   "glyphs": [
     {
+      "icon_id": "9225430",
+      "name": "抛媚眼表情",
+      "font_class": "emjo-nice",
+      "unicode": "e69d",
+      "unicode_decimal": 59037
+    },
+    {
+      "icon_id": "9225431",
+      "name": "花痴表情",
+      "font_class": "emjo-best",
+      "unicode": "e69c",
+      "unicode_decimal": 59036
+    },
+    {
+      "icon_id": "9225435",
+      "name": "失望表情",
+      "font_class": "emjo-bad",
+      "unicode": "e69e",
+      "unicode_decimal": 59038
+    },
+    {
+      "icon_id": "623791",
+      "name": "ZS图片",
+      "font_class": "imgs",
+      "unicode": "e629",
+      "unicode_decimal": 58921
+    },
+    {
+      "icon_id": "6560993",
+      "name": "我的文章",
+      "font_class": "articleNum",
+      "unicode": "e618",
+      "unicode_decimal": 58904
+    },
+    {
       "icon_id": "201557",
       "name": "关闭",
       "font_class": "closeCard",

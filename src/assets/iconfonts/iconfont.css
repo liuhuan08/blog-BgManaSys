@@ -1,8 +1,8 @@
 @font-face {
   font-family: "iconfont"; /* Project id 2906700 */
-  src: url('iconfont.woff2?t=1635842927363') format('woff2'),
-       url('iconfont.woff?t=1635842927363') format('woff'),
-       url('iconfont.ttf?t=1635842927363') format('truetype');
+  src: url('iconfont.woff2?t=1635851497957') format('woff2'),
+       url('iconfont.woff?t=1635851497957') format('woff'),
+       url('iconfont.ttf?t=1635851497957') format('truetype');
 }
 
 .iconfont {
@@ -11,6 +11,26 @@
   font-style: normal;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+}
+
+.icon-emjo-nice:before {
+  content: "\e69d";
+}
+
+.icon-emjo-best:before {
+  content: "\e69c";
+}
+
+.icon-emjo-bad:before {
+  content: "\e69e";
+}
+
+.icon-imgs:before {
+  content: "\e629";
+}
+
+.icon-articleNum:before {
+  content: "\e618";
 }
 
 .icon-closeCard:before {
