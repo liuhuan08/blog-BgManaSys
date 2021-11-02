@@ -2,7 +2,9 @@
     <div class="left-nav">
         <h2 class="title">
             <i class="iconfont icon-logo"></i>
-            blog后台
+            <transition name="fade">
+                <span v-if="!$store.state.isCollapse">blog后台</span>
+            </transition>
         </h2>
         <ul>
             <li class="menu">
@@ -157,10 +159,14 @@ export default {
     height: 0;
     opacity: 0;
 }
-.fade-enter-active, .fade-leave-active {
-  transition: opacity .5s;
+.fade-enter-active{
+    display: none;
+    transition: opacity .5s;
+}
+.fade-leave-active{
+    transition: opacity .5s;
 }
 .fade-enter, .fade-leave-to {
-  opacity: 0;
+    opacity: 0;
 }
 </style>

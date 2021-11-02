@@ -1,5 +1,5 @@
 <template>
-    <div class="layout">
+    <div class="layout" :class="$store.state.isCollapse ? 'hide' : 'show'">
         <LeftNav class="left-nav"/>
         <RightSide class="right-side"/>
     </div>
@@ -29,14 +29,38 @@ export default {
     height: 100%;
 
     .left-nav{
-        width: 250px;
         height: 100%;
         background-color: #393e46;
+        
+    }
+
+    .right-side{
+        height: 100%;
+        
+    }
+}
+
+.show{
+    .left-nav{
+        width: 250px;
+        transition: all 0.5s;
     }
 
     .right-side{
         width: calc(~"100% - 250px");
-        height: 100%;
+        transition: all 0.5s;
+    }
+}
+
+.hide{
+    .left-nav{
+        width: 80px;
+        transition: all 0.5s 0.5s;
+    }
+
+    .right-side{
+        width: calc(~"100% - 80px");
+        transition: all 0.5s 0.5s;
     }
 }
 </style>
