@@ -39,19 +39,34 @@
                 </h3>
                 <transition name="slide">
                     <ul class="sub-menu-wrap" v-if="isShow">
-                        <li class="sub-menu">
+                        <li class="sub-menu" :class="$store.state.isCollapse ? 'sub-menu-hide' : ''">
                             <router-link :to="{path: '/article/article-list'}">
-                                <p :class="activePath === '/article/article-list' ? 'active' : ''"><i class="iconfont icon-articleList"></i>文章列表</p>
+                                <p :class="activePath === '/article/article-list' ? 'active' : ''">
+                                    <i class="iconfont icon-articleList"></i>
+                                    <transition name="fade">
+                                        <span v-if="!$store.state.isCollapse">文章列表</span>
+                                    </transition>
+                                </p>
                             </router-link>
                         </li>
-                        <li class="sub-menu">
+                        <li class="sub-menu" :class="$store.state.isCollapse ? 'sub-menu-hide' : ''">
                             <router-link :to="{path: '/article/article-modify'}">
-                                <p :class="activePath === '/article/article-modify' ? 'active' : ''"><i class="iconfont icon-edit"></i>文章修改</p>
+                                <p :class="activePath === '/article/article-modify' ? 'active' : ''">
+                                    <i class="iconfont icon-edit"></i>
+                                    <transition name="fade">
+                                        <span v-if="!$store.state.isCollapse">文章修改</span>
+                                    </transition>
+                                </p>
                             </router-link>
                         </li>
-                        <li class="sub-menu">
+                        <li class="sub-menu" :class="$store.state.isCollapse ? 'sub-menu-hide' : ''">
                             <router-link :to="{path: '/article/add-article'}">
-                                <p :class="activePath === '/article/add-article' ? 'active' : ''"><i class="iconfont icon-addArticle"></i>新增文章</p>
+                                <p :class="activePath === '/article/add-article' ? 'active' : ''">
+                                    <i class="iconfont icon-addArticle"></i>
+                                    <transition name="fade">
+                                        <span v-if="!$store.state.isCollapse">新增文章</span>
+                                    </transition>
+                                </p>
                             </router-link>
                         </li>
                     </ul>
@@ -143,6 +158,11 @@ export default {
 
     .sub-menu{
         text-indent: 20px;
+        transition: all 0.5s;
+    }
+
+    .sub-menu-hide{
+        text-indent: 5px;
     }
 
 }
