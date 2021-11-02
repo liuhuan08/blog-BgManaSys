@@ -88,7 +88,7 @@ export default {
 				this.titleTimeIndex = 0;
 				let i = Math.floor(Math.random() * (4 - 0 + 1) + 0);
 				this.title = titleList[i];
-			} else if (time >= 12 && time < 19) {
+			} else if (time >= 12 && time < 18) {
 				this.titleTimeIndex = 1;
 				let i = Math.floor(Math.random() * (5 - 11 + 1) + 11);
 				this.title = titleList[i];
