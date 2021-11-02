@@ -100,6 +100,8 @@ export default {
             this.activePath = val.path;
             if(val.path !== '/article/article-list' && val.path !== '/article/article-modify' && val.path !== '/article/add-article') {
                 this.isShow = false
+            }else {
+                this.isShow = true
             }
         }
     },
@@ -128,6 +130,7 @@ export default {
         text-align: center;
 
         .icon-logo{
+            margin-right: 10px;
             font-size: 20px;
             color: #fdb004;
         }
@@ -179,6 +182,7 @@ export default {
     height: 0;
     opacity: 0;
 }
+
 .fade-enter-active{
     display: none;
     transition: opacity .5s;

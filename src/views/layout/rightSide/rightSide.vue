@@ -30,13 +30,13 @@ export default {
     .header{
         width: 100%;
         height: 100px;
-        background-color: pink;
+        background-color: #99CCCC;
     }
 
     .main{
         width: 100%;
         height: calc(~"100% - 100px");
-        background-color: #fff;
+        background-color: #eee;
     }
 }
 </style>

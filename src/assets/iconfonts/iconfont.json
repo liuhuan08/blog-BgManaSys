@@ -6,6 +6,27 @@
   "description": "",
   "glyphs": [
     {
+      "icon_id": "201557",
+      "name": "关闭",
+      "font_class": "closeCard",
+      "unicode": "e600",
+      "unicode_decimal": 58880
+    },
+    {
+      "icon_id": "1304886",
+      "name": "收起菜单",
+      "font_class": "close",
+      "unicode": "e622",
+      "unicode_decimal": 58914
+    },
+    {
+      "icon_id": "1304894",
+      "name": "展开菜单",
+      "font_class": "open",
+      "unicode": "e624",
+      "unicode_decimal": 58916
+    },
+    {
       "icon_id": "297679",
       "name": "文本编辑",
       "font_class": "edit",

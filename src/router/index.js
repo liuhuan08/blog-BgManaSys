@@ -13,6 +13,10 @@ const routes = [
 		children: [{
 				path: "/home",
 				name: "Home",
+				meta: {
+					title: '首页',
+					path: '/home'
+				},
 				component: () => import("../views/home/Index.vue")
 			}
 		]
@@ -25,6 +29,10 @@ const routes = [
 		children: [{
 				path: "/blogger/blogger-info",
 				name: "BloggerInfo",
+				meta: {
+					title: '博主信息',
+					path: '/blogger/blogger-info'
+				},
 				component: () => import("../views/bloggerInfo/BloggerInfo.vue")
 			}
 		]
@@ -37,14 +45,26 @@ const routes = [
 		children: [{
 				path: "/article/article-list",
 				name: "ArticleList",
+				meta: {
+					title: '文章列表',
+					path: '/article/article-list'
+				},
 				component: () => import("../views/articleManage/ArticleList.vue")
 			}, {
 				path: "/article/article-modify",
 				name: "ArticleModify",
+				meta: {
+					title: '文章修改',
+					path: '/article/article-modify'
+				},
 				component: () => import("../views/articleManage/ArticleModify.vue")
 			}, {
 				path: "/article/add-article",
 				name: "AddArticle",
+				meta: {
+					title: '新增文章',
+					path: '/article/add-article'
+				},
 				component: () => import("../views/articleManage/AddArticle.vue")
 			}
 		]
@@ -57,6 +77,10 @@ const routes = [
 		children: [{
 				path: "/image/image-manage",
 				name: "ImageManage",
+				meta: {
+					title: '图片管理',
+					path: "/image/image-manage"
+				},
 				component: () => import("../views/imageManage/ImageManage.vue")
 			}
 		]
