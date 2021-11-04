@@ -39,7 +39,7 @@ export default {
 				{
 					icon: "icon-articleNum",
 					title: "近一周发表文章数",
-					num: 2,
+					num: 10,
 					color: "#FF0033",
 				},
 				{
@@ -51,11 +51,14 @@ export default {
 				{
 					icon: "icon-imgs",
 					title: "近一周上传图片数",
-					num: 30,
+					num: 83,
 					color: "#663399",
 				},
 			],
 			desc: { text: "", icon: "" },
+            articleData: [],
+            imgsData: [],
+            dateArr: []
 		};
 	},
 	filters: {
@@ -86,26 +89,40 @@ export default {
 				};
 			}
 		},
+        getData() {
+            this.articleData = [1, 2, 1, 3, 2, 1, 0];
+            this.imgsData = [10, 12, 21, 13, 20, 6, 1];
+
+            let today = new Date().getTime()
+            for(let i = 0; i < 7; i++) {
+                let month = (new Date(today - i*24*60*60*1000).getMonth() + 1);
+                let day = (new Date(today - i*24*60*60*1000).getDate()) < 10 ? ('0' + (new Date(today - i*24*60*60*1000).getDate())) : new Date(today - i*24*60*60*1000).getDate();
+                let date = month + '.' + day
+                this.dateArr.unshift(date)
+            }
+        },
 		drawCharts() {
 			var myChart = echarts.init(this.$refs.chartContainer);
 			var option;
 
 			option = {
 				title: {
-					text: "Stacked Line",
+					text: "近一周发表情况",
+                    left: 20
 				},
 				tooltip: {
 					trigger: "axis",
 				},
 				legend: {
 					data: [
-						"Email",
-						"Union Ads",
-						"Video Ads",
-						"Direct",
-						"Search Engine",
+						"文章数",
+						"图片数",
 					],
 				},
+                color: [
+                    "#FF0033",
+                    "#663399"
+                ],
 				grid: {
 					left: "3%",
 					right: "4%",
@@ -119,24 +136,24 @@ export default {
 				},
 				xAxis: {
 					type: "category",
-					boundaryGap: false,
-					data: ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"],
+					boundaryGap: true,
+					data: this.dateArr,
 				},
 				yAxis: {
 					type: "value",
 				},
 				series: [
 					{
-						name: "Email",
+						name: "文章数",
 						type: "line",
 						stack: "Total",
-						data: [120, 132, 101, 134, 90, 230, 210],
+						data: this.articleData,
 					},
 					{
-						name: "Union Ads",
+						name: "图片数",
 						type: "line",
 						stack: "Total",
-						data: [220, 182, 191, 234, 290, 330, 310],
+						data: this.imgsData,
 					}
 				],
 			};
@@ -146,6 +163,7 @@ export default {
 	},
 	created() {
 		this.getDesc();
+        this.getData()
 	},
     mounted() {
         this.drawCharts();
