@@ -91,7 +91,7 @@ export default {
 		},
         getData() {
             this.articleData = [1, 2, 1, 3, 2, 1, 0];
-            this.imgsData = [10, 12, 21, 13, 20, 6, 1];
+            this.imgsData = [10, 12, 18, 16, 20, 6, 1];
 
             let today = new Date().getTime()
             for(let i = 0; i < 7; i++) {
@@ -128,11 +128,6 @@ export default {
 					right: "4%",
 					bottom: "3%",
 					containLabel: true,
-				},
-				toolbox: {
-					feature: {
-						saveAsImage: {},
-					},
 				},
 				xAxis: {
 					type: "category",
