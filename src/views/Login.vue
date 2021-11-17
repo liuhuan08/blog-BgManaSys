@@ -26,7 +26,9 @@
 </template>
 
 <script>
-import Msg from "../utils/msg"
+import Msg from "../utils/msg";
+import { Login } from "../api/Login";
+import local from "../utils/local"
 
     export default {
         data() {
@@ -65,7 +67,8 @@ import Msg from "../utils/msg"
                     val.text.toString().length > 1 && val.text.toString().length < 13 ? res = true : res = false;
                     this.account.validate = res;
                 }else {
-                    let res = /^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{6,18}$/.test(val.text);
+                    let res;
+                    val.text.toString().length > 1 && val.text.toString().length < 13 ? res = true : res = false;
                     this.psd.validate = res;
                 };
             },
@@ -73,15 +76,27 @@ import Msg from "../utils/msg"
                 this.validate(this.account);
                 this.validate(this.psd);
                 if(this.account.validate && this.psd.validate) {
-                    
-                    Msg('登录成功 ~', 'success', 2000);
-                    setTimeout(() => {
-                        this.$router.push({path:'/'})
-                    }, 1000);
+                    Login({name: this.account.text, pwd: this.psd.text}).then(res => {
+                        if(res.status === 200) {
+                            let data = res.data.data;
+                            local.set("blog_t&k", data.token)
+
+                            Msg('登录成功 ~', 'success', 2000);
+                            setTimeout(() => {
+                                this.$router.push({path:'/'})
+                            }, 1000);
+                        }
+                    })
+
                 };
             }
         },
         mounted() {
+            window.addEventListener('keyup', (e) => {
+                if(e.key === 'Enter') {
+                    this.handleLogin();
+                };
+            });
         }
     }
 </script>
