@@ -17,7 +17,7 @@
                 <i v-if="psd.isClose && psd.isClear" @click="psd.isClose = !psd.isClose" class="iconfont icon-eye-close"></i>
                 <i v-if="psd.isClear" @click="handleClear(psd)" @mouseenter="toggleShow(psd)" class="iconfont icon-closeCard"></i>
                 <transition name="fade">
-                    <span v-if="psd.validate ? '' : 'err'" class="msg">*长度在 6 到 18 个字符,至少含有一个字母和一个数字*</span>
+                    <span v-if="psd.validate ? '' : 'err'" class="msg">*长度在 2 到 12 字符*</span>
                 </transition>
             </p>
             <button @click="handleLogin" class="btn">登录</button>
@@ -79,7 +79,15 @@ import local from "../utils/local"
                     Login({name: this.account.text, pwd: this.psd.text}).then(res => {
                         if(res.status === 200) {
                             let data = res.data.data;
-                            local.set("blog_t&k", data.token)
+                            local.set("blog_t&k", data.token);
+                            local.set("blog_userinfo", {
+                                bloggerId: data.id,
+                                name: data.name,
+                                avatar: data.avatar,
+                                conciseDesc: data.conciseDesc,
+                                detailDesc: data.detailDesc,
+                                createTime: data.createTime
+                            })
 
                             Msg('登录成功 ~', 'success', 2000);
                             setTimeout(() => {
