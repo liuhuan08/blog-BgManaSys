@@ -20,7 +20,7 @@
 			<div class="user">
 				<img :src="avatar" />
 				<div class="user-item" @click="isShow = !isShow">
-					欢迎您，<span class="user-item">{{ name }}</span><i class="iconfont icon-down user-item"></i>
+					欢迎您，<span class="user-item">{{ name }}</span>
 				</div>
 				<transition name="fade">
 					<div class="top-sel" v-if="isShow">
@@ -62,8 +62,8 @@ export default {
 	},
 	methods: {
 		getData() {
-			this.name = "刘欢";
-			this.avatar = require("@/assets/imgs/avater.jpg");
+			this.name = local.get("blog_userinfo").name;
+			this.avatar = local.get("blog_userinfo").avatar;
 		},
 		showTitle() {
 			let titleList = [
@@ -182,7 +182,7 @@ export default {
 		align-items: center;
 		padding: 20px;
 		height: 60px;
-		border-bottom: 1px solid #ccc;
+		border-bottom: 1px solid #eee;
 
 		.icon-group {
 			.iconfont {
@@ -214,25 +214,21 @@ export default {
 				overflow: hidden;
 			}
 
-			.iconfont {
-				margin-left: 10px;
-				font-size: 14px;
-			}
-
 			.top-sel {
 				position: absolute;
-				bottom: -60px;
-				right: 20px;
-				padding: 15px 0;
+				bottom: -50px;
+				right: 0px;
+				padding: 10px 0;
 				font-size: 14px;
 				background-color: #fff;
 				border: 1px solid #eee;
-				border-radius: 8px;
+				border-radius: 6px;
 				box-shadow: 0px 2px 2px #efefef;
 
 				.item {
 					padding: 5px 20px;
 					cursor: pointer;
+					transition: all 2s linear;
 				}
 
 				.item:hover {
@@ -291,7 +287,7 @@ export default {
 				font-size: 14px;
 				color: #ccc;
 				opacity: 0;
-				transition: all 0.5s;
+				transition: all 0.3s;
 			}
 		}
 
@@ -307,7 +303,7 @@ export default {
 
 .fade-leave-active,
 .fade-enter-active {
-	transition: all 0.5s;
+	transition: all 0.3s;
 }
 .fade-enter,
 .fade-leave-to {

@@ -49,6 +49,7 @@ import local from "../utils/local"
             }
         },
         methods: {
+            // 控制清空按钮显示隐藏
             toggleShow(val) {
                 if(val.text.toString().length > 0) {
                     val.isClear = true;
@@ -56,11 +57,13 @@ import local from "../utils/local"
                     val.isClear = false;
                 };
             },
+            // 清空
             handleClear(val) {
                 val.text = '';
                 val.isClear = false;
                 this.validate(val);
             },
+            // 前端验证
             validate(val) {
                 if(val.type === 'account') {
                     let res;
@@ -72,6 +75,7 @@ import local from "../utils/local"
                     this.psd.validate = res;
                 };
             },
+            // 登录
             handleLogin() {
                 this.validate(this.account);
                 this.validate(this.psd);
@@ -100,6 +104,7 @@ import local from "../utils/local"
             }
         },
         mounted() {
+            // 回车登录
             window.addEventListener('keyup', (e) => {
                 if(e.key === 'Enter') {
                     this.handleLogin();
