@@ -3,14 +3,14 @@ import local from '@/utils/local'
 
 import Msg from "../utils/msg"
 
-axios.defaults.baseURL = 'http://120.24.37.109:7001';
+axios.defaults.baseURL = 'http://api.excellentlld.com';
 axios.defaults.timeout = 5000; // 请求超时时间
 
 
 // 添加请求拦截器
 axios.interceptors.request.use(function (config) {
     // 在发送请求之前做些什么
-    let token = local.get('t&k')
+    let token = local.get('blog_t&k')
 
     if (token) {
         config.headers.Authorization = token
