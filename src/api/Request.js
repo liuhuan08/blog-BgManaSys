@@ -13,7 +13,7 @@ axios.interceptors.request.use(function (config) {
     let token = local.get('blog_t&k')
 
     if (token) {
-        config.headers.Authorization = token
+        config.headers.Authorization = 'Bearer ' + token
     }
 
     return config;
