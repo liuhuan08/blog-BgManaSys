@@ -58,7 +58,9 @@ export default {
 			desc: { text: "", icon: "" },
             articleData: [],
             imgsData: [],
-            dateArr: []
+            dateArr: [],
+			chart: null,
+			timer: null
 		};
 	},
 	filters: {
@@ -102,7 +104,7 @@ export default {
             }
         },
 		drawCharts() {
-			var myChart = echarts.init(this.$refs.chartContainer);
+			this.chart = echarts.init(this.$refs.chartContainer);
 			var option;
 
 			option = {
@@ -153,8 +155,14 @@ export default {
 				],
 			};
 
-			option && myChart.setOption(option);
+			option && this.chart.setOption(option);
 		},
+		handelResize() {
+			if(this.timer) clearTimeout(this.timer);
+			this.timer = setTimeout(() => {
+				this.chart.resize()
+			}, 100)
+		}
 	},
 	created() {
 		this.getDesc();
@@ -162,7 +170,11 @@ export default {
 	},
     mounted() {
         this.drawCharts();
-    }
+		window.addEventListener('resize', this.handelResize)
+    },
+	beforeDestroy() {
+		window.removeEventListener('resize', this.handelResize)
+	}
 };
 </script>
 
