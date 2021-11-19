@@ -8,7 +8,9 @@ import "./assets/css/normalize.css"; // 重置样式表
 import "./assets/iconfonts/iconfont.css" // 字体图标样式
 
 import Msg from "./utils/msg";
-Vue.use(Msg)
+Vue.use(Msg);
+
+Vue.prototype.$EventBus = new Vue(); // 中央事件总线
 
 Vue.config.productionTip = false;
 

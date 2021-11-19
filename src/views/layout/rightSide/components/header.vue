@@ -64,6 +64,9 @@ export default {
 		getData() {
 			this.name = local.get("blog_userinfo").name;
 			this.avatar = local.get("blog_userinfo").avatar;
+			this.$EventBus.$on('changeAvatar', (data) => {
+				this.avatar = data;
+			})
 		},
 		showTitle() {
 			let titleList = [
