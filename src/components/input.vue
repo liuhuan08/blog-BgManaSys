@@ -1,9 +1,12 @@
 <template>
-	<div class="l-input" :class="labelPosition === 'top' ? 'flex' : ''">
-		<span v-show="label" class="label" :class="labelPosition === 'left' ? 'label-left' : ''" :style="{'width': labelWidth ? labelWidth : '80px'}">{{label}}</span>
-		<div class="ipt-wrap">
-            <input type="text" v-model="ipt" :placeholder="placeholder" @input="handleInput($event.target.value)" class="ipt" />
+	<div class="l-input">
+		<div class="ipt-wrap" v-if="type === 'text' || type === 'password'">
+            <input :type="type" v-model="ipt" :placeholder="placeholder" @input="handleInput($event.target.value)" class="ipt" />
             <i class="iconfont icon-closeCard" v-show="ipt.length > 0 && clearable !== false" @click="handleClear"></i>
+        </div>
+        <div class="textarea" v-if="type === 'textarea'">
+            <textarea v-model="ipt" :rows="maxlength <= 20 ? '1' : '4'" :maxlength="maxlength" :placeholder="placeholder" class="textarea-ipt" @input="handleInput($event.target.value)"></textarea>
+            <div class="num">{{ipt.length}}/{{maxlength}}</div>
         </div>
 	</div>
 </template>
@@ -12,10 +15,16 @@
 export default {
     data() {
         return {
-            ipt: ''
+            ipt: this.iptValue
         }
     },
     props: {
+        iptValue: {
+            type: String || Number
+        },
+        type: {
+            type: String
+        },
         label: {
             type: String
         },
@@ -28,7 +37,7 @@ export default {
         clearable: {
             type: String || Boolean
         },
-        labelPosition: {
+        maxlength: {
             type: String
         }
     },
@@ -49,18 +58,7 @@ export default {
 
 <style lang="less" scoped>
 .l-input{
-    display: flex;
-    align-items: center;
     width: 100%;
-
-    .label{
-        margin-right: 20px;
-        text-align: right;
-    }
-
-    .label-left{
-        text-align: left;
-    }
 
     .ipt-wrap{
         position: relative;
@@ -89,15 +87,25 @@ export default {
             display: block;
         }
     }
-}
 
-.flex{
-    flex-direction: column;
-    align-items: start;
+    .textarea{
+        position: relative;
+        width: 100%;
 
-    .label{
-        margin-bottom: 10px;
-        text-align: left;
+        .textarea-ipt{
+            padding: 10px;
+            width: 100%;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+            // resize: none;
+        }
+
+        .num{
+            position: absolute;
+            bottom: 10px;
+            right: 10px;
+            color: #999;
+        }
     }
 }
 </style>
