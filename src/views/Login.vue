@@ -83,14 +83,15 @@ import local from "../utils/local"
                         if(res.status === 200) {
                             let data = res.data.data;
                             local.set("blog_t&k", data.token);
-                            local.set("blog_userinfo", {
+                            let info = {
                                 bloggerId: data.id,
                                 name: data.name,
                                 avatar: data.avatar,
                                 conciseDesc: data.conciseDesc,
                                 detailDesc: data.detailDesc,
                                 createTime: data.createTime
-                            })
+                            }
+                            local.set("blog_userinfo", info);
 
                             this.Msg('登录成功 ~', 'success', 2000);
                             setTimeout(() => {
