@@ -14,7 +14,6 @@
                 </div>
             </label>
         </div>
-        <button class="confirm" @click="confirm">确认</button>
     </div>
 </template>
 
@@ -47,21 +46,16 @@ export default {
             if(!this.beforeUpload(this.file)) return;
             this.url = window.URL.createObjectURL(this.file)
             this.show = true;
-        },
-        confirm() {
+
             let formData = new FormData();
             formData.append('avater', this.file);
             axios.post(this.action, formData, {headers: {'Content-Type': 'multipart/form-data'}}).then(res => {
                 if(res.status === 200) {
-                    console.log(res);
                     this.url = res.data.data.url;
                     this.$emit("on-success", res.data)
                 }
             })
         }
-    },
-    mounted() {
-        
     }
 }
 </script>
@@ -142,21 +136,6 @@ export default {
 
     &:hover .remove{
         display: block;
-    }
-}
-
-.confirm{
-    margin-left: 10px;
-    width: 50px;
-    height: 26px;
-    font-size: 12px;
-    color: #fff;
-    border: 1px solid #409eff;
-    background-color: #409eff;
-    border-radius: 4px;
-
-    &:hover{
-        background-color: #66b1ff;
     }
 }
 </style>
