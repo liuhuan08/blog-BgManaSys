@@ -1,18 +1,18 @@
 <template>
     <div class="wrap">
         <div class="upload-section">
-            <label v-if="!show">
+            <label>
                 <input type="file" class="ipt" @change="upload">
                 <div class="add-wrap">
                     <i class="iconfont icon-add"></i>
                 </div>
-            </label>
-            <div class="img-wrap" v-if="show" title="移除">
-                <img :src="url" class="img" v-if="show">
-                <div class="remove" @click="handleRemove">
-                    <i class="iconfont icon-remove"></i>
+                <div class="img-wrap" v-if="url" title="更换">
+                    <img :src="url" class="img" v-if="url">
+                    <div class="remove">
+                        <i class="iconfont icon-change"></i>
+                    </div>
                 </div>
-            </div>
+            </label>
         </div>
         <button class="confirm" @click="confirm">确认</button>
     </div>
@@ -24,7 +24,7 @@ import axios from 'axios'
 export default {
     data() {
         return {
-            url: '',
+            url: this.src,
             show: false,
             file: null
         }
@@ -35,6 +35,9 @@ export default {
         },
         beforeUpload: {
             type: Function
+        },
+        src: {
+            type: String
         }
     },
     methods: {
@@ -44,11 +47,6 @@ export default {
             if(!this.beforeUpload(this.file)) return;
             this.url = window.URL.createObjectURL(this.file)
             this.show = true;
-        },
-        handleRemove() {
-            this.url = '';
-            this.file = null;
-            this.show = false;
         },
         confirm() {
             let formData = new FormData();
