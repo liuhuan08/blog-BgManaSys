@@ -1,5 +1,5 @@
 <template>
-	<button class="l-button" :class="type + ' ' + size">
+	<button class="l-button" :class="type + ' ' + size" @click="handleClick">
 		<span v-if="$slots.default"><slot></slot></span>
 	</button>
 </template>
@@ -17,6 +17,11 @@ export default {
         },
         size: {
             type: String,
+        }
+    },
+    methods: {
+        handleClick() {
+            this.$emit('click')
         }
     }
 };
