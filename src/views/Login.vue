@@ -26,7 +26,6 @@
 </template>
 
 <script>
-import Msg from "../utils/msg";
 import { Login } from "../api/Login";
 import local from "../utils/local"
 
@@ -93,7 +92,7 @@ import local from "../utils/local"
                                 createTime: data.createTime
                             })
 
-                            Msg('登录成功 ~', 'success', 2000);
+                            this.Msg('登录成功 ~', 'success', 2000);
                             setTimeout(() => {
                                 this.$router.push({path:'/'})
                             }, 1000);
