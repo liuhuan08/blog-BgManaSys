@@ -6,6 +6,13 @@
   "description": "",
   "glyphs": [
     {
+      "icon_id": "1325982",
+      "name": "我的宝贝页_更换",
+      "font_class": "change",
+      "unicode": "e650",
+      "unicode_decimal": 58960
+    },
+    {
       "icon_id": "11215385",
       "name": "error",
       "font_class": "error",
