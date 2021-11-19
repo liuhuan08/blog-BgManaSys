@@ -8,3 +8,12 @@ export const getData = (bloggerId) => {
         params: { bloggerId }
     })
 }
+
+// 修改博主信息
+export const modifyBlogger = (data) => {
+    return request({
+        method: 'post',
+        url: '/blog/back/modify-blogger',
+        data
+    })
+}
