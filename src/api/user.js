@@ -1,7 +1,7 @@
 import request from './Request'
 
 // 获取首页数据
-export const getData = (bloggerId) => {
+export const getNumData = (bloggerId) => {
     return request({
         method: 'get',
         url: '/blog/back/get-statistics-info',

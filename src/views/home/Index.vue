@@ -25,6 +25,8 @@
 
 <script>
 import * as echarts from "echarts";
+import { getNumData } from "@/api/user";
+import local from "@/utils/local" 
 
 export default {
 	data() {
@@ -33,31 +35,31 @@ export default {
 				{
 					icon: "icon-articleNum",
 					title: "发表文章总数",
-					num: 40,
+					num: 0,
 					color: "#FF9900",
 				},
 				{
 					icon: "icon-articleNum",
 					title: "近一周发表文章数",
-					num: 10,
+					num: 0,
 					color: "#FF0033",
 				},
 				{
 					icon: "icon-imgs",
 					title: "图片总数",
-					num: 2000,
+					num: 0,
 					color: "#333399",
 				},
 				{
 					icon: "icon-imgs",
 					title: "近一周上传图片数",
-					num: 83,
+					num: 0,
 					color: "#663399",
 				},
 			],
 			desc: { text: "", icon: "" },
-            articleData: [],
-            imgsData: [],
+			articleData: [0, 0, 0, 0, 0, 0, 0],
+            imgsData: [0, 0, 0, 0, 0, 0, 0],
             dateArr: [],
 			chart: null,
 			timer: null
@@ -92,16 +94,37 @@ export default {
 			}
 		},
         getData() {
-            this.articleData = [1, 2, 1, 3, 2, 1, 0];
-            this.imgsData = [10, 12, 18, 16, 20, 6, 1];
-
-            let today = new Date().getTime()
+			let today = new Date().getTime()
             for(let i = 0; i < 7; i++) {
                 let month = (new Date(today - i*24*60*60*1000).getMonth() + 1);
                 let day = (new Date(today - i*24*60*60*1000).getDate()) < 10 ? ('0' + (new Date(today - i*24*60*60*1000).getDate())) : new Date(today - i*24*60*60*1000).getDate();
-                let date = month + '.' + day
+                let date = month + '-' + day
                 this.dateArr.unshift(date)
             }
+
+			let bloggerId = local.get('blog_userinfo').bloggerId
+			getNumData(bloggerId).then(res => {
+				if(res.status === 200) {
+					let data = res.data.data;
+					
+					this.cardList[0].num = data.articles.total;
+					this.cardList[1].num = data.articles.recently;
+					this.cardList[2].num = data.albumImages.total;
+					this.cardList[3].num = data.albumImages.recently;
+
+					for(let key in data.albumImages.recentList) {
+						if(this.dateArr.indexOf(key) !== -1) {
+							this.$set(this.imgsData, this.dateArr.indexOf(key), data.albumImages.recentList[key]);
+						}
+					}
+					for(let key in data.articles.recentList) {
+						if(this.dateArr.indexOf(key) !== -1) {
+							this.$set(this.articleData, this.dateArr.indexOf(key), data.articles.recentList[key]);
+						}
+					};
+					this.drawCharts();
+				}
+			})
         },
 		drawCharts() {
 			this.chart = echarts.init(this.$refs.chartContainer);
