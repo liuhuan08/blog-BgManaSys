@@ -24,7 +24,7 @@
 				</div>
 				<transition name="fade">
 					<div class="top-sel" v-if="isShow">
-						<p class="item">退出登录</p>
+						<p class="item" @click="logout">退出登录</p>
 					</div>
 				</transition>
 			</div>
@@ -159,6 +159,13 @@ export default {
 			local.set("cardList", list);
 			this.cardList = list;
 		},
+		logout() {
+			local.clear();
+			this.Msg('成功退出 ~', 'success', 2000)
+			setTimeout(() => {
+				this.$router.push({ path: '/login' });
+			}, 500)
+		}
 	},
 	watch: {
 		$route() {
