@@ -9,3 +9,12 @@ export const getArticleList = (data) => {
         data
     })
 }
+
+// 获取标签列表
+export const getArticleTagList = (bloggerId) => {
+    return request({
+        method: 'get',
+        url: '/blog/back/get-article-tag',
+        params: { bloggerId }
+    })
+}
