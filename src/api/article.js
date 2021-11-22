@@ -18,3 +18,12 @@ export const getArticleTagList = (bloggerId) => {
         params: { bloggerId }
     })
 }
+
+// 添加标签列表
+export const addArticleTagList = (data) => {
+    return request({
+        method: 'post',
+        url: '/blog/back/add-articletag',
+        data
+    })
+}
