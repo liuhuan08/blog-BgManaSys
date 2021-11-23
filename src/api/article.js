@@ -10,6 +10,15 @@ export const getArticleList = (data) => {
     })
 }
 
+// 新增文章
+export const addArticle = (data) => {
+    return request({
+        method: 'post',
+        url: '/blog/back/add-article',
+        data
+    })
+}
+
 // 获取标签列表
 export const getArticleTagList = (bloggerId) => {
     return request({

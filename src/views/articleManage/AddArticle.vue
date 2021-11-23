@@ -40,13 +40,21 @@
 				<div class="label">文章标签</div>
 				<div class="select-wrap" @click.stop="toggleShow">
 					<p v-if="tagSelList.length > 0" class="sel-tags">
-						<span class="text">{{ tagSelList[0].tagName }} <i class="iconfont icon-closeCard" @click.stop="handelDel"></i></span>
-						<span class="text" v-if="tagSelList.length > 1">+{{ tagSelList.length - 1 }}</span>
+						<span class="text"
+							>{{ tagSelList[0].tagName }}
+							<i
+								class="iconfont icon-closeCard"
+								@click.stop="handelDel"
+							></i
+						></span>
+						<span class="text" v-if="tagSelList.length > 1"
+							>+{{ tagSelList.length - 1 }}</span
+						>
 					</p>
 					<p v-else class="placeholder">请选择</p>
 					<i class="iconfont icon-down"></i>
 					<div ref="optionWrap" class="option-wrap">
-						<ul class="option" ref="option">
+						<ul class="option" ref="option" id="option">
 							<li class="add-tag" @click.stop="handelAddTag">
 								新增标签<i class="iconfont icon-addtag"></i>
 							</li>
@@ -79,9 +87,9 @@
 			</div>
 		</div>
 
-        <div class="dialog" v-if="dialogVisible">
-            <div class="title">添加标签</div>
-            <div class="add-ipt">
+		<div class="dialog" v-if="dialogVisible">
+			<div class="title">添加标签</div>
+			<div class="add-ipt">
 				<div class="label">文章标签</div>
 				<l-input
 					class="edit"
@@ -93,12 +101,20 @@
 				>
 				</l-input>
 			</div>
-            <div class="btn-group">
-				<l-botton type="primary" size="mini" @click="confirm" style="margin-right: 10px">添加</l-botton>
-				<l-botton type="info" size="mini" class="reset" @click="cancle">取消</l-botton>
+			<div class="btn-group">
+				<l-botton
+					type="primary"
+					size="mini"
+					@click="confirm"
+					style="margin-right: 10px"
+					>添加</l-botton
+				>
+				<l-botton type="info" size="mini" class="reset" @click="cancle"
+					>取消</l-botton
+				>
 			</div>
-            <i class="iconfont icon-closeCard" @click="cancle"></i>
-        </div>
+			<i class="iconfont icon-closeCard" @click="cancle"></i>
+		</div>
 	</div>
 </template>
 
@@ -108,7 +124,7 @@ import LUploadImage from "@/components/uploadImage.vue";
 import LBotton from "@/components/botton.vue";
 
 import axios from "axios";
-import { getArticleTagList, addArticleTagList } from "../../api/article";
+import { getArticleTagList, addArticleTagList, addArticle } from "../../api/article";
 
 import local from "../../utils/local";
 
@@ -155,7 +171,7 @@ export default {
 				coverUrl: "",
 				content: "",
 				bloggerId: "",
-				articleTagList: "",
+				articleTagList: [],
 			},
 			tags: [],
 			tagSelList: [],
@@ -184,9 +200,9 @@ export default {
 					this.handleImgUpload(blobInfo, success, failure);
 				},
 			},
-            addTagName: '',
+			addTagName: "",
 			show: false,
-            dialogVisible: false
+			dialogVisible: false,
 		};
 	},
 	components: {
@@ -221,7 +237,7 @@ export default {
 				});
 		},
 		handleAvatarSuccess(data) {
-			this.formData.avatar = data.data.url;
+			this.articleForm.coverUrl = data.data.url;
 		},
 		beforeAvatarUpload(file) {
 			const isJPG = file.type === "image/jpeg";
@@ -235,13 +251,47 @@ export default {
 			}
 			return isJPG && isLt2M;
 		},
-		submit() {},
-		reset() {},
+		submit() {
+            this.tagSelList.forEach(v => {
+                this.articleForm.articleTagList.push(v.tagId)
+            })
+            let flag = true;
+            for(let key in this.articleForm) {
+                if(this.articleForm[key].length <= 0) {
+                    flag = false;
+                }
+            };
+            console.log(flag);
+            if(!flag) return;
+            console.log(this.articleForm);
+            addArticle(this.articleForm).then(res => {
+                if (res.status === 200) {
+                    this.Msg("发表成功 ~", "success", 1500);
+                    this.articleForm = {
+                        title: "",
+                        subTitle: "",
+                        coverUrl: "",
+                        content: "",
+                        bloggerId: "",
+                        articleTagList: [],
+                    }
+                }
+            })
+        },
+		reset() {
+            this.articleForm = {
+                        title: "",
+                        subTitle: "",
+                        coverUrl: "",
+                        content: "",
+                        bloggerId: "",
+                        articleTagList: [],
+                    }
+        },
 		toggleShow() {
 			this.show = !this.show;
 			if (this.show) {
-				this.$refs.optionWrap.style.height =
-					(30 + 12) * (this.tags.length + 1) + 5 + "px";
+				this.$refs.optionWrap.style.height = (30 + 12) * (this.tags.length + 1) + 5 + "px";
 				this.$refs.optionWrap.style.opacity = 1;
 			} else {
 				this.$refs.optionWrap.style.height = 0;
@@ -249,36 +299,58 @@ export default {
 			}
 		},
 		handelAddTag() {
-            this.dialogVisible = !this.dialogVisible
-        },
-        handelDel() {
-            this.tagSelList.shift();
-        },
-		handelChoose(val) {
-            if(this.tagSelList.indexOf(val) === -1) {
-                this.tagSelList.push(val);
-                console.log(this.tagSelList);
-            }else {
-                this.tagSelList.splice(this.tagSelList.indexOf(val), 1)
-            }
+			this.dialogVisible = !this.dialogVisible;
 		},
-        confirm() {
-            if(this.addTagName.length > 0) {
-                addArticleTagList({bloggerId: this.articleForm, tagName: this.addTagName}).then(res => {
-                    console.log(res);
-                })
-            }
-        },
-        cancle() {
-            this.dialogVisible = false;
-        }
+		handelDel() {
+			this.tagSelList.shift();
+		},
+		handelChoose(val) {
+			if (this.tagSelList.indexOf(val) === -1) {
+				this.tagSelList.push(val);
+				console.log(this.tagSelList);
+			} else {
+				this.tagSelList.splice(this.tagSelList.indexOf(val), 1);
+			}
+		},
+		confirm() {
+			if (this.addTagName.length > 0) {
+				addArticleTagList({
+					bloggerId: this.articleForm.bloggerId,
+					tagName: this.addTagName,
+				})
+					.then((res) => {
+						if (res.status === 200) {
+							this.Msg("添加成功 ~", "success", 1500);
+							this.getTags();
+							this.$refs.optionWrap.style.height = (30 + 12 + 12) + this.$refs.optionWrap.style.height + "px";
+							this.dialogVisible = false;
+						}
+					})
+					.catch((err) => {
+						this.Msg("添加失败...", "failed", 1500);
+						console.log(err);
+					});
+			}
+		},
+		cancle() {
+			this.dialogVisible = false;
+		},
 	},
 	created() {
 		this.getTags();
 	},
 	mounted() {
 		tinymce.init({});
-	}
+        document.addEventListener('click', (e) => {
+            // console.dir(e.target);
+            this.show = false;
+            this.$refs.optionWrap.style.height = 0;
+			this.$refs.optionWrap.style.opacity = 0;
+            // if(e.target.id === 'option') {
+
+            // }
+        })
+	},
 };
 </script>
 
@@ -289,7 +361,7 @@ body {
 </style>
 <style lang="less" scoped>
 .add-article-page {
-    position: relative;
+	position: relative;
 	padding: 20px;
 	padding-top: 0;
 	width: 100%;
@@ -346,22 +418,22 @@ body {
 				.sel-tags {
 					display: flex;
 					align-items: center;
-                    height: 40px;
+					height: 40px;
 
 					.text {
-                        display: flex;
-                        align-items: center;
-                        justify-content: space-between;
+						display: flex;
+						align-items: center;
+						justify-content: space-between;
 						padding: 0 8px 0 12px;
 						height: 24px;
 						font-size: 12px;
 						line-height: 24px;
 						background-color: #f4f4f5;
-                        border-radius: 4px;
+						border-radius: 4px;
 
-                        .iconfont{
-                            margin-left: 6px;
-                        }
+						.iconfont {
+							margin-left: 6px;
+						}
 					}
 				}
 
@@ -387,6 +459,7 @@ body {
 					transition: all 0.1s linear;
 					opacity: 0;
 					overflow: hidden;
+					z-index: 9998;
 
 					.option {
 						position: absolute;
@@ -397,6 +470,7 @@ body {
 						border-radius: 6px;
 						box-shadow: -1px 2px 5px #e4e7ed;
 						background-color: #fff;
+						z-index: 9998;
 
 						&::before {
 							position: absolute;
@@ -437,7 +511,9 @@ body {
 		}
 
 		.item-content {
+			position: relative;
 			width: 100%;
+			z-index: 98;
 
 			.content {
 				flex: 1;
@@ -455,49 +531,49 @@ body {
 	}
 }
 
-.dialog{
-    position: absolute;
-    top: 30%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    width: 400px;
-    background-color: #fff;
-    border: 1px solid #e4e7ed;
-    border-radius: 6px;
-    z-index: 9999;
+.dialog {
+	position: absolute;
+	top: 30%;
+	left: 50%;
+	transform: translate(-50%, -50%);
+	width: 400px;
+	background-color: #fff;
+	border: 1px solid #e4e7ed;
+	border-radius: 6px;
+	z-index: 9999;
 
-    .title{
-        margin: 0;
-        font-size: 14px;
-        line-height: 30px;
-    }
+	.title {
+		margin: 0;
+		font-size: 14px;
+		line-height: 30px;
+	}
 
-    .add-ipt{
-        display: flex;
-        align-items: center;
-        padding: 0 20px;
-        height: 60px;
+	.add-ipt {
+		display: flex;
+		align-items: center;
+		padding: 0 20px;
+		height: 60px;
 
-        .label{
-            width: 80px;
-        }
+		.label {
+			width: 80px;
+		}
 
-        .edit{
-            flex: 1;
-        }
-    }
+		.edit {
+			flex: 1;
+		}
+	}
 
-    .btn-group{
-        display: flex;
-        justify-content: flex-end;
-        padding: 0 20px 10px;
-    }
+	.btn-group {
+		display: flex;
+		justify-content: flex-end;
+		padding: 0 20px 10px;
+	}
 
-    .icon-closeCard{
-        position: absolute;
-        top: 4px;
-        right: 8px;
-        cursor: pointer;
-    }
+	.icon-closeCard {
+		position: absolute;
+		top: 4px;
+		right: 8px;
+		cursor: pointer;
+	}
 }
 </style>
