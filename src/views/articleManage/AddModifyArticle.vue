@@ -1,6 +1,6 @@
 <template>
 	<div class="add-article-page">
-		<div class="title">添加文章</div>
+		<div class="title">{{ pageTitle }}</div>
 		<div class="form-wrap">
 			<div class="item">
 				<div class="label">文章标题</div>
@@ -124,7 +124,13 @@ import LUploadImage from "@/components/uploadImage.vue";
 import LBotton from "@/components/botton.vue";
 
 import axios from "axios";
-import { getArticleTagList, addArticleTagList, addArticle } from "../../api/article";
+import {
+	getArticleInfoData,
+	getArticleTagList,
+	addArticleTagList,
+	editArticle,
+	addArticle,
+} from "../../api/article";
 
 import local from "../../utils/local";
 
@@ -165,6 +171,7 @@ import "@/assets/tinymce/plugins/lineheight/plugin";
 export default {
 	data() {
 		return {
+			pageTitle: "添加文章",
 			articleForm: {
 				title: "",
 				subTitle: "",
@@ -212,6 +219,34 @@ export default {
 		Editor,
 	},
 	methods: {
+		getArticleInfo() {
+			if (this.$route.query.id) {
+				this.pageTitle = "修改文章";
+				let id = this.$route.query.id;
+				getArticleInfoData(id).then((res) => {
+					if (res.status === 200) {
+						let data = res.data.data;
+						(this.articleForm.title = data.title),
+							(this.articleForm.subTitle = data.subTitle),
+							(this.articleForm.coverUrl = data.coverUrl),
+							(this.articleForm.content = data.content),
+							(this.articleForm.articleTagList = data.tags),
+							(this.tagSelList = data.tags);
+					}
+				});
+			} else {
+				this.pageTitle = "添加文章";
+				this.articleForm = {
+					title: "",
+					subTitle: "",
+					coverUrl: "",
+					content: "",
+					bloggerId: "",
+					articleTagList: [],
+				};
+				this.tagSelList = [];
+			}
+		},
 		getTags() {
 			let bloggerId = local.get("blog_userinfo").bloggerId;
 			this.articleForm.bloggerId = bloggerId;
@@ -252,46 +287,61 @@ export default {
 			return isJPG && isLt2M;
 		},
 		submit() {
-            this.tagSelList.forEach(v => {
-                this.articleForm.articleTagList.push(v.tagId)
-            })
-            let flag = true;
-            for(let key in this.articleForm) {
-                if(this.articleForm[key].length <= 0) {
-                    flag = false;
-                }
-            };
-            console.log(flag);
-            if(!flag) return;
-            console.log(this.articleForm);
-            addArticle(this.articleForm).then(res => {
-                if (res.status === 200) {
-                    this.Msg("发表成功 ~", "success", 1500);
-                    this.articleForm = {
-                        title: "",
-                        subTitle: "",
-                        coverUrl: "",
-                        content: "",
-                        bloggerId: "",
-                        articleTagList: [],
-                    }
-                }
-            })
-        },
+			this.tagSelList.forEach((v) => {
+				this.articleForm.articleTagList.push(v.tagId);
+			});
+			let flag = true;
+			for (let key in this.articleForm) {
+				if (this.articleForm[key].length <= 0) {
+					flag = false;
+				}
+			}
+			console.log(flag);
+			if (!flag) return;
+			console.log(this.articleForm);
+			if (this.$route.query.id) {
+				let data = {
+					title: this.articleForm.title,
+					subTitle: this.articleForm.subTitle,
+					coverUrl: this.articleForm.coverUrl,
+					content: this.articleForm.content,
+					articleTagList: this.articleForm.content,
+					articleId: this.$route.query.id * 1,
+				};
+				editArticle(data).then((res) => {
+					console.log(res);
+				});
+			} else {
+				addArticle(this.articleForm).then((res) => {
+					if (res.status === 200) {
+						this.Msg("发表成功 ~", "success", 1500);
+						this.articleForm = {
+							title: "",
+							subTitle: "",
+							coverUrl: "",
+							content: "",
+							bloggerId: "",
+							articleTagList: [],
+						};
+					}
+				});
+			}
+		},
 		reset() {
-            this.articleForm = {
-                        title: "",
-                        subTitle: "",
-                        coverUrl: "",
-                        content: "",
-                        bloggerId: "",
-                        articleTagList: [],
-                    }
-        },
+			this.articleForm = {
+				title: "",
+				subTitle: "",
+				coverUrl: "",
+				content: "",
+				bloggerId: "",
+				articleTagList: [],
+			};
+		},
 		toggleShow() {
 			this.show = !this.show;
 			if (this.show) {
-				this.$refs.optionWrap.style.height = (30 + 12) * (this.tags.length + 1) + 5 + "px";
+				this.$refs.optionWrap.style.height =
+					(30 + 12) * (this.tags.length + 1) + 5 + "px";
 				this.$refs.optionWrap.style.opacity = 1;
 			} else {
 				this.$refs.optionWrap.style.height = 0;
@@ -322,7 +372,12 @@ export default {
 						if (res.status === 200) {
 							this.Msg("添加成功 ~", "success", 1500);
 							this.getTags();
-							this.$refs.optionWrap.style.height = (30 + 12 + 12) + this.$refs.optionWrap.style.height + "px";
+							this.$refs.optionWrap.style.height =
+								30 +
+								12 +
+								12 +
+								this.$refs.optionWrap.style.height +
+								"px";
 							this.dialogVisible = false;
 						}
 					})
@@ -337,19 +392,20 @@ export default {
 		},
 	},
 	created() {
+		this.getArticleInfo();
 		this.getTags();
 	},
 	mounted() {
 		tinymce.init({});
-        document.addEventListener('click', (e) => {
-            // console.dir(e.target);
-            this.show = false;
-            this.$refs.optionWrap.style.height = 0;
+		document.addEventListener("click", (e) => {
+			// console.dir(e.target);
+			this.show = false;
+			this.$refs.optionWrap.style.height = 0;
 			this.$refs.optionWrap.style.opacity = 0;
-            // if(e.target.id === 'option') {
+			// if(e.target.id === 'option') {
 
-            // }
-        })
+			// }
+		});
 	},
 };
 </script>

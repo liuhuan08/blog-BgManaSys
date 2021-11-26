@@ -65,21 +65,13 @@ const routes = [
 				},
 				component: () => import("../views/articleManage/ArticleList.vue")
 			}, {
-				path: "/article/article-modify",
-				name: "ArticleModify",
-				meta: {
-					title: '文章修改',
-					path: '/article/article-modify'
-				},
-				component: () => import("../views/articleManage/ArticleModify.vue")
-			}, {
-				path: "/article/add-article",
-				name: "AddArticle",
+				path: "/article/add_modify-article",
+				name: "AddModifyArticle",
 				meta: {
 					title: '新增文章',
-					path: '/article/add-article'
+					path: '/article/add_modify-article'
 				},
-				component: () => import("../views/articleManage/AddArticle.vue")
+				component: () => import("../views/articleManage/AddModifyArticle.vue")
 			}
 		]
 	},

@@ -28,7 +28,7 @@
                 </router-link>
             </li>
             <li>
-                <h3 class="menu" @click="isShow = !isShow" :class="(activePath === '/article/article-list' || activePath === '/article/article-modify' || activePath === '/article/add-article') ? 'active' : ''">
+                <h3 class="menu" @click="isShow = !isShow" :class="(activePath === '/article/article-list' || activePath === '/article/add-article') ? 'active' : ''">
                     <i class="iconfont icon-articles"></i>
                     <transition name="fade">
                         <span style="flex: 1" v-if="!$store.state.isCollapse">文章管理</span>
@@ -50,21 +50,11 @@
                             </router-link>
                         </li>
                         <li class="sub-menu" :class="$store.state.isCollapse ? 'sub-menu-hide' : ''">
-                            <router-link :to="{path: '/article/article-modify'}">
-                                <p :class="activePath === '/article/article-modify' ? 'active' : ''">
+                            <router-link :to="{path: '/article/add_modify-article'}">
+                                <p :class="activePath === '/article/add_modify-article' ? 'active' : ''">
                                     <i class="iconfont icon-edit"></i>
                                     <transition name="fade">
-                                        <span v-if="!$store.state.isCollapse">文章修改</span>
-                                    </transition>
-                                </p>
-                            </router-link>
-                        </li>
-                        <li class="sub-menu" :class="$store.state.isCollapse ? 'sub-menu-hide' : ''">
-                            <router-link :to="{path: '/article/add-article'}">
-                                <p :class="activePath === '/article/add-article' ? 'active' : ''">
-                                    <i class="iconfont icon-addArticle"></i>
-                                    <transition name="fade">
-                                        <span v-if="!$store.state.isCollapse">新增文章</span>
+                                        <span v-if="!$store.state.isCollapse">编辑文章</span>
                                     </transition>
                                 </p>
                             </router-link>
@@ -98,7 +88,7 @@ export default {
     watch: {
         $route(val) {
             this.activePath = val.path;
-            if(val.path !== '/article/article-list' && val.path !== '/article/article-modify' && val.path !== '/article/add-article') {
+            if(val.path !== '/article/article-list' && val.path !== '/article/add_modify-article') {
                 this.isShow = false
             }else {
                 this.isShow = true
@@ -107,7 +97,7 @@ export default {
     },
     mounted() {
         this.activePath = this.$route.path
-        if(this.$route.path === '/article/article-list' || this.$route.path === '/article/article-modify' || this.$route.path === '/article/add-article') {
+        if(this.$route.path === '/article/article-list' || this.$route.path === '/article/add_modify-article') {
             this.isShow = true
         } 
     }
