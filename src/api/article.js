@@ -5,8 +5,16 @@ export const getArticleList = (data) => {
     return request({
         method: 'post',
         url: '/blog/front/get-article',
-        headers: {'Content-Type': 'application/json'},
         data
+    })
+}
+
+// 获取文章详情
+export const getArticleInfoData = (id) => {
+    return request({
+        method: 'get',
+        url: '/blog/front/get-article-info',
+        params: { id }
     })
 }
 
@@ -15,6 +23,15 @@ export const addArticle = (data) => {
     return request({
         method: 'post',
         url: '/blog/back/add-article',
+        data
+    })
+}
+
+// 编辑文章
+export const editArticle = (data) => {
+    return request({
+        method: 'post',
+        url: '/blog/back/edit-article',
         data
     })
 }
