@@ -53,8 +53,10 @@ export default {
             this.handleInput('')
         }
     },
-    mounted() {
-        
+    watch: {
+        iptValue(newVal) {
+            this.ipt = newVal
+        }
     }
 };
 </script>

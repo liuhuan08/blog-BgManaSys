@@ -56,6 +56,11 @@ export default {
                 }
             })
         }
+    },
+    watch: {
+        src(newval) {
+            this.url = newval
+        }
     }
 }
 </script>
