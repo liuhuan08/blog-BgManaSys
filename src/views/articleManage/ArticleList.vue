@@ -130,7 +130,6 @@ export default {
 .article-list-page {
 	padding: 20px;
 	width: 100%;
-	height: 100%;
 	background-color: #fff;
 
 	.search-section {

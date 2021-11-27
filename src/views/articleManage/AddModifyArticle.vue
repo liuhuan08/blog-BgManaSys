@@ -420,7 +420,6 @@ body {
 	padding: 20px;
 	padding-top: 0;
 	width: 100%;
-	height: 100%;
 	background-color: #fff;
 
 	.title {
