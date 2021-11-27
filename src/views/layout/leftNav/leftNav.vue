@@ -164,7 +164,7 @@ export default {
     }
 
 .slide-enter-active, .slide-leave-active {
-    height: 126px;
+    height: 84px;
     opacity: 1;
     transition: all .5s;
 }
