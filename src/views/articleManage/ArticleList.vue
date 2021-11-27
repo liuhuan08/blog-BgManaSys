@@ -68,6 +68,15 @@
                 </tbody>
             </table>
         </div>
+
+        <div class="page-section">
+            <div>共{{ total }}条{{ Math.ceil(total / limit) }}页</div>
+            <div>第{{ page }}页</div>
+            <div class="item" @click="goFirst">首页</div>
+            <div class="item" @click="goUp">上一页</div>
+            <div class="item" @click="goDown">下一页</div>
+            <div class="item" @click="goLast">尾页</div>
+        </div>
     </div>
 </template>
 
@@ -86,7 +95,7 @@ export default {
             total: 0,
             limit: 10,
             page: 1,
-            sortType: 1,
+            sortType: 2,
             tableData: [],
         };
     },
@@ -122,12 +131,30 @@ export default {
             });
         },
         handelDel(id) {
-            delArticle(id).then(res => {
-                if(res.status === 200) {
-                    this.Msg(res.data.message, 'success', 1500);
+            delArticle(id).then((res) => {
+                if (res.status === 200) {
+                    this.Msg(res.data.message, "success", 1500);
                     this.getData();
                 }
-            })
+            });
+        },
+        goFirst() {
+            this.page = 1;
+            this.getData();
+        },
+        goUp() {
+            if(this.page === 1) return;
+            this.page -= 1;
+            this.getData();
+        },
+        goDown() {
+            if(this.page === Math.ceil(this.total / this.limit)) return;
+            this.page += 1;
+            this.getData();
+        },
+        goLast() {
+            this.page = Math.ceil(this.total / this.limit);
+            this.getData();
         },
     },
     filters: {
@@ -192,11 +219,31 @@ export default {
                 .btn-group {
                     display: flex;
 
-                    .btn{
+                    .btn {
                         width: 50px;
                     }
                 }
             }
+        }
+    }
+
+    .page-section {
+        display: flex;
+        align-items: center;
+        justify-content: flex-end;
+        margin-top: 20px;
+        width: 100%;
+
+        div {
+            padding: 5px 10px;
+            margin-left: 10px;
+        }
+
+        .item {
+            background-color: #eee;
+            border-radius: 4px;
+            cursor: pointer;
+            user-select: none;
         }
     }
 }
