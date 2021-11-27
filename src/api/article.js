@@ -36,6 +36,15 @@ export const editArticle = (data) => {
     })
 }
 
+// 删除文章
+export const delArticle = (articleId) => {
+    return request({
+        method: 'post',
+        url: '/blog/back/delete-article',
+        data: { articleId }
+    })
+}
+
 // 获取标签列表
 export const getArticleTagList = (bloggerId) => {
     return request({
