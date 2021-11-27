@@ -296,7 +296,6 @@ export default {
 					flag = false;
 				}
 			}
-			console.log(flag);
 			if (!flag) return;
 			console.log(this.articleForm);
 			if (this.$route.query.id) {
@@ -305,7 +304,7 @@ export default {
 					subTitle: this.articleForm.subTitle,
 					coverUrl: this.articleForm.coverUrl,
 					content: this.articleForm.content,
-					articleTagList: this.articleForm.content,
+					articleTagList: this.articleForm.articleTagList,
 					articleId: this.$route.query.id * 1,
 				};
 				editArticle(data).then((res) => {
