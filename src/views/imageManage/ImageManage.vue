@@ -32,7 +32,7 @@
 							<l-botton
 								type="danger"
 								size="mini"
-								@click="handelEdit(v.id)"
+								@click="handelDel(v.id)"
 							>
 								删除相册
 							</l-botton>
@@ -106,9 +106,9 @@
 </template>
 
 <script>
-import { getAlbumsList, addAlbums } from "../../api/albums";
+import { getAlbumsList, addAlbums, delAlbums } from "@/api/albums";
 import local from "@/utils/local";
-import { normalizeDate, normalizeTime } from "../../utils/tools";
+import { normalizeDate, normalizeTime } from "@/utils/tools";
 
 import LInput from "@/components/input.vue";
 import LBotton from "@/components/botton.vue";
@@ -181,6 +181,15 @@ export default {
 			});
 		},
 		handelEdit() {},
+        handelDel(id) {
+            delAlbums({ albumId: id }).then(res => {
+                console.log(res);
+                if(res.status === 200) {
+                    this.Msg("删除成功！", 'success', 1500);
+                    this.getAlbum();
+                }
+            })
+        }
 	},
 	filters: {
 		handelData(val) {

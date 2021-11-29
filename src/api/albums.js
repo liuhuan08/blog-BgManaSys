@@ -17,3 +17,12 @@ export const addAlbums = (data) => {
         data
     })
 }
+
+// 删除相册
+export const delAlbums = (data) => {
+    return request({
+        method: 'post',
+        url: '/blog/back/delete-album',
+        data
+    })
+}
