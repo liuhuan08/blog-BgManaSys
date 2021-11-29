@@ -26,3 +26,12 @@ export const delAlbums = (data) => {
         data
     })
 }
+
+// 编辑相册
+export const editAlbums = (data) => {
+    return request({
+        method: 'post',
+        url: '/blog/back/edit-album',
+        data
+    })
+}
