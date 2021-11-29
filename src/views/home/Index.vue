@@ -205,6 +205,7 @@ export default {
 .home-page {
 	padding: 20px 10px;
 	width: 100%;
+	height: 100%;
 	background-color: #fff;
 
 	.desc {
