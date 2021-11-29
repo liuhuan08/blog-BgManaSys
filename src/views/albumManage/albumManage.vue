@@ -163,13 +163,14 @@ export default {
 		},
 		// 确认
 		handelConfirm() {
-            if (this.isAdd) {   // 添加相册
-                let bloggerId = local.get("blog_userinfo").bloggerId;
-                let sendData = {
-                    bloggerId,
-                    albumName: this.dialogForm.name,
-                    albumCover: this.dialogForm.albumCover,
-                };
+			if (this.isAdd) {
+				// 添加相册
+				let bloggerId = local.get("blog_userinfo").bloggerId;
+				let sendData = {
+					bloggerId,
+					albumName: this.dialogForm.name,
+					albumCover: this.dialogForm.albumCover,
+				};
 				addAlbums(sendData).then((res) => {
 					if (res.status === 200) {
 						this.Msg("新增相册成功！", "success", 1500);
@@ -182,12 +183,13 @@ export default {
 						this.getAlbum();
 					}
 				});
-			} else {    // 修改相册
-                let sendData = {
-                    albumId: this.dialogForm.albumId,
-                    albumName: this.dialogForm.name,
-                    albumCover: this.dialogForm.albumCover,
-                };
+			} else {
+				// 修改相册
+				let sendData = {
+					albumId: this.dialogForm.albumId,
+					albumName: this.dialogForm.name,
+					albumCover: this.dialogForm.albumCover,
+				};
 				editAlbums(sendData).then((res) => {
 					if (res.status === 200) {
 						this.Msg("修改相册成功！", "success", 1500);
@@ -213,8 +215,11 @@ export default {
 		},
 		// 进入相册
 		getInAlbum(id) {
-            
-        },
+			this.$router.push({
+				path: "/album/album-manage/imgs",
+				query: { albumId: id },
+			});
+		},
 		// 编辑相册
 		handelEdit(val) {
 			this.dialogForm.name = val.albumName;

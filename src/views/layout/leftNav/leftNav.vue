@@ -63,11 +63,11 @@
                 </transition>
             </li>
             <li class="menu">
-                <router-link :to="{path: '/image/image-manage'}">
-                    <p :class="activePath === '/image/image-manage' ? 'active' : ''">
+                <router-link :to="{path: '/album/album-manage'}">
+                    <p :class="activePath === '/album/album-manage' || activePath === '/album/album-manage/imgs' ? 'active' : ''">
                         <i class="iconfont icon-photoAlbum"></i>
                         <transition name="fade">
-                            <span v-if="!$store.state.isCollapse">图片管理</span>
+                            <span v-if="!$store.state.isCollapse">相册管理</span>
                         </transition>
                     </p>
                 </router-link>

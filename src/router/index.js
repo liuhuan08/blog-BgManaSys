@@ -76,18 +76,25 @@ const routes = [
 		]
 	},
 	{
-		path: "/image",
-		redirect: "/image/image-manage",
-		name: "Image",
+		path: "/album",
+		redirect: "/album/album-manage",
+		name: "Album",
 		component: Index,
 		children: [{
-				path: "/image/image-manage",
+				path: "/album/album-manage",
+				name: "albumManage",
+				meta: {
+					title: '相册管理',
+					path: "/album/album-manage"
+				},
+				component: () => import("../views/albumManage/albumManage.vue")
+			}, {
+				path: "/album/album-manage/imgs",
 				name: "ImageManage",
 				meta: {
-					title: '图片管理',
-					path: "/image/image-manage"
+					path: "/album/album-manage/imgs"
 				},
-				component: () => import("../views/imageManage/ImageManage.vue")
+				component: () => import("../views/albumManage/imgs.vue")
 			}
 		]
 	}

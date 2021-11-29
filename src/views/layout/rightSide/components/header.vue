@@ -36,9 +36,15 @@
 					<div class="circle" v-if="isActive === i"></div>
 				</transition>
 				<router-link :to="v.path">
-					<span :class="isActive === i ? 'active' : ''">{{ v.title }}</span>
+					<span :class="isActive === i ? 'active' : ''">{{
+						v.title
+					}}</span>
 				</router-link>
-				<i class="iconfont icon-closeCard" v-if="v.title !== '首页'" @click="handleClose(i)"></i>
+				<i
+					class="iconfont icon-closeCard"
+					v-if="v.title !== '首页'"
+					@click="handleClose(i)"
+				></i>
 			</div>
 		</div>
 	</div>
@@ -64,9 +70,9 @@ export default {
 		getData() {
 			this.name = local.get("blog_userinfo").name;
 			this.avatar = local.get("blog_userinfo").avatar;
-			this.$EventBus.$on('changeAvatar', (data) => {
+			this.$EventBus.$on("changeAvatar", (data) => {
 				this.avatar = data;
-			})
+			});
 		},
 		showTitle() {
 			let titleList = [
@@ -138,9 +144,15 @@ export default {
 			if (this.$route.path === "/home") {
 				nowActive = 0;
 			} else {
-				nowActive = this.cardList.findIndex(
-					(v) => v.title === this.$route.meta.title
-				);
+				if (this.$route.path === "/album/album-manage/imgs") {
+					nowActive = this.cardList.findIndex(
+						(v) => v.title === "相册管理"
+					);
+				}else {
+					nowActive = this.cardList.findIndex(
+						(v) => v.title === this.$route.meta.title
+					);
+				}
 			}
 			local.set("nowActive", nowActive);
 			this.isActive = nowActive;
@@ -161,11 +173,11 @@ export default {
 		},
 		logout() {
 			local.clear();
-			this.Msg('成功退出 ~', 'success', 2000)
+			this.Msg("成功退出 ~", "success", 2000);
 			setTimeout(() => {
-				this.$router.push({ path: '/login' });
-			}, 500)
-		}
+				this.$router.push({ path: "/login" });
+			}, 500);
+		},
 	},
 	watch: {
 		$route() {
