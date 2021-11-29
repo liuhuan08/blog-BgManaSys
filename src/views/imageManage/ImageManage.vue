@@ -131,6 +131,7 @@ export default {
 		LUploadImage,
 	},
 	methods: {
+        // 获取相册列表
 		getAlbum() {
 			let bloggerId = local.get("blog_userinfo").bloggerId;
 			getAlbumsList(bloggerId).then((res) => {
@@ -143,12 +144,15 @@ export default {
 				}
 			});
 		},
+        // 新增相册
 		handelAddAlbum() {
 			this.dialogVisible = true;
 		},
+        // 上传图片成功
 		handleAvatarSuccess(data) {
 			this.dialogForm.albumCover = data.data.url;
 		},
+        // 上传图片限制
 		beforeAvatarUpload(file) {
 			const isJPG = file.type === "image/jpeg";
 			const isLt2M = file.size / 1024 / 1024 < 2;
@@ -161,6 +165,7 @@ export default {
 			}
 			return isJPG && isLt2M;
 		},
+        // 确认新增相册
 		handelConfirm() {
 			let bloggerId = local.get("blog_userinfo").bloggerId;
 			let sendData = {
@@ -181,6 +186,7 @@ export default {
 			});
 		},
 		handelEdit() {},
+        // 删除相册
         handelDel(id) {
             delAlbums({ albumId: id }).then(res => {
                 console.log(res);
@@ -192,6 +198,7 @@ export default {
         }
 	},
 	filters: {
+        // 格式化时间
 		handelData(val) {
 			return normalizeDate(val, "-") + " " + normalizeTime(val);
 		},
