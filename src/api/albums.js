@@ -35,3 +35,12 @@ export const editAlbums = (data) => {
         data
     })
 }
+
+// 获取相册图片
+export const getAlbumImgs = (data) => {
+    return request({
+        method: 'post',
+        url: '/blog/front/get-album-imgs',
+        data
+    })
+}
