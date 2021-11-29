@@ -18,14 +18,14 @@
 							<l-botton
 								type="primary"
 								size="mini"
-								@click="handelEdit(v.id)"
+								@click="getInAlbum(v.id)"
 							>
 								进入相册
 							</l-botton>
 							<l-botton
 								type="primary"
 								size="mini"
-								@click="handelEdit(v.id)"
+								@click="handelEdit(v)"
 							>
 								编辑相册
 							</l-botton>
@@ -59,11 +59,9 @@
 		</ul>
 
 		<div class="dialog" v-if="dialogVisible">
-			<i
-				class="iconfont icon-closeCard"
-				@click="dialogVisible = false"
-			></i>
-			<div class="title">新增相册</div>
+			<i class="iconfont icon-closeCard" @click="handelClose"></i>
+			<div class="title" v-if="isAdd">新增相册</div>
+			<div class="title" v-if="!isAdd">修改相册</div>
 			<div class="item">
 				<div class="label">相册名称</div>
 				<l-input
@@ -93,11 +91,7 @@
 				>
 					确认
 				</l-botton>
-				<l-botton
-					type="info"
-					size="small"
-					@click="dialogVisible = false"
-				>
+				<l-botton type="info" size="small" @click="handelClose">
 					取消
 				</l-botton>
 			</div>
@@ -106,7 +100,7 @@
 </template>
 
 <script>
-import { getAlbumsList, addAlbums, delAlbums } from "@/api/albums";
+import { getAlbumsList, addAlbums, delAlbums, editAlbums } from "@/api/albums";
 import local from "@/utils/local";
 import { normalizeDate, normalizeTime } from "@/utils/tools";
 
@@ -123,6 +117,7 @@ export default {
 				albumCover: "",
 			},
 			dialogVisible: false,
+			isAdd: false,
 		};
 	},
 	components: {
@@ -131,7 +126,7 @@ export default {
 		LUploadImage,
 	},
 	methods: {
-        // 获取相册列表
+		// 获取相册列表
 		getAlbum() {
 			let bloggerId = local.get("blog_userinfo").bloggerId;
 			getAlbumsList(bloggerId).then((res) => {
@@ -144,15 +139,16 @@ export default {
 				}
 			});
 		},
-        // 新增相册
+		// 新增相册
 		handelAddAlbum() {
+			this.isAdd = true;
 			this.dialogVisible = true;
 		},
-        // 上传图片成功
+		// 上传图片成功
 		handleAvatarSuccess(data) {
 			this.dialogForm.albumCover = data.data.url;
 		},
-        // 上传图片限制
+		// 上传图片限制
 		beforeAvatarUpload(file) {
 			const isJPG = file.type === "image/jpeg";
 			const isLt2M = file.size / 1024 / 1024 < 2;
@@ -165,40 +161,81 @@ export default {
 			}
 			return isJPG && isLt2M;
 		},
-        // 确认新增相册
+		// 确认
 		handelConfirm() {
-			let bloggerId = local.get("blog_userinfo").bloggerId;
-			let sendData = {
-				bloggerId,
-				albumName: this.dialogForm.name,
-				albumCover: this.dialogForm.albumCover,
+            if (this.isAdd) {   // 添加相册
+                let bloggerId = local.get("blog_userinfo").bloggerId;
+                let sendData = {
+                    bloggerId,
+                    albumName: this.dialogForm.name,
+                    albumCover: this.dialogForm.albumCover,
+                };
+				addAlbums(sendData).then((res) => {
+					if (res.status === 200) {
+						this.Msg("新增相册成功！", "success", 1500);
+						this.dialogForm = {
+							name: "",
+							albumCover: "",
+						};
+						this.dialogVisible = false;
+						this.isAdd = false;
+						this.getAlbum();
+					}
+				});
+			} else {    // 修改相册
+                let sendData = {
+                    albumId: this.dialogForm.albumId,
+                    albumName: this.dialogForm.name,
+                    albumCover: this.dialogForm.albumCover,
+                };
+				editAlbums(sendData).then((res) => {
+					if (res.status === 200) {
+						this.Msg("修改相册成功！", "success", 1500);
+						this.dialogForm = {
+							name: "",
+							albumCover: "",
+						};
+						this.dialogVisible = false;
+						this.isAdd = false;
+						this.getAlbum();
+					}
+				});
+			}
+		},
+		// 关闭dialog
+		handelClose() {
+			this.dialogForm = {
+				name: "",
+				albumCover: "",
 			};
-			addAlbums(sendData).then((res) => {
+			this.dialogVisible = false;
+			this.isAdd = false;
+		},
+		// 进入相册
+		getInAlbum(id) {
+            
+        },
+		// 编辑相册
+		handelEdit(val) {
+			this.dialogForm.name = val.albumName;
+			this.dialogForm.albumCover = val.albumCover;
+			this.dialogForm.albumId = val.id;
+			this.isAdd = false;
+			this.dialogVisible = true;
+		},
+		// 删除相册
+		handelDel(id) {
+			delAlbums({ albumId: id }).then((res) => {
+				console.log(res);
 				if (res.status === 200) {
-					this.Msg("新增相册成功！", "success", 1500);
-					this.dialogForm = {
-						name: "",
-						albumCover: "",
-					};
-                    this.dialogVisible = false;
-                    this.getAlbum();
+					this.Msg("删除成功！", "success", 1500);
+					this.getAlbum();
 				}
 			});
 		},
-		handelEdit() {},
-        // 删除相册
-        handelDel(id) {
-            delAlbums({ albumId: id }).then(res => {
-                console.log(res);
-                if(res.status === 200) {
-                    this.Msg("删除成功！", 'success', 1500);
-                    this.getAlbum();
-                }
-            })
-        }
 	},
 	filters: {
-        // 格式化时间
+		// 格式化时间
 		handelData(val) {
 			return normalizeDate(val, "-") + " " + normalizeTime(val);
 		},
