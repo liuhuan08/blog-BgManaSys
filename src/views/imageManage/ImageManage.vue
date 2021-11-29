@@ -176,6 +176,7 @@ export default {
 						albumCover: "",
 					};
                     this.dialogVisible = false;
+                    this.getAlbum();
 				}
 			});
 		},
