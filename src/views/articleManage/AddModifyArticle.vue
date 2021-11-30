@@ -272,7 +272,7 @@ export default {
 				});
 		},
 		handleAvatarSuccess(data) {
-			this.articleForm.coverUrl = data.data.url;
+			this.articleForm.coverUrl = data;
 		},
 		beforeAvatarUpload(file) {
 			const isJPG = file.type === "image/jpeg";

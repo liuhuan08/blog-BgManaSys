@@ -76,7 +76,9 @@
 			<div class="item">
 				<div class="label">相册封面</div>
 				<l-upload-image
+					class="upload"
 					:src="dialogForm.albumCover"
+					:multiple="false"
 					action="http://api.excellentlld.com/blog/back/upload-image"
 					@on-success="handleAvatarSuccess"
 					:before-upload="beforeAvatarUpload"
@@ -155,7 +157,7 @@ export default {
 		},
 		// 上传图片成功
 		handleAvatarSuccess(data) {
-			this.dialogForm.albumCover = data.data.url;
+			this.dialogForm.albumCover = data;
 		},
 		// 上传图片限制
 		beforeAvatarUpload(file) {
@@ -409,6 +411,9 @@ export default {
 			}
 
 			.ipt {
+				flex: 1;
+			}
+			.upload{
 				flex: 1;
 			}
 		}

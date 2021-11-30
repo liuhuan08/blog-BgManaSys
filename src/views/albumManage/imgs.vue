@@ -52,6 +52,7 @@
 				<div class="label">上传图片</div>
 				<l-upload-image
 					:src="[]"
+					:multiple="true"
 					action="http://api.excellentlld.com/blog/back/upload-image"
 					@on-success="handleAvatarSuccess"
 					@on-remove="handleAvatarRemove"

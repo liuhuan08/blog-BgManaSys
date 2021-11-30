@@ -1,7 +1,7 @@
 <template>
 	<div class="wrap">
 		<div class="upload-section">
-			<label v-if="!multiple">
+			<label v-if="!multiple" class="single-upload">
 				<input
 					type="file"
 					class="ipt"
@@ -13,7 +13,7 @@
 				</div>
 				<div
 					class="img-wrap"
-					v-if="url && typeof url === 'string'"
+					v-if="url"
 					title="更换"
 				>
 					<img :src="url" class="img" v-if="url" />
@@ -53,7 +53,6 @@ export default {
 		return {
 			url: this.src,
 			file: null,
-			multiple: true,
 		};
 	},
 	props: {
@@ -64,8 +63,11 @@ export default {
 			type: Function,
 		},
 		src: {
-			type: Array,
+			// type: Array || String,
 		},
+		multiple: {
+			type: Boolean
+		}
 	},
 	methods: {
 		upload(e) {
@@ -81,7 +83,12 @@ export default {
 
 				axios.post(this.action, formData, { headers: { "Content-Type": "multipart/form-data" }, }).then((res) => {
 					if (res.status === 200) {
-						this.url = res.data.data;
+						console.log(res);
+						if(this.multiple) {
+							this.url = res.data.data;
+						}else {
+							this.url = res.data.data[0];
+						}
 						this.$emit("on-success", res.data.data);
 					}
 				});
@@ -117,6 +124,10 @@ export default {
 }
 .ipt {
 	display: none;
+}
+
+.single-upload{
+	width: 100%;
 }
 .add-wrap {
 	position: relative;

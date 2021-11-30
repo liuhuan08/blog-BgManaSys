@@ -86,7 +86,7 @@ export default {
 			this.formData = local.get("blog_userinfo");
 		},
 		handleAvatarSuccess(data) {
-			this.formData.avatar = data.data.url;
+			this.formData.avatar = data;
 		},
 		beforeAvatarUpload(file) {
 			const isJPG = file.type === "image/jpeg";
