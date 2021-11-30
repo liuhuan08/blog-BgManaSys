@@ -18,7 +18,7 @@
 							<l-botton
 								type="primary"
 								size="mini"
-								@click="getInAlbum(v.id)"
+								@click="getInAlbum(v.id, v.albumName)"
 							>
 								进入相册
 							</l-botton>
@@ -118,6 +118,9 @@ export default {
 			},
 			dialogVisible: false,
 			isAdd: false,
+			page: 1,
+			size: 20,
+			sort: 1,
 		};
 	},
 	components: {
@@ -129,7 +132,13 @@ export default {
 		// 获取相册列表
 		getAlbum() {
 			let bloggerId = local.get("blog_userinfo").bloggerId;
-			getAlbumsList(bloggerId).then((res) => {
+			let sendData = {
+				bloggerId,
+				sort: this.sort,
+				page: this.sort,
+				size: this.size,
+			};
+			getAlbumsList(sendData).then((res) => {
 				if (res.status === 200) {
 					this.albumsList = [...res.data.data.records];
 					this.albumsList.forEach((v, i) => {
@@ -214,10 +223,10 @@ export default {
 			this.isAdd = false;
 		},
 		// 进入相册
-		getInAlbum(id) {
+		getInAlbum(id, name) {
 			this.$router.push({
 				path: "/album/album-manage/imgs",
-				query: { albumId: id },
+				query: { albumName: name, albumId: id },
 			});
 		},
 		// 编辑相册

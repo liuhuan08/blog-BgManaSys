@@ -1,11 +1,11 @@
 import request from './Request'
 
 // 获取相册列表
-export const getAlbumsList = (bloggerId) => {
+export const getAlbumsList = (data) => {
     return request({
-        method: 'get',
+        method: 'post',
         url: '/blog/front/get-albums',
-        params: { bloggerId }
+        data
     })
 }
 
