@@ -44,3 +44,21 @@ export const getAlbumImgs = (data) => {
         data
     })
 }
+
+// 相册新增图片
+export const albumAddImgs = (data) => {
+    return request({
+        method: 'post',
+        url: '/blog/back/post-album',
+        data
+    })
+}
+
+// 删除相册图片
+export const albumDelImgs = (data) => {
+    return request({
+        method: 'post',
+        url: '/blog/back/delete-album-imgs',
+        data
+    })
+}
