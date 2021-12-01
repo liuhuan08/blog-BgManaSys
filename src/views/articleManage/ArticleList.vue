@@ -39,7 +39,7 @@
                         <td>{{ v.title }}</td>
                         <td>{{ v.subTitle }}</td>
                         <td class="td-img">
-                            <img :src="v.coverUrl" />
+                            <img :src="v.coverUrl" referrerPolicy="no-referrer" />
                         </td>
                         <td>{{ v.createTime | handelData }}</td>
                         <td>{{ v.updateTime | handelData }}</td>
