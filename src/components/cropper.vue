@@ -41,44 +41,24 @@
 						accept="image/png, image/jpeg, image/gif, image/jpg"
 						@change="selectImg($event)"
 					/>
-					<el-button
-						size="mini"
-						type="danger"
-						plain
-						icon="el-icon-zoom-in"
-						@click="changeScale(1)"
-						>放大</el-button
-					>
-					<el-button
-						size="mini"
-						type="danger"
-						plain
-						icon="el-icon-zoom-out"
-						@click="changeScale(-1)"
-						>缩小</el-button
-					>
-					<el-button
-						size="mini"
-						type="danger"
-						plain
-						@click="rotateLeft"
-						>↺ 左旋转</el-button
-					>
-					<el-button
-						size="mini"
-						type="danger"
-						plain
-						@click="rotateRight"
-						>↻ 右旋转</el-button
-					>
+					<l-botton class="l-btn l-btn-scale" type="warning" size="mini" @click="changeScale(1)">
+						<i class="iconfont icon-enlarge"></i>放大
+					</l-botton>
+					<l-botton class="l-btn l-btn-scale" type="warning" size="mini" @click="changeScale(-1)">
+						<i class="iconfont icon-narrow"></i>缩小
+					</l-botton>
+					<l-botton class="l-btn" type="warning" size="mini" @click="rotateLeft">
+						↺ 右旋转
+					</l-botton>
+					<l-botton class="l-btn" type="warning" size="mini" @click="rotateRight">
+						↻ 左旋转
+					</l-botton>
+					<div class="clip-proportion">
+						裁剪比例：宽 <input class="clip-input" type="text" v-model="w" @input="handelInputW"> ：高 <input class="clip-input" type="text" v-model="h" @input="handelInputH">
+					</div>
 				</div>
 				<div class="upload-btn">
-					<el-button
-						size="mini"
-						type="success"
-						@click="uploadImg('blob')"
-						>上传封面 <i class="el-icon-upload"></i
-					></el-button>
+					<l-botton type="primary" size="mini" @click="uploadImg('blob')">上传封面</l-botton>
 				</div>
 			</div>
 		</div>
@@ -92,17 +72,26 @@
 </template>
 
 <script>
+import axios from "axios";
 import { VueCropper } from "vue-cropper";
+
+import LBotton from "./botton.vue"
+import LInput from "./botton.vue"
+
 export default {
 	name: "CropperImage",
 	components: {
 		VueCropper,
+		LInput,
+		LBotton
 	},
 	props: ["Name"],
 	data() {
 		return {
 			name: this.Name,
 			previews: {},
+			w: 5,
+			h: 7,
 			option: {
 				img: "", //裁剪图片的地址
 				outputSize: 1, //裁剪生成图片的质量(可选0.1 - 1)
@@ -110,28 +99,28 @@ export default {
 				info: true, //图片大小信息
 				canScale: true, //图片是否允许滚轮缩放
 				autoCrop: true, //是否默认生成截图框
-				autoCropWidth: 230, //默认生成截图框宽度
-				autoCropHeight: 150, //默认生成截图框高度
+				autoCropWidth: 250, //默认生成截图框宽度
+				autoCropHeight: 350, //默认生成截图框高度
 				fixed: true, //是否开启截图框宽高固定比例
-				fixedNumber: [1.53, 1], //截图框的宽高比例
+				fixedNumber: [5, 7], //截图框的宽高比例
 				full: false, //false按原比例裁切图片，不失真
-				fixedBox: true, //固定截图框大小，不允许改变
-				canMove: false, //上传图片是否可以移动
+				fixedBox: false, //固定截图框大小，不允许改变
+				canMove: true, //上传图片是否可以移动
 				canMoveBox: true, //截图框能否拖动
 				original: false, //上传图片按照原始比例渲染
-				centerBox: false, //截图框是否被限制在图片里面
+				centerBox: true, //截图框是否被限制在图片里面
 				height: true, //是否按照设备的dpr 输出等比例图片
 				infoTrue: false, //true为展示真实输出图片宽高，false展示看到的截图框宽高
 				maxImgSize: 3000, //限制图片最大宽度和高度
 				enlarge: 1, //图片根据截图框输出比例倍数
-				mode: "230px 150px", //图片默认渲染方式
+				// mode: "250px 350px", //图片默认渲染方式
 			},
 		};
 	},
 	methods: {
 		//初始化函数
 		imgLoad(msg) {
-			console.log("工具初始化函数=====" + msg);
+			// console.log("工具初始化函数=====" + msg);
 		},
 		//图片缩放
 		changeScale(num) {
@@ -146,6 +135,16 @@ export default {
 		rotateRight() {
 			this.$refs.cropper.rotateRight();
 		},
+		handelInputW() {
+			this.option.fixedNumber[0] = this.w;
+			document.querySelector('.cropper-crop-box').style.width = document.querySelector('.cropper-crop-box').offsetHeight * (this.option.fixedNumber[0] / this.option.fixedNumber[1]) + 'px'
+			this.option.autoCropWidth = document.querySelector('.cropper-crop-box').offsetWidth
+		},
+		handelInputH() {
+			this.option.fixedNumber[1] = this.h;
+			document.querySelector('.cropper-crop-box').style.height = document.querySelector('.cropper-crop-box').offsetWidth * (this.option.fixedNumber[1] / this.option.fixedNumber[0]) + 'px'
+			this.option.autoCropHeight = document.querySelector('.cropper-crop-box').offsetHeight
+		},
 		//实时预览函数
 		realTime(data) {
 			this.previews = data;
@@ -154,10 +153,7 @@ export default {
 		selectImg(e) {
 			let file = e.target.files[0];
 			if (!/\.(jpg|jpeg|png|JPG|PNG)$/.test(e.target.value)) {
-				this.$message({
-					message: "图片类型要求：jpeg、jpg、png",
-					type: "error",
-				});
+				this.Msg("图片类型要求：jpeg、jpg、png", "error", 2000)
 				return false;
 			}
 			//转化为blob
@@ -178,37 +174,18 @@ export default {
 		},
 		//上传图片
 		uploadImg(type) {
-			let _this = this;
 			if (type === "blob") {
 				//获取截图的blob数据
-				this.$refs.cropper.getCropBlob(async (data) => {
+				this.$refs.cropper.getCropBlob((data) => {
 					let formData = new FormData();
 					formData.append("file", data, "DX.jpg");
 					//调用axios上传
-					let { data: res } = await _this.$http.post(
-						"/api/file/imgUpload",
-						formData
-					);
-					if (res.code === 200) {
-						_this.$message({
-							message: res.msg,
-							type: "success",
+					axios.post("http://api.excellentlld.com/blog/back/upload-image", formData, {headers: {"Content-Type": "multipart/form-data"}})
+						.then((res) => {
+							if (res.status === 200) {
+								this.$emit("on-success", res.data.data[0]);
+							}
 						});
-						let data = res.data
-							.replace("[", "")
-							.replace("]", "")
-							.split(",");
-						let imgInfo = {
-							name: _this.Name,
-							url: data[0],
-						};
-						_this.$emit("uploadImgSuccess", imgInfo);
-					} else {
-						_this.$message({
-							message: "文件服务异常，请联系管理员！",
-							type: "error",
-						});
-					}
 				});
 			}
 		},
@@ -216,17 +193,19 @@ export default {
 };
 </script>
 
-<style scoped lang="scss">
+<style scoped lang="less">
 .cropper-content {
 	display: flex;
 	display: -webkit-flex;
 	justify-content: flex-end;
+	margin-top: 20px;
+
 	.cropper-box {
-		flex: 1;
-		width: 100%;
+		// flex: 1;
+		width: 65%;
 		.cropper {
 			width: auto;
-			height: 300px;
+			height: 500px;
 		}
 	}
 
@@ -240,6 +219,10 @@ export default {
 			overflow: hidden;
 			border: 1px solid #67c23a;
 			background: #cccccc;
+
+			img{
+				max-width: none;
+			}
 		}
 	}
 }
@@ -260,6 +243,34 @@ export default {
 		display: flex;
 		display: -webkit-flex;
 		justify-content: center;
+	}
+
+	.l-btn{
+		margin-right: 10px;
+		width: 70px;
+	}
+
+	.l-btn-scale{
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		width: 60px;
+
+		.iconfont{
+			margin-right: 5px;
+			font-size: 12px;
+		}
+	}
+
+	.clip-proportion{
+		padding: 0 10px;
+		line-height: 28px;
+		background-color: #ddd;
+		border-radius: 4px;
+
+		.clip-input{
+			border: 1px solid #ccc
+		}
 	}
 	.btn {
 		outline: none;
@@ -282,6 +293,10 @@ export default {
 		background-color: #409eff;
 		border-color: #409eff;
 		margin-right: 10px;
+	}
+
+	input{
+		width: 30px;
 	}
 }
 </style>
