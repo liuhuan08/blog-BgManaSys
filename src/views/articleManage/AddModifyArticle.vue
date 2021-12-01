@@ -28,17 +28,25 @@
 			</div>
 			<div class="item">
 				<div class="label">文章封面</div>
-				<l-upload-image
-					class="edit"
-					:src="articleForm.coverUrl"
-					action="http://api.excellentlld.com/blog/back/upload-image"
-					@on-success="handleAvatarSuccess"
-					:before-upload="beforeAvatarUpload"
-				></l-upload-image>
+				<div class="upload-avatar">
+					<div class="add-wrap" v-if="!articleForm.coverUrl" @click="dialogVisible_clip = true">
+						<i class="iconfont icon-add"></i>
+					</div>
+					<div
+						class="img-wrap"
+						v-if="articleForm.coverUrl"
+						title="更换"
+					>
+						<img :src="articleForm.coverUrl" class="img" v-if="articleForm.coverUrl" />
+						<div class="remove" @click="dialogVisible_clip = true">
+							<i class="iconfont icon-change"></i>
+						</div>
+					</div>
+				</div>
 			</div>
 			<div class="item item-select">
 				<div class="label">文章标签</div>
-				<div class="select-wrap" @click.stop="toggleShow">
+				<div class="select-wrap" @mouseenter="toggleShow" @mouseleave="toggleHide">
 					<p v-if="tagSelList.length > 0" class="sel-tags">
 						<span class="text"
 							>{{ tagSelList[0].tagName }}
@@ -47,7 +55,7 @@
 								@click.stop="handelDel"
 							></i
 						></span>
-						<span class="text" v-if="tagSelList.length > 1"
+						<span class="text more" v-if="tagSelList.length > 1"
 							>+{{ tagSelList.length - 1 }}</span
 						>
 					</p>
@@ -59,6 +67,7 @@
 								新增标签<i class="iconfont icon-addtag"></i>
 							</li>
 							<li
+								:class="v.active ? 'active' : ''"
 								v-for="v in tags"
 								:key="v.tagId"
 								@click.stop="handelChoose(v)"
@@ -115,6 +124,12 @@
 			</div>
 			<i class="iconfont icon-closeCard" @click="cancle"></i>
 		</div>
+
+		<div class="dialog-clip" v-if="dialogVisible_clip">
+			<i class="iconfont icon-error" title="关闭" @click="dialogVisible_clip = false"></i>
+			<div class="dialog-title">裁剪图片</div>
+			<cropper :proportion="[1, 1]" @on-success="handleAvatarSuccess"></cropper>
+		</div>
 	</div>
 </template>
 
@@ -122,6 +137,7 @@
 import LInput from "@/components/input.vue";
 import LUploadImage from "@/components/uploadImage.vue";
 import LBotton from "@/components/botton.vue";
+import cropper from "../../components/cropper.vue"
 
 import axios from "axios";
 import {
@@ -202,6 +218,23 @@ export default {
 					"12px 14px 16px 18px 24px 36px 48px 56px 72px",
 				font_formats:
 					"微软雅黑=Microsoft YaHei,Helvetica Neue,PingFang SC,sans-serif;苹果苹方=PingFang SC,Microsoft YaHei,sans-serif;宋体=simsun,serif;仿宋体=FangSong,serif;黑体=SimHei,sans-serif;Arial=arial,helvetica,sans-serif;Arial Black=arial black,avant garde;Book Antiqua=book antiqua,palatino;",
+					style_formats: [
+						{
+							title: '首行缩进',
+							block: 'p',
+							styles: { 'text-indent': '2em' }
+						},
+						{
+							title: '行高',
+							items: [
+								{ title: '1', styles: { 'line-height': '1' }, inline: 'span' },
+								{ title: '1.5', styles: { 'line-height': '1.5' }, inline: 'span' },
+								{ title: '2', styles: { 'line-height': '2' }, inline: 'span' },
+								{ title: '2.5', styles: { 'line-height': '2.5' }, inline: 'span' },
+								{ title: '3', styles: { 'line-height': '3' }, inline: 'span' }
+							]
+						}
+					],
 				branding: false,
 				images_upload_handler: (blobInfo, success, failure) => {
 					this.handleImgUpload(blobInfo, success, failure);
@@ -210,6 +243,7 @@ export default {
 			addTagName: "",
 			show: false,
 			dialogVisible: false,
+			dialogVisible_clip: false
 		};
 	},
 	components: {
@@ -217,6 +251,7 @@ export default {
 		LUploadImage,
 		LBotton,
 		Editor,
+		cropper
 	},
 	methods: {
 		getArticleInfo() {
@@ -252,7 +287,10 @@ export default {
 			this.articleForm.bloggerId = bloggerId;
 			getArticleTagList(bloggerId).then((res) => {
 				if (res.status === 200) {
-					this.tags = res.data.data;
+					this.tags = [...res.data.data];
+					this.tags.forEach((v, i) => {
+						this.$set(this.tags[i], "active", false);
+					})
 				}
 			});
 		},
@@ -273,6 +311,7 @@ export default {
 		},
 		handleAvatarSuccess(data) {
 			this.articleForm.coverUrl = data;
+			this.dialogVisible_clip = false;
 		},
 		beforeAvatarUpload(file) {
 			const isJPG = file.type === "image/jpeg";
@@ -287,6 +326,8 @@ export default {
 			return isJPG && isLt2M;
 		},
 		submit() {
+			let bloggerId = local.get("blog_userinfo").bloggerId;
+			this.articleForm.bloggerId = bloggerId;
 			this.tagSelList.forEach((v) => {
 				this.articleForm.articleTagList.push(v.tagId);
 			});
@@ -297,7 +338,6 @@ export default {
 				}
 			}
 			if (!flag) return;
-			console.log(this.articleForm);
 			if (this.$route.query.id) {
 				let data = {
 					title: this.articleForm.title,
@@ -309,11 +349,8 @@ export default {
 				};
 				editArticle(data).then((res) => {
 					console.log(res);
-				});
-			} else {
-				addArticle(this.articleForm).then((res) => {
 					if (res.status === 200) {
-						this.Msg("发表成功 ~", "success", 1500);
+						this.Msg("修改成功 ~", "success", 2000);
 						this.articleForm = {
 							title: "",
 							subTitle: "",
@@ -322,6 +359,22 @@ export default {
 							bloggerId: "",
 							articleTagList: [],
 						};
+						this.tagSelList = [];
+					}
+				});
+			} else {
+				addArticle(this.articleForm).then((res) => {
+					if (res.status === 200) {
+						this.Msg("发表成功 ~", "success", 2000);
+						this.articleForm = {
+							title: "",
+							subTitle: "",
+							coverUrl: "",
+							content: "",
+							bloggerId: "",
+							articleTagList: [],
+						};
+						this.tagSelList = [];
 					}
 				});
 			}
@@ -337,15 +390,12 @@ export default {
 			};
 		},
 		toggleShow() {
-			this.show = !this.show;
-			if (this.show) {
-				this.$refs.optionWrap.style.height =
-					(30 + 12) * (this.tags.length + 1) + 5 + "px";
-				this.$refs.optionWrap.style.opacity = 1;
-			} else {
-				this.$refs.optionWrap.style.height = 0;
-				this.$refs.optionWrap.style.opacity = 0;
-			}
+			this.$refs.optionWrap.style.height = (30 + 12) * (this.tags.length + 1) + 5 + "px";
+			this.$refs.optionWrap.style.opacity = 1;
+		},
+		toggleHide() {
+			this.$refs.optionWrap.style.height = 0;
+			this.$refs.optionWrap.style.opacity = 0;
 		},
 		handelAddTag() {
 			this.dialogVisible = !this.dialogVisible;
@@ -356,9 +406,10 @@ export default {
 		handelChoose(val) {
 			if (this.tagSelList.indexOf(val) === -1) {
 				this.tagSelList.push(val);
-				console.log(this.tagSelList);
+				val.active = true;
 			} else {
 				this.tagSelList.splice(this.tagSelList.indexOf(val), 1);
+				val.active = false;
 			}
 		},
 		confirm() {
@@ -369,26 +420,21 @@ export default {
 				})
 					.then((res) => {
 						if (res.status === 200) {
-							this.Msg("添加成功 ~", "success", 1500);
+							this.Msg("添加成功 ~", "success", 2000);
 							this.getTags();
-							this.$refs.optionWrap.style.height =
-								30 +
-								12 +
-								12 +
-								this.$refs.optionWrap.style.height +
-								"px";
+							this.$refs.optionWrap.style.height = 30 + 12 + 12 + this.$refs.optionWrap.style.height + "px";
 							this.dialogVisible = false;
 						}
 					})
 					.catch((err) => {
-						this.Msg("添加失败...", "failed", 1500);
+						this.Msg("添加失败...", "failed", 2000);
 						console.log(err);
 					});
 			}
 		},
 		cancle() {
 			this.dialogVisible = false;
-		},
+		}
 	},
 	created() {
 		this.getArticleInfo();
@@ -396,15 +442,6 @@ export default {
 	},
 	mounted() {
 		tinymce.init({});
-		document.addEventListener("click", (e) => {
-			// console.dir(e.target);
-			this.show = false;
-			this.$refs.optionWrap.style.height = 0;
-			this.$refs.optionWrap.style.opacity = 0;
-			// if(e.target.id === 'option') {
-
-			// }
-		});
 	},
 };
 </script>
@@ -450,6 +487,56 @@ body {
 			.edit {
 				flex: 1;
 			}
+
+			.upload-avatar{
+				position: relative;
+				width: 120px;
+				height: 120px;
+				border-radius: 4px;
+				overflow: hidden;
+				cursor: pointer;
+
+				.add-wrap{
+					position: absolute;
+					top: 0;
+					left: 0;
+					width: 100%;
+					height: 100%;
+					text-align: center;
+					line-height: 120px;
+					border: 1px dashed #ccc;
+					
+				}
+
+				.img-wrap{
+					position: absolute;
+					top: 0;
+					left: 0;
+					width: 100%;
+					height: 100%;
+
+					img{
+						width: 100%;
+						height: 100%;
+					}
+
+					.remove{
+						display: none;
+						position: absolute;
+						top: 0;
+						left: 0;
+						width: 100%;
+						height: 100%;
+						text-align: center;
+						line-height: 120px;
+						background-color: rgba(255, 255, 255, .3);
+					}
+
+					&:hover .remove{
+						display: block;
+					}
+				}
+			}
 		}
 
 		.item-subTitle {
@@ -490,6 +577,10 @@ body {
 							margin-left: 6px;
 						}
 					}
+
+					.more{
+						margin-left: 5px;
+					}
 				}
 
 				.placeholder {
@@ -507,7 +598,7 @@ body {
 
 				.option-wrap {
 					position: absolute;
-					top: 50px;
+					top: 45px;
 					left: 0;
 					width: 100%;
 					height: 0;
@@ -526,6 +617,11 @@ body {
 						box-shadow: -1px 2px 5px #e4e7ed;
 						background-color: #fff;
 						z-index: 9998;
+
+						.active{
+							color: #409eff;
+							background-color: #f5f7fa;
+						}
 
 						&::before {
 							position: absolute;
@@ -629,6 +725,31 @@ body {
 		top: 4px;
 		right: 8px;
 		cursor: pointer;
+	}
+}
+
+.dialog-clip{
+	position: fixed;
+	top: 0;
+	left: 0;
+	padding: 40px;
+	width: 100%;
+	min-width: 1450px;
+	height: 100%;
+	background-color: rgba(255, 255, 255, .8);
+	z-index: 9999;
+
+	.icon-error{
+		position: absolute;
+		top: 40px;
+		right: 40px;
+		font-size: 20px;
+		cursor: pointer;
+	}
+
+	.dialog-title{
+		font-size: 20px;
+		color: #000;
 	}
 }
 </style>
