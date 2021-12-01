@@ -65,7 +65,7 @@
 		<div class="dialog" v-show="dialogVisible">
 			<i class="iconfont icon-error" title="关闭" @click="dialogVisible = false"></i>
 			<div class="dialog-title">裁剪图片</div>
-			<cropper @on-success="handleAvatarSuccess"></cropper>
+			<cropper :proportion="[5, 7]" @on-success="handleAvatarSuccess"></cropper>
 		</div>
 	</div>
 </template>

@@ -58,7 +58,7 @@
 					</div>
 				</div>
 				<div class="upload-btn">
-					<l-botton type="primary" size="mini" @click="uploadImg('blob')">上传封面</l-botton>
+					<l-botton type="primary" size="mini" @click="uploadImg('blob')">上传</l-botton>
 				</div>
 			</div>
 		</div>
@@ -85,7 +85,12 @@ export default {
 		LInput,
 		LBotton
 	},
-	props: ["Name"],
+	props: {
+		Name: {},
+		proportion: {
+			type: Array
+		}
+	},
 	data() {
 		return {
 			name: this.Name,
@@ -190,6 +195,12 @@ export default {
 			}
 		},
 	},
+	created() {
+		this.w = this.proportion[0];
+		this.h = this.proportion[1];
+		this.option.fixedNumber = this.proportion;
+		this.option.autoCropWidth = this.option.autoCropHeight * ( this.option.fixedNumber[0] / this.option.fixedNumber[1] )
+	}
 };
 </script>
 
