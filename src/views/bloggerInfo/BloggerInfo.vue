@@ -15,13 +15,21 @@
 			</div>
 			<div class="item">
 				<div class="label">头像</div>
-				<l-upload-image
-					class="edit"
-					:src="formData.avatar"
-					action="http://api.excellentlld.com/blog/back/upload-image"
-					@on-success="handleAvatarSuccess"
-					:before-upload="beforeAvatarUpload"
-				></l-upload-image>
+				<div class="upload-avatar">
+					<div class="add-wrap" v-if="!formData.avatar" @click="dialogVisible = true">
+						<i class="iconfont icon-add"></i>
+					</div>
+					<div
+						class="img-wrap"
+						v-if="formData.avatar"
+						title="更换"
+					>
+						<img :src="formData.avatar" class="img" v-if="formData.avatar" />
+						<div class="remove" @click="dialogVisible = true">
+							<i class="iconfont icon-change"></i>
+						</div>
+					</div>
+				</div>
 			</div>
 			<div class="item">
 				<div class="label">简介</div>
@@ -53,6 +61,12 @@
 				<l-botton type="info" class="reset" @click="reset">重置</l-botton>
 			</div>
 		</div>
+
+		<div class="dialog" v-show="dialogVisible">
+			<i class="iconfont icon-error" title="关闭" @click="dialogVisible = false"></i>
+			<div class="dialog-title">裁剪图片</div>
+			<cropper @on-success="handleAvatarSuccess"></cropper>
+		</div>
 	</div>
 </template>
 
@@ -60,6 +74,7 @@
 import LInput from "@/components/input.vue";
 import LUploadImage from "@/components/uploadImage.vue";
 import LBotton from "@/components/botton.vue";
+import cropper from "../../components/cropper.vue"
 
 import local from "@/utils/local";
 import { modifyBlogger } from "@/api/user"
@@ -74,12 +89,14 @@ export default {
 				conciseDesc: "",
 				detailDesc: "",
 			},
+			dialogVisible: false
 		};
 	},
 	components: {
 		LInput,
 		LUploadImage,
 		LBotton,
+		cropper
 	},
 	methods: {
 		getData() {
@@ -87,6 +104,7 @@ export default {
 		},
 		handleAvatarSuccess(data) {
 			this.formData.avatar = data;
+			this.dialogVisible = false;
 		},
 		beforeAvatarUpload(file) {
 			const isJPG = file.type === "image/jpeg";
@@ -101,7 +119,6 @@ export default {
 			return isJPG && isLt2M;
 		},
         submit() {
-            console.log(this.formData);
             modifyBlogger(this.formData).then(res => {
                 if(res.status === 200) {
                     this.Msg(res.data.message, 'success', 2000);
@@ -154,6 +171,56 @@ export default {
 			.edit {
 				flex: 1;
 			}
+
+			.upload-avatar{
+				position: relative;
+				width: 120px;
+				height: 120px;
+				border-radius: 6px;
+				overflow: hidden;
+				cursor: pointer;
+
+				.add-wrap{
+					position: absolute;
+					top: 0;
+					left: 0;
+					width: 100%;
+					height: 100%;
+					text-align: center;
+					line-height: 120px;
+					border: 1px dashed #ccc;
+					
+				}
+
+				.img-wrap{
+					position: absolute;
+					top: 0;
+					left: 0;
+					width: 100%;
+					height: 100%;
+
+					img{
+						width: 100%;
+						height: 100%;
+					}
+
+					.remove{
+						display: none;
+						position: absolute;
+						top: 0;
+						left: 0;
+						width: 100%;
+						height: 100%;
+						text-align: center;
+						line-height: 120px;
+						background-color: rgba(255, 255, 255, .3);
+					}
+
+					&:hover .remove{
+						display: block;
+					}
+				}
+			}
 		}
 		.item-btn {
             margin-top: 50px;
@@ -163,6 +230,30 @@ export default {
 				margin-left: 20px;
 			}
 		}
+	}
+}
+
+.dialog{
+	position: fixed;
+	top: 0;
+	left: 0;
+	padding: 40px;
+	width: 100%;
+	min-width: 1450px;
+	height: 100%;
+	background-color: rgba(255, 255, 255, .8);
+
+	.icon-error{
+		position: absolute;
+		top: 40px;
+		right: 40px;
+		font-size: 20px;
+		cursor: pointer;
+	}
+
+	.dialog-title{
+		font-size: 20px;
+		color: #000;
 	}
 }
 </style>
