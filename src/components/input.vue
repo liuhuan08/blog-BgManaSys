@@ -5,7 +5,7 @@
             <i class="iconfont icon-closeCard" v-show="ipt.length > 0 && clearable !== false" @click="handleClear"></i>
         </div>
         <div class="textarea" v-if="type === 'textarea'">
-            <textarea v-model="ipt" :rows="rows ? rows : (maxlength <= 20 ? '1' : '4')" :maxlength="maxlength" :placeholder="placeholder" class="textarea-ipt" @input="handleInput($event.target.value)"></textarea>
+            <textarea v-model="ipt" :rows="rows ? rows : (maxlength <= 50 ? '1' : '4')" :class="maxlength <= 50 ? 'resize-none' : ''" :maxlength="maxlength" :placeholder="placeholder" class="textarea-ipt" @input="handleInput($event.target.value)"></textarea>
             <div class="num">{{ipt.length}}/{{maxlength}}</div>
         </div>
 	</div>
@@ -102,7 +102,11 @@ export default {
             width: 100%;
             border: 1px solid #ddd;
             border-radius: 6px;
-            // resize: none;
+        }
+
+        .resize-none{
+            padding-right: 40px;
+            resize: none;
         }
 
         .num{
