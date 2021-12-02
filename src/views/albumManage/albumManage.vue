@@ -75,14 +75,21 @@
 			</div>
 			<div class="item">
 				<div class="label">相册封面</div>
-				<l-upload-image
-					class="upload"
-					:src="dialogForm.albumCover"
-					:multiple="false"
-					action="http://api.excellentlld.com/blog/back/upload-image"
-					@on-success="handleAvatarSuccess"
-					:before-upload="beforeAvatarUpload"
-				></l-upload-image>
+				<div class="upload-avatar">
+					<div class="add-wrap" v-if="!dialogForm.albumCover" @click="dialogVisible_clip = true">
+						<i class="iconfont icon-add"></i>
+					</div>
+					<div
+						class="img-wrap"
+						v-if="dialogForm.albumCover"
+						title="更换"
+					>
+						<img :src="dialogForm.albumCover" class="img" v-if="dialogForm.albumCover" />
+						<div class="remove" @click="dialogVisible_clip = true">
+							<i class="iconfont icon-change"></i>
+						</div>
+					</div>
+				</div>
 			</div>
 			<div class="bottom">
 				<l-botton
@@ -98,6 +105,12 @@
 				</l-botton>
 			</div>
 		</div>
+
+		<div class="dialog-clip" v-if="dialogVisible_clip">
+			<i class="iconfont icon-error" title="关闭" @click="dialogVisible_clip = false"></i>
+			<div class="dialog-title">裁剪图片</div>
+			<cropper :proportion="[5, 7]" @on-success="handleAvatarSuccess"></cropper>
+		</div>
 	</div>
 </template>
 
@@ -109,6 +122,7 @@ import { normalizeDate, normalizeTime } from "@/utils/tools";
 import LInput from "@/components/input.vue";
 import LBotton from "@/components/botton.vue";
 import LUploadImage from "@/components/uploadImage.vue";
+import cropper from "../../components/cropper.vue"
 
 export default {
 	data() {
@@ -123,12 +137,14 @@ export default {
 			page: 1,
 			size: 20,
 			sort: 1,
+			dialogVisible_clip:false
 		};
 	},
 	components: {
 		LInput,
 		LBotton,
 		LUploadImage,
+		cropper
 	},
 	methods: {
 		// 获取相册列表
@@ -158,6 +174,7 @@ export default {
 		// 上传图片成功
 		handleAvatarSuccess(data) {
 			this.dialogForm.albumCover = data;
+			this.dialogVisible_clip = false;
 		},
 		// 上传图片限制
 		beforeAvatarUpload(file) {
@@ -242,7 +259,6 @@ export default {
 		// 删除相册
 		handelDel(id) {
 			delAlbums({ albumId: id }).then((res) => {
-				console.log(res);
 				if (res.status === 200) {
 					this.Msg("删除成功！", "success", 1500);
 					this.getAlbum();
@@ -290,7 +306,7 @@ export default {
 				padding: 5px;
 				margin-bottom: 10px;
 				width: 150px;
-				height: 180px;
+				height: 210px;
 				background-color: #fff;
 				box-shadow: 5px 5px 4px #333;
 				border: 1px solid #ddd;
@@ -360,7 +376,7 @@ export default {
 			align-items: center;
 			justify-content: center;
 			width: 150px;
-			height: 180px;
+			height: 210px;
 			background-color: #eee;
 			border: 1px dashed #ccc;
 			cursor: pointer;
@@ -406,6 +422,56 @@ export default {
 			display: flex;
 			margin-top: 20px;
 
+			.upload-avatar{
+				position: relative;
+				width: 125px;
+				height: 175px;
+				border-radius: 4px;
+				overflow: hidden;
+				cursor: pointer;
+
+				.add-wrap{
+					position: absolute;
+					top: 0;
+					left: 0;
+					width: 100%;
+					height: 100%;
+					text-align: center;
+					line-height: 120px;
+					border: 1px dashed #ccc;
+					
+				}
+
+				.img-wrap{
+					position: absolute;
+					top: 0;
+					left: 0;
+					width: 100%;
+					height: 100%;
+
+					img{
+						width: 100%;
+						height: 100%;
+					}
+
+					.remove{
+						display: none;
+						position: absolute;
+						top: 0;
+						left: 0;
+						width: 100%;
+						height: 100%;
+						text-align: center;
+						line-height: 175px;
+						background-color: rgba(255, 255, 255, .3);
+					}
+
+					&:hover .remove{
+						display: block;
+					}
+				}
+			}
+
 			.label {
 				width: 100px;
 			}
@@ -425,6 +491,31 @@ export default {
 			display: flex;
 			justify-content: end;
 		}
+	}
+}
+
+.dialog-clip{
+	position: fixed;
+	top: 0;
+	left: 0;
+	padding: 40px;
+	width: 100%;
+	min-width: 1450px;
+	height: 100%;
+	background-color: rgba(255, 255, 255, .8);
+	z-index: 9999;
+
+	.icon-error{
+		position: absolute;
+		top: 40px;
+		right: 40px;
+		font-size: 20px;
+		cursor: pointer;
+	}
+
+	.dialog-title{
+		font-size: 20px;
+		color: #000;
 	}
 }
 
