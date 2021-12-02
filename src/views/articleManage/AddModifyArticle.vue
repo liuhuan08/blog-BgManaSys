@@ -22,7 +22,7 @@
 					:ipt-value="articleForm.subTitle"
 					type="textarea"
 					placeholder="请输入文章副标题"
-					maxlength="20"
+					maxlength="50"
 					clearable
 				></l-input>
 			</div>
@@ -50,11 +50,7 @@
 					<p v-if="tagSelList.length > 0" class="sel-tags">
 						<span class="text"
 							>{{ tagSelList[0].tagName }}
-							<i
-								class="iconfont icon-closeCard"
-								@click.stop="handelDel"
-							></i
-						></span>
+						</span>
 						<span class="text more" v-if="tagSelList.length > 1"
 							>+{{ tagSelList.length - 1 }}</span
 						>
@@ -400,9 +396,6 @@ export default {
 		handelAddTag() {
 			this.dialogVisible = !this.dialogVisible;
 		},
-		handelDel() {
-			this.tagSelList.shift();
-		},
 		handelChoose(val) {
 			if (this.tagSelList.indexOf(val) === -1) {
 				this.tagSelList.push(val);
@@ -566,20 +559,16 @@ body {
 						display: flex;
 						align-items: center;
 						justify-content: space-between;
-						padding: 0 8px 0 12px;
+						padding: 0 12px 0 12px;
 						height: 24px;
 						font-size: 12px;
 						line-height: 24px;
 						background-color: #f4f4f5;
 						border-radius: 4px;
-
-						.iconfont {
-							margin-left: 6px;
-						}
 					}
 
 					.more{
-						margin-left: 5px;
+						margin-left: 10px;
 					}
 				}
 
