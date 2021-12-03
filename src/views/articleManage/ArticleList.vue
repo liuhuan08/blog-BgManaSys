@@ -26,7 +26,21 @@
                 <div class="td-title">文章标题</div>
                 <div class="td-subtitle">文章副标题</div>
                 <div class="td-img">文章封面</div>
-                <div class="td-time">创建时间</div>
+                <div class="td-time">
+                    创建时间
+                    <div class="item">
+                        <i
+							class="iconfont icon-triangle icon-triangle-up"
+							:class="sortType === 1 ? 'active' : ''"
+							@click.stop="sortByTimeUp"
+						></i>
+						<i
+							class="iconfont icon-triangle"
+							:class="sortType === 2 ? 'active' : ''"
+							@click.stop="sortByTimeDown"
+						></i>
+                    </div>
+                </div>
                 <div class="td-time">修改时间</div>
                 <div class="td-btn">操作</div>
             </div>
@@ -117,6 +131,15 @@ export default {
             });
         },
         handelSearch() {},
+        // 按时间排序
+        sortByTimeUp() {
+            this.sortType = 1;
+            this.getData();
+        },
+        sortByTimeDown() {
+            this.sortType = 2;
+            this.getData();
+        },
         handelEdit(id) {
             console.log(id);
             this.$router.push({
@@ -193,6 +216,43 @@ export default {
             display: flex;
             width: 100%;
             height: 42px;
+
+            .td-time{
+                .item {
+                    display: flex;
+                    flex-direction: column;
+                    align-items: center;
+                    justify-content: center;
+                    height: 100%;
+                    border: 0;
+					user-select: none;
+					cursor: pointer;
+
+					.icon-triangle {
+						width: 12px;
+						height: 12px;
+						font-size: 12px;
+						line-height: 12px;
+						transform: scale(0.8);
+						transform-origin: center;
+						color: #999;
+					}
+
+					.icon-triangle-up {
+						width: 12px;
+						height: 12px;
+						font-size: 12px;
+						line-height: 12px;
+						transform: rotateZ(180deg) scale(0.8);
+						transform-origin: center;
+						color: #999;
+					}
+
+					.icon-triangle.active {
+						color: #409eff;
+					}
+				}
+            }
         }
 
         .tbody .tr, .thead{
@@ -214,7 +274,7 @@ export default {
             }
 
             .td-title {
-                width: 20%;
+                width: 180px;
                 border-right: 1px solid #ebeef5;
             }
 
@@ -224,7 +284,7 @@ export default {
             }
 
             .td-img {
-                width: 150px;
+                width: 180px;
                 border-right: 1px solid #ebeef5;
 
                 img {
@@ -233,12 +293,12 @@ export default {
             }
 
             .td-time {
-                width: 10%;
+                width: 180px;
                 border-right: 1px solid #ebeef5;
             }
 
             .td-btn {
-                width: 180px;
+                width: 150px;
                 .btn-group {
                     display: flex;
                     justify-content: center;
@@ -254,7 +314,7 @@ export default {
         }
 
         .thead .td-btn{
-            width: 186px;
+            width: 156px;
         }
 
         .tbody .tr:last-child div{
