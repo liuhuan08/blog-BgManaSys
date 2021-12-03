@@ -21,52 +21,48 @@
         </div>
 
         <div class="table-section">
-            <table class="table">
-                <thead>
-                    <tr>
-                        <th>序号</th>
-                        <th>文章标题</th>
-                        <th>文章副标题</th>
-                        <th>文章封面</th>
-                        <th>创建时间</th>
-                        <th>修改时间</th>
-                        <th>操作</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr v-for="v in tableData" :key="v.article_id">
-                        <td class="td-num">{{ v.article_id }}</td>
-                        <td>{{ v.title }}</td>
-                        <td>{{ v.subTitle }}</td>
-                        <td class="td-img">
-                            <img :src="v.coverUrl" referrerPolicy="no-referrer" />
-                        </td>
-                        <td>{{ v.createTime | handelData }}</td>
-                        <td>{{ v.updateTime | handelData }}</td>
-                        <td class="td-btn">
-                            <div class="btn-group">
-                                <l-botton
-                                    class="btn"
-                                    type="primary"
-                                    size="mini"
-                                    @click="handelEdit(v.article_id)"
-                                    style="margin-right: 10px"
-                                >
-                                    编辑
-                                </l-botton>
-                                <l-botton
-                                    class="btn"
-                                    type="danger"
-                                    size="mini"
-                                    @click="handelDel(v.article_id)"
-                                >
-                                    删除
-                                </l-botton>
-                            </div>
-                        </td>
-                    </tr>
-                </tbody>
-            </table>
+            <div class="thead">
+                <div class="td-num">序号</div>
+                <div class="td-title">文章标题</div>
+                <div class="td-subtitle">文章副标题</div>
+                <div class="td-img">文章封面</div>
+                <div class="td-time">创建时间</div>
+                <div class="td-time">修改时间</div>
+                <div class="td-btn">操作</div>
+            </div>
+            <div class="tbody">
+                <div v-for="v in tableData" :key="v.article_id" class="tr">
+                    <div class="td-num">{{ v.article_id }}</div>
+                    <div class="td-title">{{ v.title }}</div>
+                    <div class="td-subtitle">{{ v.subTitle }}</div>
+                    <div class="td-img">
+                        <img :src="v.coverUrl" referrerPolicy="no-referrer" />
+                    </div>
+                    <div class="td-time">{{ v.createTime | handelData }}</div>
+                    <div class="td-time">{{ v.updateTime | handelData }}</div>
+                    <div class="td-btn">
+                        <div class="btn-group">
+                            <l-botton
+                                class="btn"
+                                type="primary"
+                                size="mini"
+                                @click="handelEdit(v.article_id)"
+                                style="margin-right: 10px"
+                            >
+                                编辑
+                            </l-botton>
+                            <l-botton
+                                class="btn"
+                                type="danger"
+                                size="mini"
+                                @click="handelDel(v.article_id)"
+                            >
+                                删除
+                            </l-botton>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
 
         <div class="page-section">
@@ -95,7 +91,7 @@ export default {
             total: 0,
             limit: 10,
             page: 1,
-            sortType: 2,
+            sortType: 1,
             tableData: [],
         };
     },
@@ -190,40 +186,105 @@ export default {
     .table-section {
         margin-top: 20px;
         width: 100%;
+        height: calc(~"100% - 82px - 20px - 50px");
+        border: 1px solid #ebeef5;
 
-        .table {
+        .thead{
+            display: flex;
             width: 100%;
-            // border: 1px solid #333;
+            height: 42px;
+        }
 
-            th,
-            td {
-                // width: 10%;
+        .tbody .tr, .thead{
+            width: 100%;
+            display: flex;
+
+            div{
+                display: flex;
+                align-items: center;
+                justify-content: center;
                 padding: 10px;
                 text-align: center;
-                border: 1px solid #ccc;
+                border-bottom: 1px solid #ebeef5;
             }
 
             .td-num {
-                min-width: 60px;
+                width: 80px;
+                border-right: 1px solid #ebeef5;
+            }
+
+            .td-title {
+                width: 20%;
+                border-right: 1px solid #ebeef5;
+            }
+
+            .td-subtitle {
+                flex: 1;
+                border-right: 1px solid #ebeef5;
             }
 
             .td-img {
-                width: 121px;
+                width: 150px;
+                border-right: 1px solid #ebeef5;
 
                 img {
-                    width: 100px;
-                    height: 100px;
+                    width: 100%;
                 }
             }
 
+            .td-time {
+                width: 10%;
+                border-right: 1px solid #ebeef5;
+            }
+
             .td-btn {
+                width: 180px;
                 .btn-group {
                     display: flex;
+                    justify-content: center;
+                    align-items: center;
+                    height: 100%;
+                    border: 0;
 
                     .btn {
                         width: 50px;
                     }
                 }
+            }
+        }
+
+        .thead .td-btn{
+            width: 186px;
+        }
+
+        .tbody .tr:last-child div{
+            border-bottom: 0;
+        }
+
+        .tbody .tr:nth-child(2n) {
+            background-color: #fafafa;
+        }
+
+        .tbody .tr:hover{
+            background-color: #f5f7fa;
+        }
+
+        .tbody{
+            height: calc(~"100% - 42px");
+            overflow-y: scroll;
+
+            &::-webkit-scrollbar {
+                width: 6px;
+            }
+
+            &::-webkit-scrollbar-thumb {
+                border-radius: 6px;
+                background: #aaa;
+            }
+
+            &::-webkit-scrollbar-track {
+                border-radius: 0;
+                background: #ddd;
             }
         }
     }
