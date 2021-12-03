@@ -379,6 +379,7 @@ export default {
 			height: 210px;
 			background-color: #eee;
 			border: 1px dashed #ccc;
+			box-shadow: 5px 5px 4px #333;
 			cursor: pointer;
 
 			.icon-add {
