@@ -97,6 +97,9 @@ const routes = [
 				component: () => import("../views/albumManage/imgs.vue")
 			}
 		]
+	},{
+		path: "/test",
+		component: () => import("../views/test.vue")
 	}
 ];
 
