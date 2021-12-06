@@ -1,10 +1,13 @@
 <template>
     <div>
         <pagination
-            :total="100"
+            :total="80"
             :size="pageSize"
             @size-change="handelSizeChange"
             :sizeArr="[10, 20, 30, 40, 50]"
+            @current-change="handelCurrentChange"
+            :current-page="currentPage"
+            layout="total, sizes, jumper"
         ></pagination>
     </div>
 </template>
@@ -14,7 +17,8 @@ import pagination from "../components/pagination.vue"
     export default {
         data() {
             return {
-                pageSize: 10
+                pageSize: 10,
+                currentPage: 1
             }
         },
         components: {
@@ -23,6 +27,9 @@ import pagination from "../components/pagination.vue"
         methods: {
             handelSizeChange(val) {
                 this.pageSize = val;
+            },
+            handelCurrentChange(val) {
+                this.currentPage = val;
             }
         }
     }

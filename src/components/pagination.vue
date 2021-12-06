@@ -1,7 +1,7 @@
 <template>
 	<div class="pagination-page">
-		<div class="total">共 {{ total }} 条</div>
-		<div class="size pagination_click_lh_toggleShow_ttt" ref="size" @click.self="toggleShow">
+		<div class="total" v-if="hasTotal">共 {{ total }} 条</div>
+		<div class="size pagination_click_lh_toggleShow_ttt" ref="size" v-if="hasSizes" @click.self="toggleShow">
 			{{ size }}条/页 <i class="iconfont icon-down pagination_click_lh_toggleShow_ttt" @click.self="toggleShow"></i>
 
 			<div class="size-list-wrap pagination_click_lh_toggleShow_ttt" ref="sizeListWrap">
@@ -12,21 +12,17 @@
             </div>
 		</div>
 
+        <button class="page-btns" @click="pagedown"><i class="iconfont icon-left"></i></button>
         <ul class="page-item-list">
-            <li class="page-item"><i class="iconfont icon-left"></i></li>
-            <li class="page-item">1</li>
-            <li class="page-item" @mouseenter="toleft = false" @mouseleave="toleft = true"><i class="iconfont icon-ellipsis" v-if="toleft"></i><i v-if="!toleft" class="iconfont icon-bdleft"></i></li>
-            <li class="page-item">3</li>
-            <li class="page-item">4</li>
-            <li class="page-item">5</li>
-            <li class="page-item">6</li>
-            <li class="page-item">7</li>
-            <li class="page-item" @mouseenter="toright = false" @mouseleave="toright = true"><i class="iconfont icon-ellipsis" v-if="toright"></i><i v-if="!toright" class="iconfont icon-dbright"></i></li>
-            <li class="page-item">10</li>
-            <li class="page-item"><i class="iconfont icon-right"></i></li>
+            <li class="page-item" @click="handelPageChange(1)" v-if="leftPage">1</li>
+            <li class="page-item" @click="goLeft" @mouseenter="toleft = false" @mouseleave="toleft = true" v-if="leftPage"><i class="iconfont icon-ellipsis" v-if="toleft"></i><i v-if="!toleft" class="iconfont icon-bdleft"></i></li>
+            <li class="page-item" @click="handelPageChange(i)" v-for="i in pageArr" :key="i">{{i}}</li>
+            <li class="page-item" @click="goRight"  @mouseenter="toright = false" @mouseleave="toright = true" v-if="rightPage"><i class="iconfont icon-ellipsis" v-if="toright"></i><i v-if="!toright" class="iconfont icon-dbright"></i></li>
+            <li class="page-item" @click="handelPageChange(totalPage)" v-if="rightPage">{{totalPage}}</li>
         </ul>
+        <button class="page-btns" @click="pageup"><i class="iconfont icon-right"></i></button>
 
-        <div>前往第 <input class="page-inpt" type="text"> 页</div>
+        <div class="page-inpt-container" v-if="hasJumper">前往第 <input v-model="nowPage" @input="handelInput($event.target.value)" class="page-inpt" type="text"> 页</div>
 	</div>
 </template>
 
@@ -35,8 +31,16 @@ export default {
 	data() {
 		return {
 			show: false,
+            pageArr: [4, 5, 6, 7, 8],
+            totalPage: 0,
             toleft: true,
-            toright: true
+            leftPage: true,
+            toright: true,
+            rightPage: true,
+            nowPage: 1,
+            hasTotal: false,
+            hasSizes: false,
+            hasJumper: false,
 		};
 	},
 	props: {
@@ -50,6 +54,12 @@ export default {
 		sizeArr: {
 			type: Array,
 		},
+        currentPage: {
+            type: Number
+        },
+        layout: {
+            type: String
+        }
 	},
 	methods: {
 		toggleShow() {
@@ -63,24 +73,203 @@ export default {
             }
 		},
         handelSizeChange(val) {
-            this.$emit("size-change", val);
             this.show = false;
             this.changeStyle();
+            this.$emit("size-change", val);
+        },
+        handelPageChange(val) {
+            this.changeActive(val);
+            this.nowPage = val;
+            this.$emit("current-change", this.nowPage);
+        },
+        init() {
+            this.totalPage = Math.ceil(this.total / this.size);
+            if(this.totalPage > 7) {
+                if(this.currentPage <= 0) {
+                    this.nowPage = 1;
+                }else if(this.currentPage > 0 && this.currentPage <= 5) {
+                    this.nowPage = this.currentPage;
+                    this.pageArr = [1, 2, 3, 4, 5];
+                    this.leftPage = false;
+                    this.rightPage = true;
+                    this.toright = true;
+                }else if(this.currentPage > 5) {
+                    this.nowPage = this.currentPage;
+                    this.leftPage = true;
+                    this.toleft = true;
+                    this.pageArr = [this.nowPage - 2, this.nowPage - 1, this.nowPage, this.nowPage + 1, this.nowPage + 2];
+                }
+            }else {
+                if(this.currentPage <= 0) {
+                    this.nowPage = 1;
+                }else{
+                    this.nowPage = this.currentPage;
+                };
+                this.pageArr = [];
+                for(let i = 0; i < this.totalPage; i ++) {
+                    this.pageArr.push(i + 1);
+                }
+                this.leftPage = false;
+                this.rightPage = false
+            }
+        },
+        goLeft() {
+            this.nowPage -= 5;
+            if(this.nowPage === this.totalPage) {
+                this.rightPage = true;
+                this.toright = true;
+                this.pageArr = [this.totalPage - 7, this.totalPage - 6, this.totalPage - 5, this.totalPage - 4, this.totalPage - 3];
+            }else {
+                this.rightPage = true;
+                this.toright = true;
+                if(this.nowPage <= 5) {
+                    this.leftPage = false;
+                    if(this.nowPage <= 0) {
+                        this.nowPage = 1;
+                    }
+                    this.pageArr = [1, 2, 3, 4, 5];
+                }else if(this.nowPage > 2) {
+                    this.pageArr = [this.nowPage - 2, this.nowPage - 1, this.nowPage, this.nowPage + 1, this.nowPage + 2];
+                };
+            };
+            this.$emit("current-change", this.nowPage);
+        },
+        goRight() {
+            this.nowPage += 5;
+            if(this.nowPage === 1) {
+                this.leftPage = true;
+                this.toleft = true;
+                this.pageArr = [4, 5, 6, 7, 8];
+            }else {
+                this.leftPage = true;
+                this.toleft = true;
+                if(this.nowPage > (this.totalPage - 5)) {
+                    this.rightPage = false;
+                    if(this.nowPage >= this.totalPage) {
+                        this.nowPage = this.totalPage;
+                    }
+                    this.pageArr = [this.totalPage - 4, this.totalPage - 3, this.totalPage - 2, this.totalPage - 1, this.totalPage];
+                }else if(this.nowPage <= (this.totalPage - 2)) {
+                    this.pageArr = [this.nowPage - 2, this.nowPage - 1, this.nowPage, this.nowPage + 1, this.nowPage + 2];
+                };
+            };
+            this.$emit("current-change", this.nowPage);
+        },
+        pagedown() {
+            if(this.nowPage <= 1) return;
+            this.nowPage --;
+            if(this.totalPage > 7) {
+                if(this.nowPage < 5) {
+                    this.leftPage = false;
+                    this.rightPage = true;
+                    this.toright = true;
+                    if(this.nowPage <= 0) {
+                        this.nowPage = 1;
+                    }
+                    this.pageArr = [1, 2, 3, 4, 5];
+                }else if(this.nowPage <= this.totalPage - 5) {
+                    this.rightPage = true;
+                    this.toright = true;
+                    this.pageArr = [this.nowPage - 2, this.nowPage - 1, this.nowPage, this.nowPage + 1, this.nowPage + 2];
+                };
+            }
+            this.$emit("current-change", this.nowPage);
+        },
+        pageup() {
+            if(this.nowPage >= this.totalPage) return;
+            this.nowPage ++;
+            if(this.totalPage > 7) {
+                if(this.nowPage >= 6) {
+                    if(this.nowPage > (this.totalPage - 5)) {
+                        this.rightPage = false;
+                        this.leftPage = true;
+                        this.toleft = true;
+                        if(this.nowPage >= this.totalPage) {
+                            this.nowPage = this.totalPage;
+                        }
+                        this.pageArr = [this.totalPage - 4, this.totalPage - 3, this.totalPage - 2, this.totalPage - 1, this.totalPage];
+                    }else {
+                        this.leftPage = true;
+                        this.toleft = true;
+                        this.pageArr = [this.nowPage - 2, this.nowPage - 1, this.nowPage, this.nowPage + 1, this.nowPage + 2];
+                    };
+                }
+            }
+            this.$emit("current-change", this.nowPage);
+        },
+        handelInput(val) {
+            if(val <= 0 || !Boolean(Number(val))) {
+                this.nowPage = 1;
+            }else if(val >= this.totalPage) {
+                this.nowPage = this.totalPage;
+            };
+            if(this.nowPage <= 5) {
+                this.leftPage = false;
+                this.pageArr = [1, 2, 3, 4, 5];
+            }else if(this.nowPage >= 6) {
+                this.leftPage = true;
+                this.toleft = true;
+                if(this.nowPage > (this.totalPage - 5)) {
+                    this.rightPage = false;
+                    this.pageArr = [this.totalPage - 4, this.totalPage - 3, this.totalPage - 2, this.totalPage - 1, this.totalPage];
+                }else {
+                    this.pageArr = [this.nowPage-2, this.nowPage - 1, this.nowPage, this.nowPage * 1 + 1, this.nowPage * 1 + 2];
+                }
+            };
+            this.$emit("current-change", this.nowPage);
         },
         changeStyle() {
             this.$refs.sizeListWrap.style.opacity = 0;
             this.$refs.sizeListWrap.style.height = '0px';
             this.$refs.size.style.border = '1px solid #dcdfe6'
+        },
+        changeActive(page) {
+            document.querySelectorAll('.page-item').forEach(v => {
+                if(v.innerText == page) {
+                    v.className = 'page-item active';
+                }else {
+                    v.className = 'page-item';
+                }
+            });
+        },
+        initLayout() {
+            this.layout.split(',').forEach(v => {
+                if(v.replace(' ', '') == 'total') {
+                    this.hasTotal = true;
+                }else if(v.replace(' ', '') == 'sizes') {
+                    this.hasSizes = true;
+                }else if(v.replace(' ', '') == 'jumper') {
+                    this.hasJumper = true;
+                }
+            });
         }
 	},
+    watch: {
+        nowPage(newVal) {
+            this.$nextTick(() => {
+                this.changeActive(newVal);
+            })
+        },
+        currentPage(newVal) {
+            this.nowPage = newVal;
+        },
+        size(newVal) {
+            this.init();
+        }
+    },
+    created() {
+        this.initLayout();
+        this.init();
+    },
     mounted() {
+        this.changeActive(this.nowPage);
         window.addEventListener('click', (e) => {
             if(!this.show) return;
             if(e.target.className.indexOf('pagination_click_lh_toggleShow_ttt') === -1) {
                 this.show = false;
                 this.changeStyle();
             }
-        })
+        });
     }
 };
 </script>
@@ -98,6 +287,7 @@ export default {
 	.size {
 		position: relative;
 		padding: 0 10px;
+        margin-right: 10px;
 		border: 1px solid #dcdfe6;
 		border-radius: 4px;
 		cursor: pointer;
@@ -153,6 +343,16 @@ export default {
 		}
 	}
 
+    .page-btns{
+        width: 38px;
+        height: 30px;
+        line-height: 30px;
+        font-size: 14px;
+        text-align: center;
+        border: 0;
+        background-color: #fff;
+    }
+
     .page-item-list{
         display: flex;
         align-items: center;
@@ -173,15 +373,23 @@ export default {
                 color: #409eff;
             }
         }
+
+        .active{
+            color: #409eff;
+        }
     }
 
-    .page-inpt{
-        width: 50px;
-        height: 28px;
-        text-align: center;
-        color: #222;
-        border: 1px solid #dcdfe6;
-        border-radius: 4px;
+    .page-inpt-container{
+        margin-left: 10px;
+
+        .page-inpt{
+            width: 50px;
+            height: 28px;
+            text-align: center;
+            color: #222;
+            border: 1px solid #dcdfe6;
+            border-radius: 4px;
+        }
     }
 }
 </style>
