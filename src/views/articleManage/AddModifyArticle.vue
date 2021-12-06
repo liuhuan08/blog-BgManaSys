@@ -1,76 +1,78 @@
 <template>
-	<div class="add-article-page">
+	<div class="add-article-page" ref="addArticePage">
 		<div class="title">{{ pageTitle }}</div>
 		<div class="form-wrap">
-			<div class="item">
-				<div class="label">文章标题</div>
-				<l-input
-					class="edit"
-					v-model="articleForm.title"
-					:ipt-value="articleForm.title"
-					type="text"
-					placeholder="请输入文章标题"
-					clearable
-				>
-				</l-input>
-			</div>
-			<div class="item item-subTitle">
-				<div class="label">文章副标题</div>
-				<l-input
-					class="edit"
-					v-model="articleForm.subTitle"
-					:ipt-value="articleForm.subTitle"
-					type="textarea"
-					placeholder="请输入文章副标题"
-					maxlength="50"
-					clearable
-				></l-input>
-			</div>
-			<div class="item">
-				<div class="label">文章封面</div>
-				<div class="upload-avatar">
-					<div class="add-wrap" v-if="!articleForm.coverUrl" @click="dialogVisible_clip = true">
-						<i class="iconfont icon-add"></i>
-					</div>
-					<div
-						class="img-wrap"
-						v-if="articleForm.coverUrl"
-						title="更换"
+			<div class="item-wrap">
+				<div class="item">
+					<div class="label">文章标题</div>
+					<l-input
+						class="edit"
+						v-model="articleForm.title"
+						:ipt-value="articleForm.title"
+						type="text"
+						placeholder="请输入文章标题"
+						clearable
 					>
-						<img :src="articleForm.coverUrl" class="img" v-if="articleForm.coverUrl" />
-						<div class="remove" @click="dialogVisible_clip = true">
-							<i class="iconfont icon-change"></i>
+					</l-input>
+				</div>
+				<div class="item item-subTitle">
+					<div class="label">文章副标题</div>
+					<l-input
+						class="edit"
+						v-model="articleForm.subTitle"
+						:ipt-value="articleForm.subTitle"
+						type="textarea"
+						placeholder="请输入文章副标题"
+						maxlength="50"
+						clearable
+					></l-input>
+				</div>
+				<div class="item">
+					<div class="label">文章封面</div>
+					<div class="upload-avatar">
+						<div class="add-wrap" v-if="!articleForm.coverUrl" @click="dialogVisible_clip = true">
+							<i class="iconfont icon-add"></i>
+						</div>
+						<div
+							class="img-wrap"
+							v-if="articleForm.coverUrl"
+							title="更换"
+						>
+							<img :src="articleForm.coverUrl" class="img" v-if="articleForm.coverUrl" />
+							<div class="remove" @click="dialogVisible_clip = true">
+								<i class="iconfont icon-change"></i>
+							</div>
 						</div>
 					</div>
 				</div>
-			</div>
-			<div class="item item-select">
-				<div class="label">文章标签</div>
-				<div class="select-wrap" @mouseenter="toggleShow" @mouseleave="toggleHide">
-					<p v-if="tagSelList.length > 0" class="sel-tags">
-						<span class="text"
-							>{{ tagSelList[0].tagName }}
-						</span>
-						<span class="text more" v-if="tagSelList.length > 1"
-							>+{{ tagSelList.length - 1 }}</span
-						>
-					</p>
-					<p v-else class="placeholder">请选择</p>
-					<i class="iconfont icon-down"></i>
-					<div ref="optionWrap" class="option-wrap">
-						<ul class="option" ref="option" id="option">
-							<li class="add-tag" @click.stop="handelAddTag">
-								新增标签<i class="iconfont icon-addtag"></i>
-							</li>
-							<li
-								:class="v.active ? 'active' : ''"
-								v-for="v in tags"
-								:key="v.tagId"
-								@click.stop="handelChoose(v)"
+				<div class="item item-select">
+					<div class="label">文章标签</div>
+					<div class="select-wrap" @mouseenter="toggleShow" @mouseleave="toggleHide">
+						<p v-if="tagSelList.length > 0" class="sel-tags">
+							<span class="text"
+								>{{ tagSelList[0].tagName }}
+							</span>
+							<span class="text more" v-if="tagSelList.length > 1"
+								>+{{ tagSelList.length - 1 }}</span
 							>
-								{{ v.tagName }}
-							</li>
-						</ul>
+						</p>
+						<p v-else class="placeholder">请选择</p>
+						<i class="iconfont icon-down"></i>
+						<div ref="optionWrap" class="option-wrap">
+							<ul class="option" ref="option" id="option">
+								<li class="add-tag" @click.stop="handelAddTag">
+									新增标签<i class="iconfont icon-addtag"></i>
+								</li>
+								<li
+									:class="v.active ? 'active' : ''"
+									v-for="v in tags"
+									:key="v.tagId"
+									@click.stop="handelChoose(v)"
+								>
+									{{ v.tagName }}
+								</li>
+							</ul>
+						</div>
 					</div>
 				</div>
 			</div>
@@ -201,7 +203,7 @@ export default {
 				content_css: require("../../tinymce/skins/content/default/content.css"),
 				height: 400,
 				min_height: 400,
-				max_height: 400,
+				// max_height: 400,
 				toolbar_mode: "wrap",
 				plugins:
 					"preview searchreplace autolink directionality visualblocks visualchars fullscreen image link media template code codesample table charmap hr nonbreaking insertdatetime advlist lists wordcount imagetools textpattern autosave autoresize lineheight",
@@ -434,6 +436,7 @@ export default {
 		this.getTags();
 	},
 	mounted() {
+		// this.editorInit.height = this.$refs.addArticePage.offsetHeight - 61 - 202 - 80;
 		tinymce.init({});
 	},
 };
@@ -463,7 +466,12 @@ body {
 
 	.form-wrap {
 		display: flex;
-		flex-wrap: wrap;
+		flex-direction: column;
+
+		.item-wrap{
+			display: flex;
+			flex-wrap: wrap;
+		}
 
 		.item {
 			display: flex;
@@ -651,6 +659,7 @@ body {
 		}
 
 		.item-content {
+			flex: 1;
 			position: relative;
 			width: 100%;
 			z-index: 98;
@@ -661,7 +670,7 @@ body {
 		}
 
 		.item-btn {
-			margin-top: 50px;
+			margin-top: 20px;
 			margin-left: 100px;
 
 			.reset {
