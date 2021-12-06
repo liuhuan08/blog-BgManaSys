@@ -36,7 +36,8 @@ axios.interceptors.response.use(function (response) {
     }
 
     if (res.code === 1 || res.code === 5001) {
-        Message.error(res.msg)
+        // Message.error(res.msg)
+        Msg(`${res.msg}`, 'success', 2000);
     }
 
     return response;
