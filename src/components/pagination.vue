@@ -68,7 +68,7 @@ export default {
 	},
 	methods: {
 		toggleShow() {
-            if((document.querySelector('body').offsetHeight - this.$refs.size.offsetTop) < (this.sizeArr.length * 36 + 10 + 12)) {
+            if((document.querySelector('.main').offsetHeight - this.$refs.size.offsetTop) < (this.sizeArr.length * 36 + 80)) {
                 this.$refs.sizeListWrap.style.top = -(this.sizeArr.length * 36 + 30) + 'px';
                 this.top = false;
                 this.bottom = true;
