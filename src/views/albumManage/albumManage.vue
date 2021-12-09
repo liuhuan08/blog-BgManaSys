@@ -58,6 +58,18 @@
 			</li>
 		</ul>
 
+		<div class="page-section">
+			<l-pagination
+				:total="total"
+				:size="size"
+				@size-change="handelSizeChange"
+				:sizeArr="[10, 20, 30, 40, 50]"
+				@current-change="handelCurrentChange"
+				:current-page="page"
+				layout="total, sizes, jumper"
+			></l-pagination>
+		</div>
+
 		<div class="dialog" v-if="dialogVisible">
 			<i class="iconfont icon-closeCard" @click="handelClose"></i>
 			<div class="title" v-if="isAdd">新增相册</div>
@@ -123,6 +135,7 @@ import LInput from "@/components/input.vue";
 import LBotton from "@/components/botton.vue";
 import LUploadImage from "@/components/uploadImage.vue";
 import cropper from "../../components/cropper.vue"
+import LPagination from "@/components/pagination.vue";
 
 export default {
 	data() {
@@ -137,6 +150,7 @@ export default {
 			page: 1,
 			size: 20,
 			sort: 1,
+			total: 0,
 			dialogVisible_clip:false
 		};
 	},
@@ -144,7 +158,8 @@ export default {
 		LInput,
 		LBotton,
 		LUploadImage,
-		cropper
+		cropper,
+		LPagination
 	},
 	methods: {
 		// 获取相册列表
@@ -158,6 +173,7 @@ export default {
 			};
 			getAlbumsList(sendData).then((res) => {
 				if (res.status === 200) {
+					this.total = res.data.data.total;
 					this.albumsList = [...res.data.data.records];
 					this.albumsList.forEach((v, i) => {
 						this.$set(this.albumsList[i], "showInfo", false);
@@ -165,6 +181,14 @@ export default {
 					});
 				}
 			});
+		},
+		handelSizeChange(val) {
+			this.size = val;
+            this.getAlbum();
+		},
+		handelCurrentChange(val) {
+			this.page = val;
+            this.getAlbum();
 		},
 		// 新增相册
 		handelAddAlbum() {
@@ -297,9 +321,12 @@ export default {
 	.list {
 		display: flex;
 		flex-wrap: wrap;
+		align-content: flex-start;
+		height: calc(~"100% - 81px - 51px");
 
 		.item {
-			margin: 5px;
+			margin: 5px 10px;
+			height: 240px;
 
 			.img-wrap {
 				position: relative;
@@ -392,6 +419,14 @@ export default {
 				box-shadow: 3px 3px 3px #ccc;
 			}
 		}
+	}
+
+	.page-section {
+		display: flex;
+		align-items: center;
+		justify-content: flex-end;
+		margin-top: 20px;
+		width: 100%;
 	}
 
 	.dialog {
