@@ -28,7 +28,7 @@
 				</l-botton>
 			</div>
 		</div>
-		<ul class="list">
+		<ul class="list" ref="imgsListDom">
             <li v-if="imgsList.length === 0">这个相册是空的！</li>
 			<li class="item" v-for="v in imgsList" :key="v.id">
 				<img :src="v.url" />
@@ -73,6 +73,13 @@
 				</l-botton>
 			</div>
 		</div>
+
+		<div class="dialog-tips" v-if="dialogTipsVisible">
+			<span v-if="showCircle" class="circle circle-side"></span>
+			<span v-if="showCircle" class="circle circle-center"></span>
+			<span v-if="showCircle" class="circle circle-side"></span>
+			<p v-else>我是有底线的~~~</p>
+		</div>
 	</div>
 </template>
 
@@ -90,10 +97,18 @@ export default {
 			title: "",
 			imgsList: [],
 			imgsTotal: 0,
+			page: 1,
+			size: 20,
+			total: 0,
 			checkedList: [],
 			checkall: false,
 			dialogVisible: false,
+			dialogTipsVisible: false,
+			showCircle: true,
 			newImgs: [],
+			showOne: true,
+			timer: null,
+			timer2: null
 		};
 	},
 	components: {
@@ -104,15 +119,45 @@ export default {
 		// 获取图片列表
 		getImgs() {
 			let id = this.$route.query.albumId;
-			getAlbumImgs({ albumId: id }).then((res) => {
+			getAlbumImgs({ albumId: id, page: this.page, size: this.size }).then((res) => {
 				if (res.status === 200) {
+					if(this.total === res.data.data.total) {
+						this.showCircle = false;
+						setTimeout(() => {
+							this.dialogTipsVisible = false;
+							clearInterval(this.timer2);
+							this.timer2 = null;
+						}, 500)
+						return;
+					};
+					this.showCircle = true;
+					this.total = res.data.data.records.length;
 					this.imgsList = [...res.data.data.records];
 					this.imgsList.forEach((v, i) => {
 						this.$set(this.imgsList[i], "checkone", false);
 					});
 					this.imgsTotal = res.data.data.total;
+
+					this.$nextTick(() => {
+						this.fall();
+						setTimeout(() => {
+							this.dialogTipsVisible = false;
+							clearInterval(this.timer2);
+							this.timer2 = null;
+						}, 500)
+					})
 				}
 			});
+		},
+		handelScroll() {
+			let scrollHeight = this.$refs.imgsListDom.scrollHeight;
+			let height = this.$refs.imgsListDom.offsetHeight;
+			let scrollTop = this.$refs.imgsListDom.scrollTop;
+			if((height + scrollTop) === scrollHeight) {
+				this.changShow();
+				this.size += 20;
+				this.getImgs();
+			}
 		},
 		// 添加图片
 		handelAddImg() {
@@ -213,6 +258,72 @@ export default {
 				});
 			}
 		},
+		// 计算瀑布流布局
+		fall() {
+			if(this.timer) clearTimeout(this.timer);
+			this.timer = setTimeout(() => {
+				const minGap = 15; // 最小间距，让每一列的最小空隙可以自定义，避免太过拥挤的情况发生。但是，会通过计算得到真实的间距。
+				const itemWidth = 200; // 每一项的宽度，即当前每一个图片容器的宽度。保证每一列都是等宽不等高的。
+				const scrollBarWidth = 10; // 获取滚动条的宽度
+				const pageWidth = document.querySelector('.list').offsetWidth - scrollBarWidth; // 获取当前页面的宽度
+				const column = Math.floor(pageWidth / (itemWidth + minGap)); // 实际列数=页面宽度/(图片宽度+最小间距)
+				const gap = (pageWidth - itemWidth * column) / (column-1); // 计算真实间距 = (页面宽度- 图片宽度*实际列数)/实际列数/2
+				const items = document.querySelectorAll(".list .item"); // 获取所有的外层元素
+				const heightArr = []; // 定义一个空数组，保存最低高度。
+	
+				for (let i = 0; i < items.length; i++) {
+					// 遍历所有的外层容器
+					const height = items[i].offsetHeight;
+					// console.log(height);
+					// 如果当前处在第一行
+					if (i < column) {
+						// 直接设置元素距离上部的位置和距离左边的距离。
+						items[i].style.cssText = `top: 0px;left: ${(itemWidth + gap) * i}px`;
+						// 保存当前元素的高度。
+						heightArr.push(height);
+					} else {
+						// 不是第一行的话，就进行比对。
+						let minHeight = heightArr[0]; // 先保存第一项的高度
+						let minIndex = 0; // 保存第一项的索引值
+						for (let j = 0; j < heightArr.length; j++) {
+							// 通过循环遍历比对，拿到最小值和最小值的索引。
+							if (minHeight > heightArr[j]) {
+								minHeight = heightArr[j];
+								minIndex = j;
+							}
+						}
+						// 通过最小值为当前元素设置top值，通过索引为当前元素设置left值。
+						items[i].style.cssText = `top: ${minHeight + 20}px; left: ${(itemWidth + gap) * minIndex}px`;
+						// 并修改当前索引的高度为当前元素的高度
+						heightArr[minIndex] = minHeight + gap + height;
+					}
+				}
+			}, 100)
+		},
+		changShow() {
+			this.dialogTipsVisible = true;
+			if(this.timer2) clearInterval(this.timer2);
+			if(!this.showCircle) return;
+			this.timer2 = setInterval(() => {
+				this.showOne = !this.showOne;
+				let circleSide = document.querySelectorAll('.circle-side');
+				if(this.showOne) {
+					for(let i = 0; i < circleSide.length; i ++) {
+						circleSide[i].style.opacity = 0;
+						circleSide[i].style.width = "12px";
+						circleSide[i].style.height = "12px";
+					};
+					document.querySelector('.circle-center').style.opacity = 1;
+				}else {
+					for(let i = 0; i < circleSide.length; i ++) {
+						circleSide[i].style.opacity = 1;
+						circleSide[i].style.width = "8px";
+						circleSide[i].style.height = "8px";
+					};
+					document.querySelector('.circle-center').style.opacity = 0;
+				};
+			}, 150);
+		}
 	},
 	filters: {
 		// 格式化时间
@@ -224,11 +335,20 @@ export default {
 		this.title = this.$route.query.albumName;
 		this.getImgs();
 	},
+	mounted() {
+		window.addEventListener('resize', this.fall);
+		
+		this.$refs.imgsListDom.addEventListener('scroll', this.handelScroll)
+	},
+	beforeDestroy() {
+		window.removeEventListener('resize', this.fall);
+	}
 };
 </script>
 
 <style lang="less" scoped>
 .imgs-page {
+	position: relative;
 	padding: 20px;
 	width: 100%;
 	height: 100%;
@@ -258,17 +378,26 @@ export default {
 	}
 
 	.list {
-		/*最多多分为4列,会根据浏览器的大小变化,但是不会超过4列*/
-		column-count: 4;
-		/*规定每列列宽最小为200px*/
-		column-width: 200px;
-		/*规定每列的间隙*/
-		column-gap: 20px;
+		position: relative;
 		width: 100%;
+		height: calc(~"100% - 81px");
+		overflow-y: scroll;
+
+		&::-webkit-scrollbar {
+			width: 6px;
+		}
+		&::-webkit-scrollbar-thumb {
+			border-radius: 6px;
+			background: #ddd;
+		}
+		&::-webkit-scrollbar-track {
+			border-radius: 0;
+			background: #fff;
+		}
 
 		.item {
-			position: relative;
-			margin-bottom: 20px;
+			position: absolute;
+			width: 200px;
 			border: 1px solid #eee;
 			cursor: pointer;
 
@@ -280,6 +409,9 @@ export default {
 			//     width: 100%;
 			//     background-color: rgba(255, 255, 255, .3);
 			// }
+			.img{
+				width: 100%;
+			}
 
 			.del-wrap {
 				display: flex;
@@ -363,6 +495,32 @@ export default {
 		right: 20px;
 		display: flex;
 		justify-content: end;
+	}
+}
+
+.dialog-tips{
+	position: absolute;
+	bottom: 0;
+	left: 0;
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	width: 100%;
+	height: 30px;
+	background-color: rgba(0, 0, 0, .2);
+
+	.circle{
+		width: 8px;
+		height: 8px;
+		border-radius: 50%;
+		background-color: #666;
+		transition: all .5 linear;
+	}
+
+	.circle-center{
+		width: 12px;
+		height: 12px;
+		margin: 0 10px;
 	}
 }
 </style>
