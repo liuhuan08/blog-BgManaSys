@@ -1,62 +1,65 @@
 <template>
 	<div class="album-page">
-		<div class="title">相册列表</div>
-		<ul class="list">
-			<li class="item add-album" @click="handelAddAlbum">
-				<i class="iconfont icon-add"></i>
-				添加相册
-			</li>
-			<li v-for="v in albumsList" :key="v.id" class="item">
-				<div
-					class="img-wrap"
-					@mouseenter="$set(v, 'showOperation', true)"
-					@mouseleave="$set(v, 'showOperation', false)"
-				>
-					<img :src="v.albumCover" />
-					<transition name="fade">
-						<div class="operation" v-if="v.showOperation">
-							<l-botton
-								type="primary"
-								size="mini"
-								@click="getInAlbum(v.id, v.albumName)"
-							>
-								进入相册
-							</l-botton>
-							<l-botton
-								type="primary"
-								size="mini"
-								@click="handelEdit(v)"
-							>
-								编辑相册
-							</l-botton>
-							<l-botton
-								type="danger"
-								size="mini"
-								@click="handelDel(v.id)"
-							>
-								删除相册
-							</l-botton>
-						</div>
-					</transition>
-				</div>
-				<div class="album-name">
-					{{ v.albumName }}
-					<i
-						class="iconfont icon-info"
-						@mouseenter="$set(v, 'showInfo', true)"
-						@mouseleave="$set(v, 'showInfo', false)"
-					></i>
-					<transition name="fade">
-						<div class="album-info" v-if="v.showInfo">
-							<p>创建时间：</p>
-							<p class="time">{{ v.createTime | handelData }}</p>
-							<p>最近修改：</p>
-							<p class="time">{{ v.updateTime | handelData }}</p>
-						</div>
-					</transition>
-				</div>
-			</li>
-		</ul>
+		<div class="title">
+			<p>相册列表</p>
+			<l-botton type="primary" class="btn" size="small" @click="handelAddAlbum">
+				新增相册
+			</l-botton>
+		</div>
+		<div class="list-wrap">
+			<ul class="list">
+				<li v-for="(v, i) in albumsList" :key="v.id" class="item" :class="i === albumsList.length - 1 ? 'last-child' : ''">
+					<div
+						class="img-wrap"
+						@mouseenter="$set(v, 'showOperation', true)"
+						@mouseleave="$set(v, 'showOperation', false)"
+					>
+						<img :src="v.albumCover" />
+						<transition name="fade">
+							<div class="operation" v-if="v.showOperation">
+								<l-botton
+									type="primary"
+									size="mini"
+									@click="getInAlbum(v.id, v.albumName)"
+								>
+									进入相册
+								</l-botton>
+								<l-botton
+									type="primary"
+									size="mini"
+									@click="handelEdit(v)"
+								>
+									编辑相册
+								</l-botton>
+								<l-botton
+									type="danger"
+									size="mini"
+									@click="handelDel(v.id)"
+								>
+									删除相册
+								</l-botton>
+							</div>
+						</transition>
+					</div>
+					<div class="album-name">
+						{{ v.albumName }}
+						<i
+							class="iconfont icon-info"
+							@mouseenter="$set(v, 'showInfo', true)"
+							@mouseleave="$set(v, 'showInfo', false)"
+						></i>
+						<transition name="fade">
+							<div class="album-info" v-if="v.showInfo">
+								<p>创建时间：</p>
+								<p class="time">{{ v.createTime | handelData }}</p>
+								<p>最近修改：</p>
+								<p class="time">{{ v.updateTime | handelData }}</p>
+							</div>
+						</transition>
+					</div>
+				</li>
+			</ul>
+		</div>
 
 		<div class="page-section">
 			<l-pagination
@@ -168,7 +171,7 @@ export default {
 			let sendData = {
 				bloggerId,
 				sort: this.sort,
-				page: this.sort,
+				page: this.page,
 				size: this.size,
 			};
 			getAlbumsList(sendData).then((res) => {
@@ -289,6 +292,9 @@ export default {
 				}
 			});
 		},
+		handelResize() {
+			
+		}
 	},
 	filters: {
 		// 格式化时间
@@ -299,6 +305,10 @@ export default {
 	created() {
 		this.getAlbum();
 	},
+	mounted() {
+		this.handelResize();
+		window.addEventListener('resize', this.handelResize)
+	}
 };
 </script>
 
@@ -311,115 +321,118 @@ export default {
 	background-color: #fff;
 
 	.title {
+		display: flex;
+		justify-content: space-between;
+		align-items: center;
 		margin-bottom: 20px;
 		font-size: 20px;
 		text-indent: 20px;
 		line-height: 60px;
 		border-bottom: 1px dashed #ccc;
+
+		.btn{
+			line-height: 32px;
+		}
 	}
 
-	.list {
-		display: flex;
-		flex-wrap: wrap;
-		align-content: flex-start;
+	.list-wrap{
+		padding-right: 10px;
 		height: calc(~"100% - 81px - 51px");
+		box-shadow: inset 0px -3px 5px #eee;
+		overflow-y: scroll;
 
-		.item {
-			margin: 5px 10px;
-			height: 240px;
-
-			.img-wrap {
-				position: relative;
-				padding: 5px;
-				margin-bottom: 10px;
-				width: 150px;
-				height: 210px;
-				background-color: #fff;
-				box-shadow: 5px 5px 4px #333;
-				border: 1px solid #ddd;
-				transition: all 2s linear;
-
-				img {
-					width: 100%;
-					height: 100%;
-				}
-
-				.operation {
-					position: absolute;
-					top: 0;
-					left: 0;
-					display: flex;
-					flex-direction: column;
-					align-items: center;
-					justify-content: space-evenly;
-					width: 101%;
-					height: 101%;
-					background-color: rgba(255, 255, 255, 0.5);
-				}
-			}
-
-			.album-name {
-				position: relative;
-				display: flex;
-				align-items: center;
-				justify-content: space-between;
-				padding: 0 5px;
-				cursor: pointer;
-
-				.album-info {
-					position: absolute;
-					bottom: calc(~"100% + 4px");
-					left: calc(~"5% + 8px");
-					padding: 5px;
-					width: 90%;
-					font-size: 12px;
-					background-color: #fff;
-					border: 1px solid #ddd;
-					border-radius: 6px;
-
-					.time {
-						text-indent: 10px;
-					}
-
-					::before {
-						position: absolute;
-						bottom: -6px;
-						right: 10px;
-						transform: rotateZ(45deg);
-						width: 10px;
-						height: 10px;
-						content: "";
-						background-color: #fff;
-						border-right: 1px solid #ddd;
-						border-bottom: 1px solid #ddd;
-					}
-				}
-			}
+		&::-webkit-scrollbar {
+			width: 6px;
+		}
+		&::-webkit-scrollbar-thumb {
+			border-radius: 6px;
+			background: #ccc;
+		}
+		&::-webkit-scrollbar-track {
+			border-radius: 0;
+			background: #fff;
 		}
 
-		.add-album {
-			display: flex;
-			flex-direction: column;
-			align-items: center;
-			justify-content: center;
-			width: 150px;
-			height: 210px;
-			background-color: #eee;
-			border: 1px dashed #ccc;
-			box-shadow: 5px 5px 4px #333;
-			cursor: pointer;
+		.list {
+			display: grid;
+			grid-template-columns: repeat(auto-fill, 150px);
+			grid-column-gap: 10px;
+			grid-row-gap: 20px;
+			justify-content: space-between;
 
-			.icon-add {
-				font-size: 20px;
-			}
+			.item {
 
-			&:hover {
-				color: #409eff;
-				border: 1px dashed #409eff;
-				box-shadow: 3px 3px 3px #ccc;
+				.img-wrap {
+					position: relative;
+					padding: 5px;
+					margin-bottom: 10px;
+					width: 150px;
+					height: 210px;
+					background-color: #fff;
+					box-shadow: 5px 5px 4px #333;
+					border: 1px solid #ddd;
+					transition: all .2s linear;
+
+					img {
+						width: 100%;
+						height: 100%;
+					}
+
+					.operation {
+						position: absolute;
+						top: 0;
+						left: 0;
+						display: flex;
+						flex-direction: column;
+						align-items: center;
+						justify-content: space-evenly;
+						width: 101%;
+						height: 101%;
+						background-color: rgba(255, 255, 255, 0.5);
+					}
+				}
+
+				.album-name {
+					position: relative;
+					display: flex;
+					align-items: center;
+					justify-content: space-between;
+					padding: 0 5px;
+					cursor: pointer;
+
+					.album-info {
+						position: absolute;
+						bottom: calc(~"100% + 4px");
+						left: calc(~"5% + 8px");
+						padding: 5px;
+						width: 90%;
+						font-size: 12px;
+						background-color: #fff;
+						border: 1px solid #ddd;
+						border-radius: 6px;
+
+						.time {
+							text-indent: 10px;
+						}
+
+						::before {
+							position: absolute;
+							bottom: -6px;
+							right: 10px;
+							transform: rotateZ(45deg);
+							width: 10px;
+							height: 10px;
+							content: "";
+							background-color: #fff;
+							border-right: 1px solid #ddd;
+							border-bottom: 1px solid #ddd;
+						}
+					}
+				}
 			}
 		}
 	}
+
 
 	.page-section {
 		display: flex;
@@ -563,4 +576,31 @@ export default {
 .fade-leave-to {
 	opacity: 0;
 }
+
+// @media (min-width: 0px) and (max-width: 1450px) {
+// 	.album-page {
+// 		.list{
+// 			.item{
+// 				.img-wrap{
+// 					width: 121px;
+// 					height: 168px;
+// 				}
+// 			}
+// 		}
+// 	}
+// }
+
+// @media (min-width: 1450px) and (max-width: 1510px) {
+// 	.album-page {
+// 		.list{
+// 			.item{
+// 				margin: 5px 2%;
+// 				.img-wrap{
+// 					width: 150px;
+// 					height: 210px;
+// 				}
+// 			}
+// 		}
+// 	}
+// }
 </style>
