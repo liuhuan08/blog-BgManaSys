@@ -30,8 +30,8 @@
 		</div>
 		<ul class="list" ref="imgsListDom">
             <li v-if="imgsList.length === 0">这个相册是空的！</li>
-			<li class="item" v-for="v in imgsList" :key="v.id">
-				<img :src="v.url" />
+			<li class="item" v-for="(v, i) in imgsList" :key="v.id">
+				<img :src="v.url" @click="showBigImg(v.url, i)" />
 				<!-- <p class="info">创建时间：{{v.createTime | handelData}}</p> -->
 				<div class="del-wrap" @click="handelRemove(v.id)">
 					<i class="iconfont icon-remove"></i>
@@ -44,6 +44,13 @@
 				/>
 			</li>
 		</ul>
+
+		<div class="bigimg-dialog" v-if="isShowBigImg" @click.self="handelCloseBigImg">
+			<i class="iconfont icon-error" title="关闭" @click.self="handelCloseBigImg"></i>
+			<div class="wrap">
+				<img :src="bigimgUrl">
+			</div>
+		</div>
 
 		<div class="dialog" v-if="dialogVisible">
 			<i class="iconfont icon-closeCard" @click="handelClose"></i>
@@ -97,6 +104,8 @@ export default {
 			title: "",
 			imgsList: [],
 			imgsTotal: 0,
+			bigimgUrl: '',
+			isShowBigImg: false,
 			page: 1,
 			size: 20,
 			total: 0,
@@ -159,6 +168,14 @@ export default {
 				this.size += 20;
 				this.getImgs();
 			}
+		},
+		showBigImg(url, index) {
+			this.bigimgUrl = url;
+			this.isShowBigImg = true;
+		},
+		handelCloseBigImg() {
+			this.bigimgUrl = '';
+			this.isShowBigImg = false;
 		},
 		// 添加图片
 		handelAddImg() {
@@ -522,6 +539,35 @@ export default {
 		width: 12px;
 		height: 12px;
 		margin: 0 10px;
+	}
+}
+
+.bigimg-dialog{
+	position: fixed;
+	top: 0;
+	left: 0;
+	width: 100%;
+	height: 100%;
+	background-color: rgba(0, 0, 0, .2);
+
+	.icon-error{
+		position: absolute;
+		top: 10px;
+		right: 10px;
+		font-size: 20px;
+		color: #fff;
+		cursor: pointer;
+	}
+
+	.wrap{
+		margin: 50px auto;
+		width: 80%;
+		height: 80%;
+		text-align: center;
+
+		img{
+			height: 100%;
+		}
 	}
 }
 </style>
