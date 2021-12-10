@@ -149,6 +149,7 @@ export default {
 				}
 			});
 		},
+		// 监听滚动事件
 		handelScroll() {
 			let scrollHeight = this.$refs.imgsListDom.scrollHeight;
 			let height = this.$refs.imgsListDom.offsetHeight;
@@ -300,6 +301,7 @@ export default {
 				}
 			}, 100)
 		},
+		// 控制加载中效果
 		changShow() {
 			this.dialogTipsVisible = true;
 			if(this.timer2) clearInterval(this.timer2);
@@ -337,7 +339,6 @@ export default {
 	},
 	mounted() {
 		window.addEventListener('resize', this.fall);
-		
 		this.$refs.imgsListDom.addEventListener('scroll', this.handelScroll)
 	},
 	beforeDestroy() {
