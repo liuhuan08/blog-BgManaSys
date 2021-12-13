@@ -1,6 +1,8 @@
 import Vue from "vue";
 import VueRouter from "vue-router";
 
+import local from "../utils/local"
+
 import Index from "../views/layout/Index.vue"
 import Login from "../views/Login.vue"
 
@@ -11,7 +13,7 @@ Vue.use(VueRouter);
 const originalPush = VueRouter.prototype.push
 //修改原型对象中的push方法
 VueRouter.prototype.push = function push(location) {
-  return originalPush.call(this, location).catch(err => err)
+  	return originalPush.call(this, location).catch(err => err)
 }
 
 const routes = [
@@ -98,13 +100,47 @@ const routes = [
 			}
 		]
 	},{
-		path: "/test",
-		component: () => import("../views/test.vue")
+		path: "/404",
+		component: () => import("../views/404.vue")
 	}
 ];
 
 const router = new VueRouter({
-  routes,
+  	routes,
+});
+
+let pathArr = [];
+routes.forEach(v => {
+	pathArr.push(v.path);
+	if(v.children) {
+		v.children.forEach(item => {
+			pathArr.push(item.path);
+		})
+	};
+});
+
+/* 全局前置路由守卫 */
+router.beforeEach((to, from, next) => {
+	// 登录状态  
+	let isLogin = local.get('blog_t&k') ? true : false;
+	
+	if (isLogin) {
+		if(pathArr.indexOf(to.path) === -1) {
+			next({
+				path: '/404'
+		  	});
+		}else {
+			next();
+		};
+	} else {
+	  	if (to.path === '/login') {
+			next();
+	  	} else {
+			next({
+		  		path: '/login'
+			});
+	  	};
+	};
 });
 
 export default router;
