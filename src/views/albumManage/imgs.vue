@@ -28,7 +28,7 @@
 				</l-botton>
 			</div>
 		</div>
-		<ul class="list" ref="imgsListDom">
+		<ul class="list" ref="imgsListDom" @mousewheel="initImgsList">
             <li v-if="imgsList.length === 0">这个相册是空的！</li>
 			<li class="item" v-for="(v, i) in imgsList" :key="v.id">
 				<img :src="v.url" @click="showBigImg(v.url, i)" />
@@ -47,9 +47,11 @@
 
 		<div class="bigimg-dialog" v-if="isShowBigImg" @click.self="handelCloseBigImg">
 			<i class="iconfont icon-error" title="关闭" @click.self="handelCloseBigImg"></i>
+			<i class="iconfont icon-left" title="上一张" @click="toPre"></i>
 			<div class="wrap">
 				<img :src="bigimgUrl">
 			</div>
+			<i class="iconfont icon-right" title="下一张" @click="toNext"></i>
 		</div>
 
 		<div class="dialog" v-if="dialogVisible">
@@ -105,9 +107,10 @@ export default {
 			imgsList: [],
 			imgsTotal: 0,
 			bigimgUrl: '',
+			bigimgUrlIndex: 0,
 			isShowBigImg: false,
 			page: 1,
-			size: 20,
+			size: 10,
 			total: 0,
 			checkedList: [],
 			checkall: false,
@@ -117,7 +120,8 @@ export default {
 			newImgs: [],
 			showOne: true,
 			timer: null,
-			timer2: null
+			timer2: null,
+			timer3: null
 		};
 	},
 	components: {
@@ -158,7 +162,23 @@ export default {
 				}
 			});
 		},
-		// 监听滚动事件
+		// 初始化滚动条
+		initImgsList(e) {
+			if(e.deltaY > 0) {
+				this.$nextTick(() => {
+					if(this.timer3) clearTimeout(this.timer3);
+					this.timer3 = setTimeout(() => {
+						let scrollHeight = this.$refs.imgsListDom.scrollHeight;
+						let height = this.$refs.imgsListDom.offsetHeight;
+						if(scrollHeight <= height) {
+							this.size += 10;
+							this.getImgs();
+						}
+					}, 200)
+				})
+			};
+		},
+		// 监听滚动，加载更多
 		handelScroll() {
 			let scrollHeight = this.$refs.imgsListDom.scrollHeight;
 			let height = this.$refs.imgsListDom.offsetHeight;
@@ -169,10 +189,31 @@ export default {
 				this.getImgs();
 			}
 		},
+		// 点击显示大图
 		showBigImg(url, index) {
 			this.bigimgUrl = url;
+			this.bigimgUrlIndex = index;
 			this.isShowBigImg = true;
 		},
+		// 上一张
+		toPre() {
+			if(this.bigimgUrlIndex === 0) {
+				this.Msg('已经是第一张了哦~~~', 'warning', 2000);			
+			} else {
+				this.bigimgUrlIndex --;
+				this.bigimgUrl = this.imgsList[this.bigimgUrlIndex].url;
+			}
+		},
+		// 下一张
+		toNext() {
+			if(this.bigimgUrlIndex === (this.imgsList.length - 1)) {
+				this.Msg('已经是最后一张了哦~~~', 'warning', 2000);			
+			} else {
+				this.bigimgUrlIndex ++;
+				this.bigimgUrl = this.imgsList[this.bigimgUrlIndex].url;
+			}
+		},
+		// 关闭大图
 		handelCloseBigImg() {
 			this.bigimgUrl = '';
 			this.isShowBigImg = false;
@@ -355,6 +396,7 @@ export default {
 		this.getImgs();
 	},
 	mounted() {
+		
 		window.addEventListener('resize', this.fall);
 		this.$refs.imgsListDom.addEventListener('scroll', this.handelScroll)
 	},
@@ -548,7 +590,7 @@ export default {
 	left: 0;
 	width: 100%;
 	height: 100%;
-	background-color: rgba(0, 0, 0, .2);
+	background-color: rgba(0, 0, 0, .5);
 
 	.icon-error{
 		position: absolute;
@@ -557,6 +599,29 @@ export default {
 		font-size: 20px;
 		color: #fff;
 		cursor: pointer;
+	}
+
+	.icon-left, .icon-right{
+		position: absolute;
+		top: 50%;
+		transform: translateY(-50%);
+		width: 40px;
+		height: 40px;
+		font-size: 20px;
+		text-align: center;
+		line-height: 40px;
+		color: #fff;
+		background-color: #999;
+		border-radius: 50%;
+		cursor: pointer;
+	}
+
+	.icon-left{
+		left: 20px;
+	}
+
+	.icon-right{
+		right: 20px;
 	}
 
 	.wrap{
