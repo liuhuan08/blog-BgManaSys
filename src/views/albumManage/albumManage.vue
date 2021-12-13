@@ -273,6 +273,8 @@ export default {
 			this.$router.push({
 				path: "/album/album-manage/imgs",
 				query: { albumName: name, albumId: id },
+			}).then(() => {
+				location.reload();
 			});
 		},
 		// 编辑相册

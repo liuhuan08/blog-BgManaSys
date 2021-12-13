@@ -356,7 +356,7 @@ export default {
 						// 并修改当前索引的高度为当前元素的高度
 						heightArr[minIndex] = minHeight + gap + height;
 					}
-				}
+				};
 			}, 100)
 		},
 		// 控制加载中效果
@@ -396,7 +396,6 @@ export default {
 		this.getImgs();
 	},
 	mounted() {
-		
 		window.addEventListener('resize', this.fall);
 		this.$refs.imgsListDom.addEventListener('scroll', this.handelScroll)
 	},
