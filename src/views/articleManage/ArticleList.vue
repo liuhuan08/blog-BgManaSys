@@ -44,7 +44,7 @@
 				<div class="td-time">修改时间</div>
 				<div class="td-btn">操作</div>
 			</div>
-			<div class="tbody">
+			<div class="tbody" :class="showBorder ? 'showBorder' : ''" ref="tbody">
 				<div v-for="v in tableData" :key="v.article_id" class="tr">
 					<div class="td-num">{{ v.article_id }}</div>
 					<div class="td-title">{{ v.title }}</div>
@@ -111,6 +111,7 @@ export default {
 			currentPage: 1,
 			sortType: 1,
 			tableData: [],
+			showBorder: false
 		};
 	},
 	components: {
@@ -132,6 +133,8 @@ export default {
 				if (res.status === 200) {
 					this.tableData = res.data.data.records;
 					this.total = res.data.data.total;
+
+					this.handelResize();
 				}
 			});
 		},
@@ -170,6 +173,20 @@ export default {
 			this.currentPage = val;
             this.getData();
 		},
+		handelResize() {
+			this.$nextTick(() => {
+				let h = 0;
+				let len = document.querySelectorAll('.tbody .tr').length;
+				for(let i = 0; i < len; i ++) {
+					h += document.querySelectorAll('.tbody .tr')[i].offsetHeight;
+				};
+				if(h < this.$refs.tbody.offsetHeight) {
+					this.showBorder = true;
+				}else {
+					this.showBorder = false;
+				}
+			})
+		}
 	},
 	filters: {
 		handelData(val) {
@@ -315,6 +332,10 @@ export default {
 
 		.tbody .tr:last-child div {
 			border-bottom: 0;
+		}
+
+		.showBorder .tr:last-child div {
+			border-bottom: 1px solid #ebeef5;
 		}
 
 		.tbody .tr:nth-child(2n) {
