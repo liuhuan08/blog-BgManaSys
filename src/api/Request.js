@@ -1,7 +1,7 @@
 import axios from 'axios'
 import local from '@/utils/local'
 
-import Msg from "../utils/msg"
+// import Msg from "../utils/msg"
 
 axios.defaults.baseURL = 'http://api.excellentlld.com';
 axios.defaults.timeout = 10000; // 请求超时时间
@@ -32,12 +32,12 @@ axios.interceptors.response.use(function (response) {
         //     type: 'success',
         //     message: res.msg
         // })
-        Msg(`${res.msg}`, 'success', 2000);
+        // Msg(`${res.msg}`, 'success', 2000);
     }
 
     if (res.code === 1 || res.code === 5001) {
         // Message.error(res.msg)
-        Msg(`${res.msg}`, 'success', 2000);
+        // Msg(`${res.msg}`, 'success', 2000);
     }
 
     return response;
