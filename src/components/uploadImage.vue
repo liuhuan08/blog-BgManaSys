@@ -42,6 +42,13 @@
 				</div>
 			</div>
 		</div>
+		
+		<div class="loading" v-if="showLoading">
+			<div class="content">
+				<div class="sircle"></div>
+				上传中
+			</div>
+		</div>
 	</div>
 </template>
 
@@ -53,6 +60,7 @@ export default {
 		return {
 			url: this.src,
 			file: null,
+			showLoading: false,
 		};
 	},
 	props: {
@@ -75,6 +83,7 @@ export default {
 				this.Msg("最多5张，重新选择吧~", "warning", 1500);
 			} else {
 				if (this.file) return;
+				this.showLoading = true;
 				let formData = new FormData();
 				for (let i = 0; i < e.target.files.length; i++) {
 					if (!this.beforeUpload(e.target.files[i])) return;
@@ -90,6 +99,7 @@ export default {
 							this.url = res.data.data[0];
 						}
 						this.$emit("on-success", res.data.data);
+						this.showLoading = false;
 					}
 				});
 			}
@@ -229,6 +239,46 @@ export default {
 		&:hover .del {
 			display: block;
 		}
+	}
+}
+
+.loading{
+	position: fixed;
+	top: 0;
+	left: 0;
+	width: 100%;
+	height: 100%;
+	background-color: rgba(255, 255, 255, .8);
+
+	.content{
+		display: flex;
+		flex-direction: column;
+		align-items: center;
+		position: absolute;
+		top: 40%;
+		left: 50%;
+		transform: translate(-50%, -50%);
+
+		.sircle{
+			margin-bottom: 10px;
+			width: 30px;
+			height: 30px;
+			border-bottom: 1px solid #59abff;
+			border-radius: 50%;
+			animation: goRotate .7s ease-in-out infinite;
+		}
+	}
+}
+
+@keyframes goRotate {
+	0%{
+		transform: rotateZ(0deg);
+	}
+	50%{
+		transform: rotateZ(180deg);
+	}
+	100%{
+		transform: rotateZ(360deg);
 	}
 }
 </style>
