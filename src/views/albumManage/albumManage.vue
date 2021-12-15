@@ -42,7 +42,10 @@
 						</transition>
 					</div>
 					<div class="album-name">
-						{{ v.albumName }}
+						<div>
+							<i class="iconfont icon-psd" v-if="v.isPrivate === 1"></i>
+							{{ v.albumName }}
+						</div>
 						<i
 							class="iconfont icon-info"
 							@mouseenter="$set(v, 'showInfo', true)"
@@ -106,6 +109,27 @@
 					</div>
 				</div>
 			</div>
+			<div class="item">
+				<div class="label">是否私密</div>
+				<div class="swicth-container">
+					否
+					<div class="swicth" :class="dialogForm.isPrivate ? 'swicth-on' : 'swicth-off'" @click="changePrivate"><div class="swicth-circle"></div></div>
+					是
+				</div>
+			</div>
+			<transition name="slide-fade">
+				<div class="item" v-if="dialogForm.isPrivate">
+					<div class="label">进入密码</div>
+					<l-input
+						class="ipt"
+						v-model="dialogForm.password"
+						:ipt-value="dialogForm.password"
+						type="password"
+						placeholder="请输入进入密码"
+						clearable
+					></l-input>
+				</div>
+			</transition>
 			<div class="bottom">
 				<l-botton
 					style="margin-right: 10px"
@@ -147,6 +171,8 @@ export default {
 			dialogForm: {
 				name: "",
 				albumCover: "",
+				isPrivate: true,
+				password: ''
 			},
 			dialogVisible: false,
 			isAdd: false,
@@ -193,6 +219,9 @@ export default {
 			this.page = val;
             this.getAlbum();
 		},
+		changePrivate() {
+			this.dialogForm.isPrivate = !this.dialogForm.isPrivate;
+		},
 		// 新增相册
 		handelAddAlbum() {
 			this.isAdd = true;
@@ -221,17 +250,32 @@ export default {
 			if (this.isAdd) {
 				// 添加相册
 				let bloggerId = local.get("blog_userinfo").bloggerId;
-				let sendData = {
-					bloggerId,
-					albumName: this.dialogForm.name,
-					albumCover: this.dialogForm.albumCover,
+				let sendData = {};
+				if(this.dialogForm.isPrivate) {
+					sendData = {
+						bloggerId,
+						albumName: this.dialogForm.name,
+						albumCover: this.dialogForm.albumCover,
+						isPrivate: 1,
+						password: this.dialogForm.password
+					};
+				}else {
+					sendData = {
+						bloggerId,
+						albumName: this.dialogForm.name,
+						albumCover: this.dialogForm.albumCover,
+						isPrivate: 0,
+					};
 				};
+				
 				addAlbums(sendData).then((res) => {
 					if (res.status === 200) {
 						this.Msg("新增相册成功！", "success", 1500);
 						this.dialogForm = {
 							name: "",
 							albumCover: "",
+							isPrivate: true,
+							password: ''
 						};
 						this.dialogVisible = false;
 						this.isAdd = false;
@@ -240,17 +284,32 @@ export default {
 				});
 			} else {
 				// 修改相册
-				let sendData = {
-					albumId: this.dialogForm.albumId,
-					albumName: this.dialogForm.name,
-					albumCover: this.dialogForm.albumCover,
+				let sendData = {};
+				if(this.dialogForm.isPrivate) {
+					sendData = {
+						albumId: this.dialogForm.albumId,
+						albumName: this.dialogForm.name,
+						albumCover: this.dialogForm.albumCover,
+						isPrivate: 1,
+						password: this.dialogForm.password
+					};
+				}else {
+					sendData = {
+						albumId: this.dialogForm.albumId,
+						albumName: this.dialogForm.name,
+						albumCover: this.dialogForm.albumCover,
+						isPrivate: 0,
+					};
 				};
+				console.log(sendData);
 				editAlbums(sendData).then((res) => {
 					if (res.status === 200) {
 						this.Msg("修改相册成功！", "success", 1500);
 						this.dialogForm = {
 							name: "",
 							albumCover: "",
+							isPrivate: true,
+							password: ''
 						};
 						this.dialogVisible = false;
 						this.isAdd = false;
@@ -282,6 +341,8 @@ export default {
 			this.dialogForm.name = val.albumName;
 			this.dialogForm.albumCover = val.albumCover;
 			this.dialogForm.albumId = val.id;
+			val.isPrivate ? this.dialogForm.isPrivate = true : this.dialogForm.isPrivate = false;
+			val.isPrivate ? this.dialogForm.password = val.password : this.dialogForm.password = '';
 			this.isAdd = false;
 			this.dialogVisible = true;
 		},
@@ -402,6 +463,10 @@ export default {
 					padding: 0 5px;
 					cursor: pointer;
 
+					.icon-psd{
+						color: #888;
+					}
+
 					.album-info {
 						position: absolute;
 						bottom: calc(~"100% + 4px");
@@ -452,7 +517,7 @@ export default {
 		padding: 20px;
 		padding-top: 0;
 		width: 400px;
-		height: 400px;
+		// height: 400px;
 		background-color: #fff;
 		box-shadow: 0px 0px 5px #ccc;
 		border-radius: 10px;
@@ -473,6 +538,51 @@ export default {
 			display: flex;
 			margin-top: 20px;
 
+			.swicth-container{
+				display: flex;
+				align-items: center;
+				height: 38px;
+
+				.swicth{
+					position: relative;
+					width: 40px;
+					height: 20px;
+					margin: 0 5px;
+					background-color: #13ce66;
+					border-radius: 15px;
+					cursor: pointer;
+					transition: all .2s linear;
+
+					.swicth-circle{
+						width: 18px;
+						height: 18px;
+						border-radius: 50%;
+						background-color: #fff;
+						transition: all .2s linear;
+					}
+				}
+
+				.swicth-on{
+					background-color: #13ce66;
+
+					.swicth-circle{
+						position: absolute;
+						top: 1px;
+						left: 21px;
+					}
+				}
+
+				.swicth-off{
+					background-color: #ff4949;
+
+					.swicth-circle{
+						position: absolute;
+						top: 1px;
+						left: 1px;
+					}
+				}
+			}
+
 			.upload-avatar{
 				position: relative;
 				width: 125px;
@@ -490,7 +600,7 @@ export default {
 					text-align: center;
 					line-height: 120px;
 					border: 1px dashed #ccc;
-					
+					line-height: 175px;
 				}
 
 				.img-wrap{
@@ -525,6 +635,7 @@ export default {
 
 			.label {
 				width: 100px;
+				line-height: 38px;
 			}
 
 			.ipt {
@@ -536,9 +647,7 @@ export default {
 		}
 
 		.bottom {
-			position: absolute;
-			bottom: 20px;
-			right: 20px;
+			margin-top: 20px;
 			display: flex;
 			justify-content: end;
 		}
@@ -579,30 +688,15 @@ export default {
 	opacity: 0;
 }
 
-// @media (min-width: 0px) and (max-width: 1450px) {
-// 	.album-page {
-// 		.list{
-// 			.item{
-// 				.img-wrap{
-// 					width: 121px;
-// 					height: 168px;
-// 				}
-// 			}
-// 		}
-// 	}
-// }
-
-// @media (min-width: 1450px) and (max-width: 1510px) {
-// 	.album-page {
-// 		.list{
-// 			.item{
-// 				margin: 5px 2%;
-// 				.img-wrap{
-// 					width: 150px;
-// 					height: 210px;
-// 				}
-// 			}
-// 		}
-// 	}
-// }
+.slide-fade-enter-active {
+	transition: all 0.3s linear;
+}
+.slide-fade-leave-active {
+	transition: all 0.3s linear;
+}
+.slide-fade-enter,
+.slide-fade-leave-to {
+	transform: translateY(-10px);
+	opacity: 0;
+}
 </style>
