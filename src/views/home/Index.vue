@@ -122,6 +122,7 @@ export default {
 							this.$set(this.articleData, this.dateArr.indexOf(key), data.articles.recentList[key]);
 						}
 					};
+					this.getDesc();
 					this.drawCharts();
 				}
 			})
