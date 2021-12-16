@@ -3,7 +3,7 @@
         <div @click="toggleShow"><slot name="reference" ref="reference"></slot></div>
         <transition name="fade">
             <div v-if="show" class="pop-wrap" ref="popWrap" :class="position">
-                <div class="title">{{ title }}</div>
+                <div class="title"><i class="iconfont icon-isConfirm"></i> {{ title }}</div>
                 <div class="operation">
                     <l-botton
                         class="l-btn"
@@ -63,9 +63,9 @@ export default {
         changePosition() {
             if(!this.show) return;
             let w = this.$refs.popWrap.offsetWidth - this.$refs.popconfirm.offsetWidth;
-            if(this.$refs.popconfirm.offsetLeft < (w / 2 )) {
+            if(this.$refs.popconfirm.offsetLeft < w) {
                     this.position = 'left'
-            }else if((document.querySelector('body').offsetWidth - this.$refs.popconfirm.offsetLeft - this.$refs.popconfirm.offsetWidth) < (w / 2)) {
+            }else if((document.querySelector('body').offsetWidth - this.$refs.popconfirm.offsetLeft - this.$refs.popconfirm.offsetWidth) < w) {
                     this.position = 'right'
             }else {
                     this.position = 'center'
@@ -97,6 +97,13 @@ export default {
         border-radius: 6px;
         background-color: #fff;
         box-shadow: 0px 0px 5px #ccc;
+
+        .title{
+            .icon-isConfirm{
+                line-height: 16px;
+                color: #ff9900;
+            }
+        }
 
         .operation{
             display: flex;
@@ -135,7 +142,7 @@ export default {
     }
 
     .right{
-        transform: translateX(-60%);
+        transform: translateX(-70%);
 
         &::before{
             left: calc(~"100% - 30px");
