@@ -31,13 +31,16 @@
 								>
 									编辑相册
 								</l-botton>
-								<l-botton
-									type="danger"
-									size="mini"
-									@click="handelDel(v.id)"
-								>
-									删除相册
-								</l-botton>
+								<l-popconfirm @confirm="handelDel(v.id)" :title="'确认删除这个相册吗？'" @mouseleave="$set(v, 'showOperation', false)">
+									<l-botton
+										slot="reference"
+										type="danger"
+										size="mini"
+									>
+										删除相册
+									</l-botton>
+
+								</l-popconfirm>
 							</div>
 						</transition>
 					</div>
@@ -163,6 +166,7 @@ import LBotton from "@/components/botton.vue";
 import LUploadImage from "@/components/uploadImage.vue";
 import cropper from "../../components/cropper.vue"
 import LPagination from "@/components/pagination.vue";
+import LPopconfirm from "@/components/popconfirm.vue"
 
 export default {
 	data() {
@@ -188,7 +192,8 @@ export default {
 		LBotton,
 		LUploadImage,
 		cropper,
-		LPagination
+		LPagination,
+		LPopconfirm
 	},
 	methods: {
 		// 获取相册列表

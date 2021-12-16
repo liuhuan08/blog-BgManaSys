@@ -10,14 +10,16 @@
 						class="checkall"
 						@click="checkAll"
 				/></label>
-				<l-botton
-					style="width: 60px"
-					type="danger"
-					size="mini"
-					@click="handelDelChecked"
-				>
-					删除
-				</l-botton>
+				<l-popconfirm @confirm="handelDelChecked" :title="'确认删除这些图片吗？'">
+					<l-botton
+						slot="reference"
+						style="width: 60px"
+						type="danger"
+						size="mini"
+					>
+						删除
+					</l-botton>
+				</l-popconfirm>
 				<l-botton
 					style="margin-left: 10px"
 					type="primary"
@@ -31,7 +33,7 @@
 		<ul class="list" ref="imgsListDom" @mousewheel="initImgsList">
             <li v-if="imgsList.length === 0">这个相册是空的！</li>
 			<li class="item" v-for="(v, i) in imgsList" :key="v.id">
-				<img :src="v.url" @click="showBigImg(v.url, i)" />
+				<img :src="v.url" @click="showBigImg(v.url, i)" referrerPolicy="no-referrer" />
 				<!-- <p class="info">创建时间：{{v.createTime | handelData}}</p> -->
 				<div class="del-wrap" @click="handelRemove(v.id)">
 					<i class="iconfont icon-remove"></i>
@@ -99,6 +101,7 @@ import { normalizeDate, normalizeTime } from "@/utils/tools";
 
 import LBotton from "@/components/botton.vue";
 import LUploadImage from "@/components/uploadImage.vue";
+import LPopconfirm from "@/components/popconfirm.vue"
 
 export default {
 	data() {
@@ -127,6 +130,7 @@ export default {
 	components: {
 		LBotton,
 		LUploadImage,
+		LPopconfirm
 	},
 	methods: {
 		// 获取图片列表

@@ -65,14 +65,16 @@
 							>
 								编辑
 							</l-botton>
-							<l-botton
-								class="btn"
-								type="danger"
-								size="mini"
-								@click="handelDel(v.article_id)"
-							>
-								删除
-							</l-botton>
+							<l-popconfirm @confirm="handelDel(v.article_id)" :title="'确认删除这篇文章吗？'">
+								<l-botton
+									slot="reference"
+									class="btn"
+									type="danger"
+									size="mini"
+								>
+									删除
+								</l-botton>
+							</l-popconfirm>
 						</div>
 					</div>
 				</div>
@@ -101,6 +103,7 @@ import { normalizeDate, normalizeTime } from "../../utils/tools";
 import LInput from "@/components/input.vue";
 import LBotton from "@/components/botton.vue";
 import LPagination from "@/components/pagination.vue";
+import LPopconfirm from "@/components/popconfirm.vue";
 
 export default {
 	data() {
@@ -118,6 +121,7 @@ export default {
 		LInput,
 		LBotton,
 		LPagination,
+		LPopconfirm
 	},
 	methods: {
 		getData() {
