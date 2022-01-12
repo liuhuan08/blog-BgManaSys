@@ -95,6 +95,8 @@
 </template>
 
 <script>
+import * as imageConversion from 'image-conversion';
+
 import { getAlbumImgs, albumAddImgs, albumDelImgs } from "@/api/albums";
 
 import { normalizeDate, normalizeTime } from "@/utils/tools";
@@ -236,15 +238,22 @@ export default {
 		// 上传图片限制
 		beforeAvatarUpload(file) {
 			const isJPG = file.type === "image/jpeg";
-			const isLt10M = file.size / 1024 / 1024 < 10;
 
 			if (!isJPG) {
 				this.Msg("上传头像图片只能是 JPG 格式!", "error", 2000);
+				return isJPG
+			}else {
+				return new Promise((resolve, reject) => {
+					let isLt200KB = file.size / 1024 / 1024 < 0.2; // 判定图片大小是否小于200KB
+					if (isLt200KB) {
+						resolve(file);
+					}
+					// console.log(file); // 压缩到200KB,这里的200就是要压缩的大小,可自定义
+					imageConversion.compressAccurately(file, 200).then((res) => {
+						resolve(res);
+					});
+				});
 			}
-			if (!isLt10M) {
-				this.Msg("上传头像图片大小不能超过 10MB!", "error", 2000);
-			}
-			return isJPG && isLt10M;
 		},
 		// 确认
 		handelConfirm() {

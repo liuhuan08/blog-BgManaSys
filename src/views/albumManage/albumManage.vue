@@ -164,7 +164,7 @@ import { normalizeDate, normalizeTime } from "@/utils/tools";
 import LInput from "@/components/input.vue";
 import LBotton from "@/components/botton.vue";
 import LUploadImage from "@/components/uploadImage.vue";
-import cropper from "../../components/cropper.vue"
+import cropper from "@/components/cropper.vue"
 import LPagination from "@/components/pagination.vue";
 import LPopconfirm from "@/components/popconfirm.vue"
 

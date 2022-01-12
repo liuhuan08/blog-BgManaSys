@@ -72,7 +72,8 @@
 </template>
 
 <script>
-import axios from "axios";
+import axios from "axios"
+import * as imageConversion from 'image-conversion';
 import { VueCropper } from "vue-cropper";
 
 import LBotton from "./botton.vue"
@@ -177,14 +178,28 @@ export default {
 			//转化为base64
 			reader.readAsDataURL(file);
 		},
+		// 上传图片限制
+		beforeAvatarUpload(file) {
+            return new Promise((resolve, reject) => {
+				let isLt200Kb = file.size / 1024 / 1024 < 0.2; // 判定图片大小是否小于200kb
+				if (isLt200Kb) {
+					resolve(file);
+				}
+				// console.log(file); // 压缩到200KB,这里的200就是要压缩的大小,可自定义
+				imageConversion.compressAccurately(file, 200).then((res) => {
+					resolve(res);
+				});
+			});
+		},
 		//上传图片
 		uploadImg(type) {
 			if (type === "blob") {
 				//获取截图的blob数据
-				this.$refs.cropper.getCropBlob((data) => {
+				this.$refs.cropper.getCropBlob(async (data) => {
+					let ret =await this.beforeAvatarUpload(data);
 					let formData = new FormData();
-					formData.append("file", data, "DX.jpg");
-					//调用axios上传
+					formData.append("file", ret, "DX.jpg");
+					// 调用axios上传
 					axios.post("http://api.excellentlld.com/blog/back/upload-image", formData, {headers: {"Content-Type": "multipart/form-data"}})
 						.then((res) => {
 							if (res.status === 200) {

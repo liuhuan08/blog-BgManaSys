@@ -78,7 +78,7 @@ export default {
 		}
 	},
 	methods: {
-		upload(e) {
+		async upload(e) {
 			if (e.target.files.length > 5) {
 				this.Msg("最多5张，重新选择吧~", "warning", 1500);
 			} else {
@@ -86,13 +86,16 @@ export default {
 				this.showLoading = true;
 				let formData = new FormData();
 				for (let i = 0; i < e.target.files.length; i++) {
-					if (!this.beforeUpload(e.target.files[i])) return;
-					formData.append("images", e.target.files[i]);
+					if (!this.beforeUpload(e.target.files[i])) {
+						return;
+					}else {
+						let ret = await this.beforeUpload(e.target.files[i]);
+						formData.append("images", ret, "DX.jpg");
+					};
 				}
 
 				axios.post(this.action, formData, { headers: { "Content-Type": "multipart/form-data" }, }).then((res) => {
 					if (res.status === 200) {
-						console.log(res);
 						if(this.multiple) {
 							this.url = res.data.data;
 						}else {
