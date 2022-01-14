@@ -49,7 +49,7 @@ export const delArticle = (articleId) => {
 export const getArticleTagList = (bloggerId) => {
     return request({
         method: 'get',
-        url: '/blog/back/get-article-tag',
+        url: '/blog/front/get-article-tag',
         params: { bloggerId }
     })
 }
