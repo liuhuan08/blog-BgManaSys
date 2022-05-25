@@ -79,11 +79,7 @@
 			<div class="item item-content">
 				<div class="label">文章内容</div>
 				<div class="content">
-					<Editor
-						id="tinymce"
-						v-model="articleForm.content"
-						:init="editorInit"
-					></Editor>
+    			<mavon-editor v-model="articleForm.content" ref="md" @imgAdd="handleImgUpload"></mavon-editor>
 				</div>
 			</div>
 			<div class="item item-btn">
@@ -148,44 +144,11 @@ import {
 
 import local from "../../utils/local";
 
-import tinymce from "tinymce/tinymce";
-import "tinymce/themes/silver/theme";
-import Editor from "@tinymce/tinymce-vue";
-import "tinymce/icons/default/icons";
-import "tinymce/plugins/image";
-import "tinymce/plugins/media";
-import "tinymce/plugins/table";
-import "tinymce/plugins/lists";
-import "tinymce/plugins/contextmenu";
-import "tinymce/plugins/wordcount";
-import "tinymce/plugins/colorpicker";
-import "tinymce/plugins/textcolor";
-import "tinymce/plugins/preview";
-import "tinymce/plugins/code";
-import "tinymce/plugins/link";
-import "tinymce/plugins/advlist";
-import "tinymce/plugins/codesample";
-import "tinymce/plugins/hr";
-import "tinymce/plugins/fullscreen";
-import "tinymce/plugins/textpattern";
-import "tinymce/plugins/searchreplace";
-import "tinymce/plugins/autolink";
-import "tinymce/plugins/directionality";
-import "tinymce/plugins/visualblocks";
-import "tinymce/plugins/visualchars";
-import "tinymce/plugins/template";
-import "tinymce/plugins/charmap";
-import "tinymce/plugins/nonbreaking";
-import "tinymce/plugins/insertdatetime";
-import "tinymce/plugins/imagetools";
-import "tinymce/plugins/autosave";
-import "tinymce/plugins/autoresize";
-import "@/assets/tinymce/plugins/lineheight/plugin";
-
 export default {
 	data() {
 		return {
 			pageTitle: "添加文章",
+			content: '',
 			articleForm: {
 				title: "",
 				subTitle: "",
@@ -196,48 +159,6 @@ export default {
 			},
 			tags: [],
 			tagSelList: [],
-			editorInit: {
-				language_url: require("../../tinymce/zh_CN.js"),
-				language: "zh_CN",
-				skin_url: require("../../tinymce/skins/ui/oxide/skin.css"),
-				content_css: require("../../tinymce/skins/content/default/content.css"),
-				height: 400,
-				min_height: 400,
-				// max_height: 400,
-				toolbar_mode: "wrap",
-				plugins:
-					"preview searchreplace autolink directionality visualblocks visualchars fullscreen image link media template code codesample table charmap hr nonbreaking insertdatetime advlist lists wordcount imagetools textpattern autosave autoresize lineheight",
-				toolbar:
-					"code undo redo restoredraft | cut copy paste pastetext | forecolor backcolor bold italic underline strikethrough link codesample | alignleft aligncenter alignright alignjustify outdent indent lineheight formatpainter | \
-                    styleselect formatselect fontselect fontsizeselect | bullist numlist | blockquote subscript superscript removeformat | \
-                    table image media charmap hr pagebreak insertdatetime | fullscreen preview",
-				content_style: "p {margin: 5px 0;}",
-				fontsize_formats:
-					"12px 14px 16px 18px 24px 36px 48px 56px 72px",
-				font_formats:
-					"微软雅黑=Microsoft YaHei,Helvetica Neue,PingFang SC,sans-serif;苹果苹方=PingFang SC,Microsoft YaHei,sans-serif;宋体=simsun,serif;仿宋体=FangSong,serif;黑体=SimHei,sans-serif;Arial=arial,helvetica,sans-serif;Arial Black=arial black,avant garde;Book Antiqua=book antiqua,palatino;",
-					style_formats: [
-						{
-							title: '首行缩进',
-							block: 'p',
-							styles: { 'text-indent': '2em' }
-						},
-						{
-							title: '行高',
-							items: [
-								{ title: '1', styles: { 'line-height': '1' }, inline: 'span' },
-								{ title: '1.5', styles: { 'line-height': '1.5' }, inline: 'span' },
-								{ title: '2', styles: { 'line-height': '2' }, inline: 'span' },
-								{ title: '2.5', styles: { 'line-height': '2.5' }, inline: 'span' },
-								{ title: '3', styles: { 'line-height': '3' }, inline: 'span' }
-							]
-						}
-					],
-				branding: false,
-				images_upload_handler: (blobInfo, success, failure) => {
-					this.handleImgUpload(blobInfo, success, failure);
-				},
-			},
 			addTagName: "",
 			show: false,
 			dialogVisible: false,
@@ -248,7 +169,6 @@ export default {
 		LInput,
 		LUploadImage,
 		LBotton,
-		Editor,
 		cropper
 	},
 	methods: {
@@ -292,9 +212,9 @@ export default {
 				}
 			});
 		},
-		handleImgUpload(blobInfo, success, failure) {
+		handleImgUpload(pos, $file) {
 			let formData = new FormData();
-			formData.append("image", blobInfo.blob());
+			formData.append("image", $file);
 			axios
 				.post(
 					"http://api.excellentlld.com/blog/back/upload-image",
@@ -303,7 +223,7 @@ export default {
 				)
 				.then((res) => {
 					if (res.status === 200) {
-						success(res.data.data.url);
+						this.$refs.md.$img2Url(pos, res.data.data[0])
 					}
 				});
 		},
@@ -316,10 +236,10 @@ export default {
 			const isLt2M = file.size / 1024 / 1024 < 2;
 
 			if (!isJPG) {
-				this.Msg("上传头像图片只能是 JPG 格式!", "error", 2000);
+				this.$modal.msgError('上传头像图片只能是 JPG 格式!');
 			}
 			if (!isLt2M) {
-				this.Msg("上传头像图片大小不能超过 2MB!", "error", 2000);
+				this.$modal.msgError('上传头像图片大小不能超过 2MB!');
 			}
 			return isJPG && isLt2M;
 		},
@@ -348,7 +268,7 @@ export default {
 				editArticle(data).then((res) => {
 					console.log(res);
 					if (res.status === 200) {
-						this.Msg("修改成功 ~", "success", 2000);
+						this.$modal.msgSuccess('修改成功 ~');
 						this.articleForm = {
 							title: "",
 							subTitle: "",
@@ -363,7 +283,7 @@ export default {
 			} else {
 				addArticle(this.articleForm).then((res) => {
 					if (res.status === 200) {
-						this.Msg("发表成功 ~", "success", 2000);
+						this.$modal.msgSuccess('发表成功 ~');
 						this.articleForm = {
 							title: "",
 							subTitle: "",
@@ -415,14 +335,14 @@ export default {
 				})
 					.then((res) => {
 						if (res.status === 200) {
-							this.Msg("添加成功 ~", "success", 2000);
+							this.$modal.msgSuccess('添加成功 ~');
 							this.getTags();
 							this.$refs.optionWrap.style.height = 30 + 12 + 12 + this.$refs.optionWrap.style.height + "px";
 							this.dialogVisible = false;
 						}
 					})
 					.catch((err) => {
-						this.Msg("添加失败...", "failed", 2000);
+						this.$modal.msgError('添加失败...');
 						console.log(err);
 					});
 			}
@@ -437,7 +357,6 @@ export default {
 	},
 	mounted() {
 		// this.editorInit.height = this.$refs.addArticePage.offsetHeight - 61 - 202 - 80;
-		tinymce.init({});
 	},
 };
 </script>
