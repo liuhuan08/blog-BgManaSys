@@ -243,10 +243,10 @@ export default {
 			const isLt2M = file.size / 1024 / 1024 < 2;
 
 			if (!isJPG) {
-				this.Msg("上传头像图片只能是 JPG 格式!", "error", 2000);
+				this.$modal.msgError('上传头像图片只能是 JPG 格式!');
 			}
 			if (!isLt2M) {
-				this.Msg("上传头像图片大小不能超过 2MB!", "error", 2000);
+				this.$modal.msgError('上传头像图片大小不能超过 2MB!');
 			}
 			return isJPG && isLt2M;
 		},
@@ -275,7 +275,7 @@ export default {
 				
 				addAlbums(sendData).then((res) => {
 					if (res.status === 200) {
-						this.Msg("新增相册成功！", "success", 1500);
+						this.$modal.msgSuccess('新增相册成功！');
 						this.dialogForm = {
 							name: "",
 							albumCover: "",
@@ -309,7 +309,7 @@ export default {
 				console.log(sendData);
 				editAlbums(sendData).then((res) => {
 					if (res.status === 200) {
-						this.Msg("修改相册成功！", "success", 1500);
+						this.$modal.msgSuccess('修改相册成功！');
 						this.dialogForm = {
 							name: "",
 							albumCover: "",
@@ -355,7 +355,7 @@ export default {
 		handelDel(id) {
 			delAlbums({ albumId: id }).then((res) => {
 				if (res.status === 200) {
-					this.Msg("删除成功！", "success", 1500);
+					this.$modal.msgSuccess('删除成功！');
 					this.getAlbum();
 				}
 			});

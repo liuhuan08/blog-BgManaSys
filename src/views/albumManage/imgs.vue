@@ -204,7 +204,7 @@ export default {
 		// 上一张
 		toPre() {
 			if(this.bigimgUrlIndex === 0) {
-				this.Msg('已经是第一张了哦~~~', 'warning', 2000);			
+				this.$modal.msgWarning('已经是第一张了哦~~~');
 			} else {
 				this.bigimgUrlIndex --;
 				this.bigimgUrl = this.imgsList[this.bigimgUrlIndex].url;
@@ -213,7 +213,7 @@ export default {
 		// 下一张
 		toNext() {
 			if(this.bigimgUrlIndex === (this.imgsList.length - 1)) {
-				this.Msg('已经是最后一张了哦~~~', 'warning', 2000);			
+				this.$modal.msgWarning('已经是最后一张了哦~~~');
 			} else {
 				this.bigimgUrlIndex ++;
 				this.bigimgUrl = this.imgsList[this.bigimgUrlIndex].url;
@@ -240,7 +240,7 @@ export default {
 			const isJPG = file.type === "image/jpeg";
 
 			if (!isJPG) {
-				this.Msg("上传头像图片只能是 JPG 格式!", "error", 2000);
+				this.$modal.msgError('上传头像图片只能是 JPG 格式!');
 				return isJPG
 			}else {
 				return new Promise((resolve, reject) => {
@@ -264,7 +264,7 @@ export default {
 			};
 			albumAddImgs(sendData).then((res) => {
 				if (res.status === 200) {
-					this.Msg("新增相册图片成功！", "success", 1500);
+					this.$modal.msgSuccess('新增相册图片成功！');
 					this.newImgs = [];
 					this.dialogVisible = false;
 					this.getImgs();
@@ -280,7 +280,7 @@ export default {
 		handelRemove(id) {
 			albumDelImgs({ deleteIds: [id] }).then((res) => {
 				if (res.status === 200) {
-					this.Msg("删除成功~", "success", 1500);
+					this.$modal.msgSuccess('删除成功~');
 					this.getImgs();
 				}
 			});
@@ -320,11 +320,11 @@ export default {
 		// 删除选中
 		handelDelChecked() {
 			if (this.checkedList.length === 0) {
-				this.Msg("请先选中要删除的图片~", "warning", 1500);
+				this.$modal.msgWarning('请先选中要删除的图片~');
 			} else {
 				albumDelImgs({ deleteIds: this.checkedList }).then((res) => {
 					if (res.status === 200) {
-						this.Msg("删除成功~", "success", 1500);
+						this.$modal.msgSuccess('删除成功~');
 						this.getImgs();
 					}
 				});

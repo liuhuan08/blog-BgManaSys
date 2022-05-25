@@ -164,7 +164,7 @@ export default {
 		handelDel(id) {
 			delArticle(id).then((res) => {
 				if (res.status === 200) {
-					this.Msg(res.data.message, "success", 1500);
+					this.$modal.msgSuccess(res.data.message);
 					this.getData();
 				}
 			});

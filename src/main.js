@@ -7,8 +7,16 @@ import "./assets/css/normalize.css"; // 重置样式表
 
 import "./assets/iconfonts/iconfont.css" // 字体图标样式
 
-import Msg from "./utils/msg";
-Vue.use(Msg);
+import ElementUI from 'element-ui';
+import 'element-ui/lib/theme-chalk/index.css';
+Vue.use(ElementUI);
+
+import modal from './utils/modal';
+Vue.prototype.$modal = modal
+
+import mavonEditor from "mavon-editor" // md编辑器
+import "mavon-editor/dist/css/index.css"
+Vue.use(mavonEditor)
 
 Vue.prototype.$EventBus = new Vue(); // 中央事件总线
 

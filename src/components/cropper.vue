@@ -159,7 +159,7 @@ export default {
 		selectImg(e) {
 			let file = e.target.files[0];
 			if (!/\.(jpg|jpeg|png|JPG|PNG)$/.test(e.target.value)) {
-				this.Msg("图片类型要求：jpeg、jpg、png", "error", 2000)
+				this.$modal.msgError('图片类型要求：jpeg、jpg、png');
 				return false;
 			}
 			//转化为blob

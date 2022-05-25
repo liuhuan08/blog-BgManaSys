@@ -173,7 +173,7 @@ export default {
 		},
 		logout() {
 			local.clear();
-			this.Msg("成功退出 ~", "success", 2000);
+			this.$modal.msgSuccess('成功退出 ~');
 			setTimeout(() => {
 				this.$router.push({ path: "/login" });
 			}, 500);

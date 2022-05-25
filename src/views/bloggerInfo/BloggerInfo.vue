@@ -111,17 +111,17 @@ export default {
 			const isLt2M = file.size / 1024 / 1024 < 2;
 
 			if (!isJPG) {
-				this.Msg("上传头像图片只能是 JPG 格式!", "error", 2000);
+				this.$modal.msgError("上传头像图片只能是 JPG 格式!");
 			}
 			if (!isLt2M) {
-				this.Msg("上传头像图片大小不能超过 2MB!", "error", 2000);
+				this.$modal.msgError("上传头像图片大小不能超过 2MB!");
 			}
 			return isJPG && isLt2M;
 		},
         submit() {
             modifyBlogger(this.formData).then(res => {
                 if(res.status === 200) {
-                    this.Msg(res.data.message, 'success', 2000);
+										this.$modal.msgSuccess(res.data.message);
                     local.set("blog_userinfo", this.formData);
                     this.$EventBus.$emit('changeAvatar', this.formData.avatar)
                 }

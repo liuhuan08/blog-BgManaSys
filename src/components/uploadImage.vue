@@ -80,7 +80,7 @@ export default {
 	methods: {
 		async upload(e) {
 			if (e.target.files.length > 5) {
-				this.Msg("最多5张，重新选择吧~", "warning", 1500);
+				this.$modal.msgWarning('最多5张，重新选择吧~');
 			} else {
 				if (this.file) return;
 				this.showLoading = true;
