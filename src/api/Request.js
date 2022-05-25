@@ -1,7 +1,7 @@
 import axios from 'axios'
 import local from '@/utils/local'
 
-// import Msg from "../utils/msg"
+import { Message } from 'element-ui';
 
 axios.defaults.baseURL = 'http://api.excellentlld.com';
 axios.defaults.timeout = 10000; // 请求超时时间
@@ -32,17 +32,18 @@ axios.interceptors.response.use(function (response) {
         //     type: 'success',
         //     message: res.msg
         // })
-        // Msg(`${res.msg}`, 'success', 2000);
-    }
-
-    if (res.code === 1 || res.code === 5001) {
+    }else if (res.code === 1 || res.code === 5001) {
         // Message.error(res.msg)
-        // Msg(`${res.msg}`, 'success', 2000);
+    }else if (res.code === 500) {
+        Message.error(res.msg)
     }
 
     return response;
 }, function (error) {
     // 对响应错误做点什么
+    if (error.response.status === 500) {
+        Message.error('服务器异常')
+    }
     return Promise.reject(error);
 });
 
