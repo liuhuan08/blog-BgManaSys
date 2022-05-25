@@ -13,8 +13,8 @@
             <p class="item">
                 <i class="iconfont icon-psd"></i>
                 <input v-model="psd.text" @keyup="toggleShow(psd)" @mouseenter="toggleShow(psd)" @mouseleave="psd.isClear = false" @blur="validate(psd)" :type="psd.isClose ? 'password' : 'text'" :class="psd.validate ? '' : 'err'">
-                <i v-if="!psd.isClose && psd.isClear" @click="psd.isClose = !psd.isClose" class="iconfont icon-eye-open"></i>
-                <i v-if="psd.isClose && psd.isClear" @click="psd.isClose = !psd.isClose" class="iconfont icon-eye-close"></i>
+                <i v-if="!psd.isClose && psd.isClear" @click="psd.isClose = !psd.isClose" @mouseenter="toggleShow(psd)" class="iconfont icon-eye-open"></i>
+                <i v-if="psd.isClose && psd.isClear" @click="psd.isClose = !psd.isClose" @mouseenter="toggleShow(psd)" class="iconfont icon-eye-close"></i>
                 <i v-if="psd.isClear" @click="handleClear(psd)" @mouseenter="toggleShow(psd)" class="iconfont icon-closeCard"></i>
                 <transition name="fade">
                     <span v-if="psd.validate ? '' : 'err'" class="msg">*长度在 2 到 12 字符*</span>
@@ -141,6 +141,7 @@ import local from "../utils/local"
         .item{
             position: relative;
             margin-top: 20px;
+            z-index: 999;
 
             input{
                 width: 400px;
@@ -178,6 +179,7 @@ import local from "../utils/local"
                 right: 30px;
                 transform: translateY(-50%);
                 cursor: pointer;
+                z-index: 9999;
             }
 
             .icon-closeCard{
