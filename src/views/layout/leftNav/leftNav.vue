@@ -9,7 +9,7 @@
         <el-menu
             :default-active="activePath"
             active-text-color="#fdb004"
-            background-color="#393e46"
+            background-color="rgba(57, 62, 70, 0)"
             text-color="#fff"
             router
             :collapse="$store.state.isCollapse"
@@ -122,6 +122,16 @@ export default {
         .iconfont {
             margin-right: 10px;
             font-weight: 700;
+        }
+        .el-menu-item:not(is-active) .iconfont, .el-submenu .iconfont {
+            color: #fff;
+        }
+        .el-menu-item.is-active .iconfont {
+            color: #fdb004;
+        }
+
+        /deep/.el-submenu__icon-arrow {
+            color: #fff;
         }
     }
 }

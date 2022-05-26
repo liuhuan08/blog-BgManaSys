@@ -36,7 +36,7 @@ export default {
         padding: 10px;
         width: 100%;
         height: calc(~"100% - 100px");
-        background-color: #eee;
+        background-color: rgba(238, 238, 238, .5);
     }
 }
 </style>

@@ -1,5 +1,5 @@
 <template>
-    <div class="layout" :class="$store.state.isCollapse ? 'hide' : 'show'">
+    <div class="layout" :class="$store.state.isCollapse ? 'hide' : 'show'" :style="`background-image: url(${bg_url});`">
         <LeftNav class="left-nav"/>
         <RightSide class="right-side"/>
     </div>
@@ -12,13 +12,23 @@ import RightSide from "./rightSide/rightSide.vue"
 export default {
     data() {
         return {
-
+            bg_url: ''
         }
     },
     components: {
         LeftNav,
         RightSide
     },
+    methods: {
+        setBgIamge() {
+            let num = Math.floor(Math.random() * (13 - 1 + 1) + 1);
+            num = num < 10 ? `0${num}` : num
+            this.bg_url = require(`@/assets/imgs/login-bg/bg_${num}.jpeg`)
+        },
+    },
+    created() {
+        this.setBgIamge()
+    }
 }
 </script>
 
@@ -30,7 +40,7 @@ export default {
 
     .left-nav{
         height: 100%;
-        background-color: #393e46;
+        background-color: rgba(57, 62, 70, .5);
         
     }
 

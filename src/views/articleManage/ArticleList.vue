@@ -208,7 +208,7 @@ export default {
 	padding: 20px;
 	width: 100%;
 	height: 100%;
-	background-color: #fff;
+	background-color: rgba(255, 255, 255, .5);
 
 	.search-section {
 		display: flex;
@@ -343,7 +343,7 @@ export default {
 		}
 
 		.tbody .tr:nth-child(2n) {
-			background-color: #fafafa;
+			background-color: rgba(250, 250, 250, .5);
 		}
 
 		.tbody .tr:hover {

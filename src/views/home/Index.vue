@@ -207,7 +207,7 @@ export default {
 	padding: 20px 10px;
 	width: 100%;
 	height: 100%;
-	background-color: #fff;
+	background-color: rgba(255, 255, 255, .5);
 
 	.desc {
 		display: flex;

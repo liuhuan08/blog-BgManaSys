@@ -48,7 +48,7 @@ export default {
     methods: {
         setBgIamge() {
             const num = Math.floor(Math.random() * (6 - 1 + 1) + 1);
-            this.bg_url = require(`../assets/imgs/login-bg/bg_0${num}.jpeg`)
+            this.bg_url = require(`@/assets/imgs/login-bg/bg_0${num}.jpeg`)
         },
         // 登录
         handleLogin() {

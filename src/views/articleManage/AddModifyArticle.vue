@@ -349,7 +349,7 @@ body {
 	padding-top: 0;
 	width: 100%;
 	height: 100%;
-	background-color: #fff;
+	background-color: rgba(255, 255, 255, .5);
 
 	.title {
 		margin-bottom: 20px;

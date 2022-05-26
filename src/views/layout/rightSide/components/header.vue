@@ -238,7 +238,7 @@ export default {
 				right: 0px;
 				padding: 10px 0;
 				font-size: 14px;
-				background-color: #fff;
+				background-color: rgba(255, 255, 255, .5);
 				border: 1px solid #eee;
 				border-radius: 6px;
 				box-shadow: 0px 2px 2px #efefef;
@@ -263,7 +263,7 @@ export default {
 				width: 8px;
 				height: 8px;
 				content: "";
-				background-color: #fff;
+				background-color: rgba(255, 255, 255, .5);
 				border-left: 1px solid #eee;
 				border-top: 1px solid #eee;
 			}
@@ -273,8 +273,8 @@ export default {
 	.card-list {
 		display: flex;
 		line-height: 40px;
-		background-color: #fff;
-		border-bottom: 1px solid #ccc;
+		background-color: rgba(255, 255, 255, .7);
+		border-bottom: 1px solid #666;
 
 		a {
 			color: #000;
@@ -283,7 +283,7 @@ export default {
 		.item {
 			position: relative;
 			padding: 0 30px;
-			border-right: 1px solid #eee;
+			border-right: 1px solid #aaa;
 			cursor: pointer;
 
 			.circle {
@@ -303,7 +303,7 @@ export default {
 				right: 10px;
 				transform: translateY(-50%);
 				font-size: 14px;
-				color: #ccc;
+				color: #aaa;
 				opacity: 0;
 				transition: all 0.3s;
 			}
