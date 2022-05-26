@@ -17,6 +17,7 @@
 				<span>{{ titleTime[titleTimeIndex] }}</span>
 				<span>{{ title }}</span>
 			</div>
+			<div class="refresh-bg" title="换肤" @click="changeBg"><i class="el-icon-refresh"></i></div>
 			<div class="user">
 				<img :src="$store.state.userinfo.avatar" />
 				<div class="user-item" @click="isShow = !isShow">
@@ -109,6 +110,9 @@ export default {
 					this.isShow = false;
 				}
 			});
+		},
+		changeBg() {
+			this.$EventBus.$emit('changeBg')
 		},
 		// 第一次加载时初始化卡片列表
 		initCardList() {
@@ -214,6 +218,15 @@ export default {
 			flex: 1;
 			margin-left: 50px;
 			font-size: 16px;
+		}
+
+		.refresh-bg {
+			margin-right: 20px;
+
+			.el-icon-refresh {
+				font-size: 20px;
+				cursor: pointer;
+			}
 		}
 
 		.user {

@@ -28,6 +28,7 @@ export default {
     },
     created() {
         this.setBgIamge()
+        this.$EventBus.$on('changeBg', this.setBgIamge)
     }
 }
 </script>
