@@ -43,24 +43,24 @@ export default {
 .show{
     .left-nav{
         width: 250px;
-        transition: all 0.5s;
+        transition: all 0.3s;
     }
 
     .right-side{
         width: calc(~"100% - 250px");
-        transition: all 0.5s;
+        transition: all 0.3s;
     }
 }
 
 .hide{
     .left-nav{
         width: 80px;
-        transition: all 0.5s 0.5s;
+        transition: all 0.5s .2s;
     }
 
     .right-side{
         width: calc(~"100% - 80px");
-        transition: all 0.5s 0.5s;
+        transition: all 0.5s .2s;
     }
 }
 </style>

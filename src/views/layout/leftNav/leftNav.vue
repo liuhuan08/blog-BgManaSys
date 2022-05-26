@@ -6,73 +6,33 @@
                 <span v-if="!$store.state.isCollapse">blog后台</span>
             </transition>
         </h2>
-        <ul>
-            <li class="menu">
-                <router-link :to="{path: '/home'}">
-                    <p :class="activePath === '/home' ? 'active' : ''">
-                        <i class="iconfont icon-home"></i>
-                        <transition name="fade">
-                            <span v-if="!$store.state.isCollapse">首页</span>
-                        </transition>
-                    </p>
-                </router-link>
-            </li>
-            <li class="menu">
-                <router-link :to="{path: '/blogger/blogger-info'}">
-                    <p :class="activePath === '/blogger/blogger-info' ? 'active' : ''">
-                        <i class="iconfont icon-blogger"></i>
-                        <transition name="fade">
-                            <span v-if="!$store.state.isCollapse">博主信息</span>
-                        </transition>
-                    </p>
-                </router-link>
-            </li>
-            <li>
-                <h3 class="menu" @click="isShow = !isShow" :class="(activePath === '/article/article-list' || activePath === '/article/add-article') ? 'active' : ''">
-                    <i class="iconfont icon-articles"></i>
-                    <transition name="fade">
-                        <span style="flex: 1" v-if="!$store.state.isCollapse">文章管理</span>
-                    </transition>
-                    <transition name="fade">
-                        <i class="iconfont icon-down" v-if="!$store.state.isCollapse" :style="{transform: isShow ? 'rotateZ(180deg)' : 'rotateZ(0)', transition: 'all .5s'}"></i>
-                    </transition>
-                </h3>
-                <transition name="slide">
-                    <ul class="sub-menu-wrap" v-if="isShow">
-                        <li class="sub-menu" :class="$store.state.isCollapse ? 'sub-menu-hide' : ''">
-                            <router-link :to="{path: '/article/article-list'}">
-                                <p :class="activePath === '/article/article-list' ? 'active' : ''">
-                                    <i class="iconfont icon-articleList"></i>
-                                    <transition name="fade">
-                                        <span v-if="!$store.state.isCollapse">文章列表</span>
-                                    </transition>
-                                </p>
-                            </router-link>
-                        </li>
-                        <li class="sub-menu" :class="$store.state.isCollapse ? 'sub-menu-hide' : ''">
-                            <router-link :to="{path: '/article/add_modify-article'}">
-                                <p :class="activePath === '/article/add_modify-article' ? 'active' : ''">
-                                    <i class="iconfont icon-edit"></i>
-                                    <transition name="fade">
-                                        <span v-if="!$store.state.isCollapse">编辑文章</span>
-                                    </transition>
-                                </p>
-                            </router-link>
-                        </li>
-                    </ul>
-                </transition>
-            </li>
-            <li class="menu">
-                <router-link :to="{path: '/album/album-manage'}">
-                    <p :class="activePath === '/album/album-manage' || activePath === '/album/album-manage/imgs' ? 'active' : ''">
-                        <i class="iconfont icon-photoAlbum"></i>
-                        <transition name="fade">
-                            <span v-if="!$store.state.isCollapse">相册管理</span>
-                        </transition>
-                    </p>
-                </router-link>
-            </li>
-        </ul>
+        <el-menu
+            :default-active="activePath"
+            active-text-color="#fdb004"
+            background-color="#393e46"
+            text-color="#fff"
+            router
+            :collapse="$store.state.isCollapse"
+            collapse-transition
+            unique-opened
+        >
+            <template v-for="(route, index) in routersArr">
+                <el-submenu v-if="route.children && route.children" :index="route.path" :key="index">
+                    <template slot="title">
+                        <i class="iconfont" :class="route.icon"></i>
+                        <span slot="title">{{route.name}}</span>
+                    </template>
+                    <el-menu-item :index="subRoute.path" v-for="subRoute in route.children" :key="subRoute.path">
+                        <i class="iconfont" :class="subRoute.icon"></i>
+                        {{subRoute.name}}
+                    </el-menu-item>
+                </el-submenu>
+                <el-menu-item v-else :index="route.path" :key="route.path">
+                    <i class="iconfont" :class="route.icon"></i>
+                    <span slot="title">{{route.name}}</span>
+                </el-menu-item>
+            </template>
+        </el-menu>
     </div>
 </template>
 
@@ -81,32 +41,56 @@
 export default {
     data() {
         return {
-            isShow: false,
-            activePath: '/home'
+            activePath: '/home',
+            routersArr: [
+                {
+                    name: '首页',
+                    path: '/home',
+                    icon: 'icon-home'
+                },
+                {
+                    name: '博主信息',
+                    path: '/blogger/blogger-info',
+                    icon: 'icon-blogger'
+                },
+                {
+                    name: '文章管理',
+                    path: '/article',
+                    icon: 'icon-articles',
+                    children: [
+                        {
+                            name: '文章列表',
+                            path: '/article/article-list',
+                            icon: 'icon-articleList',
+                        },
+                        {
+                            name: '编辑文章',
+                            path: '/article/add_modify-article',
+                            icon: 'icon-edit',
+                        }
+                    ]
+                },
+                {
+                    name: '相册管理',
+                    path: '/album/album-manage',
+                    icon: 'icon-photoAlbum',
+                }
+            ]
         }
     },
     watch: {
         $route(val) {
             this.activePath = val.path;
-            if(val.path !== '/article/article-list' && val.path !== '/article/add_modify-article') {
-                this.isShow = false
-            }else {
-                this.isShow = true
-            }
         }
     },
     mounted() {
         this.activePath = this.$route.path
-        if(this.$route.path === '/article/article-list' || this.$route.path === '/article/add_modify-article') {
-            this.isShow = true
-        } 
     }
 }
 </script>
 
 <style lang="less" scoped>
 .left-nav{
-    padding: 20px 30px;
     color: #fff;
 
     a{
@@ -114,7 +98,8 @@ export default {
     }
 
     .title{
-        margin-bottom: 40px;
+        margin-bottom: 10px;
+        margin-top: 20px;
         font-size: 22px;
         line-height: 22px;
         text-align: center;
@@ -126,60 +111,29 @@ export default {
         }
     }
 
-    .menu, .sub-menu{
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        margin-top: 26px;
-        font-size: 16px;
-        line-height: 16px;
-        cursor: pointer;
+    .el-menu {
+        padding: 0 5px;
+        border-right: 0;
 
-        .iconfont{
+        &:not(.el-menu--collapse) {
+        width: 250px;
+    }
+
+        .iconfont {
             margin-right: 10px;
-        }
-
-        .icon-down{
-            margin-right: 0;
-            font-size: 12px;
+            font-weight: 700;
         }
     }
-
-    .sub-menu-wrap{
-        overflow: hidden;
-    }
-
-    .sub-menu{
-        text-indent: 20px;
-        transition: all 0.5s;
-    }
-
-    .sub-menu-hide{
-        text-indent: 5px;
-    }
-
-}
-    .active{
-        color: #fdb004;
-    }
-
-.slide-enter-active, .slide-leave-active {
-    height: 84px;
-    opacity: 1;
-    transition: all .5s;
-}
-.slide-enter, .slide-leave-to{
-    height: 0;
-    opacity: 0;
 }
 
-.fade-enter-active{
-    display: none;
-    transition: opacity .5s;
+// .fade-enter-active{
+//     display: none;
+// }
+
+.fade-leave-active,.fade-enter-active {
+    transition: opacity .2s;
 }
-.fade-leave-active{
-    transition: opacity .5s;
-}
+
 .fade-enter, .fade-leave-to {
     opacity: 0;
 }

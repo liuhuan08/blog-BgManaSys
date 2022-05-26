@@ -66,7 +66,7 @@ export default {
                                 detailDesc: data.detailDesc,
                                 createTime: data.createTime
                             }
-                            local.set("blog_userinfo", info);
+                            this.$store.dispatch('set_userinfo', info)
                             this.$modal.msgSuccess('登录成功 ~');
                             this.$router.push({path:'/'})
                         }

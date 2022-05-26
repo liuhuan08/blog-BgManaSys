@@ -1,6 +1,7 @@
 <template>
 	<div class="add-article-page" ref="addArticePage">
 		<div class="title">{{ pageTitle }}</div>
+		<!-- 添加/修改文章表单 -->
 		<el-form :model="articleForm" :rules="rules" ref="articleForm" label-width="100px">
       <el-form-item label="文章标题" prop="title" class="article-title">
         <el-input v-model="articleForm.title" placeholder="请输入文章标题" clearable></el-input>
@@ -74,7 +75,7 @@
 			</span>
 		</el-dialog>
 
-
+		<!-- 裁剪图片dialog -->
 		<div class="dialog-clip" v-if="dialogVisible_clip">
 			<i class="iconfont icon-error" title="关闭" @click="dialogVisible_clip = false"></i>
 			<div class="dialog-title">裁剪图片</div>
@@ -84,9 +85,7 @@
 </template>
 
 <script>
-import LInput from "@/components/input.vue";
 import LUploadImage from "@/components/uploadImage.vue";
-import LBotton from "@/components/botton.vue";
 import cropper from "../../components/cropper.vue"
 
 import axios from "axios";
@@ -103,9 +102,8 @@ import local from "../../utils/local";
 export default {
 	data() {
 		return {
-			pageTitle: "添加文章",
-			content: '',
-			articleForm: {
+			pageTitle: "添加文章", // 标题
+			articleForm: { // 添加/修改文章表单
 				title: "",
 				subTitle: "",
 				coverUrl: "",
@@ -113,7 +111,7 @@ export default {
 				bloggerId: "",
 				articleTagList: [],
 			},
-			rules: {
+			rules: { // 添加/修改文章表单验证规则
         title: [
           { required: true, message: '请输入文章标题', trigger: 'blur' },
         ],
@@ -131,25 +129,21 @@ export default {
           { required: true, message: '请输入文章内容', trigger: 'blur' },
         ]
       },
-			tags: [],
-			tagSelList: [],
-			addTagForm: {
+			tags: [], // 标签列表
+			addTagForm: { // 添加标签表单
 				addTagName: ""
 			},
-			addTagRules: {
+			addTagRules: { // 添加标签表单验证规则
 				addTagName:[
 					{ required: true, message: '请输入文章标签', trigger: 'blur' }
 				]
 			},
-			show: false,
-			dialogVisible: false,
-			dialogVisible_clip: false
+			dialogVisible: false, // 添加标签dialog
+			dialogVisible_clip: false // 裁剪图片dialog
 		};
 	},
 	components: {
-		LInput,
 		LUploadImage,
-		LBotton,
 		cropper
 	},
 	methods: {
@@ -197,6 +191,7 @@ export default {
 		handelAddTag() {
 			this.dialogVisible = !this.dialogVisible;
 		},
+		// 确认添加标签
 		confirm(formName) {
 			this.$refs[formName].validate((valid) => {
         if (valid) {
@@ -221,10 +216,12 @@ export default {
         }
       });
 		},
+		// 取消添加标签
 		cancle(formName) {
 			this.$refs[formName].resetFields();
 			this.dialogVisible = false;
 		},
+		// md编辑器上传图片
 		handleImgUpload(pos, $file) {
 			let formData = new FormData();
 			formData.append("image", $file);
@@ -240,10 +237,12 @@ export default {
 					}
 				});
 		},
+		// 上传封面图片
 		handleAvatarSuccess(data) {
 			this.articleForm.coverUrl = data;
 			this.dialogVisible_clip = false;
 		},
+		// 上传封面图片限制
 		beforeAvatarUpload(file) {
 			const isJPG = file.type === "image/jpeg";
 			const isLt2M = file.size / 1024 / 1024 < 2;
@@ -256,6 +255,7 @@ export default {
 			}
 			return isJPG && isLt2M;
 		},
+		// 提交新增/修改文章请求
 		submit(formName) {
 			let bloggerId = local.get("blog_userinfo").bloggerId;
 			this.articleForm.bloggerId = bloggerId;
@@ -303,6 +303,7 @@ export default {
 				}
 			})
 		},
+		// 重置内容
 		reset(formName) {
 			this.$refs[formName].resetFields();
 			this.articleForm = {
@@ -318,8 +319,6 @@ export default {
 	created() {
 		this.getArticleInfo();
 		this.getTags();
-	},
-	mounted() {
 	},
 };
 </script>

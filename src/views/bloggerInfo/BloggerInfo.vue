@@ -1,21 +1,12 @@
 <template>
 	<div class="blogger-info-page">
 		<div class="title">博主信息</div>
-		<div class="edit-section">
-			<div class="item">
-				<div class="label">博主名</div>
-				<l-input
-					class="edit"
-					v-model="formData.name"
-					:ipt-value="formData.name"
-					type="text"
-					placeholder="请输入姓名"
-					clearable
-				></l-input>
-			</div>
-			<div class="item">
-				<div class="label">头像</div>
-				<div class="upload-avatar">
+		<el-form :model="formData" :rules="rules" ref="formData" label-width="100px">
+      <el-form-item label="博主名" prop="name">
+        <el-input v-model="formData.name" placeholder="请输入博主名" clearable></el-input>
+      </el-form-item>
+			<el-form-item label="头像" prop="avatar">
+        <div class="upload-avatar">
 					<div class="add-wrap" v-if="!formData.avatar" @click="dialogVisible = true">
 						<i class="iconfont icon-add"></i>
 					</div>
@@ -30,37 +21,18 @@
 						</div>
 					</div>
 				</div>
-			</div>
-			<div class="item">
-				<div class="label">简介</div>
-				<l-input
-					class="edit"
-					v-model="formData.conciseDesc"
-					:ipt-value="formData.conciseDesc"
-					type="textarea"
-					placeholder="请输入简介"
-					maxlength="20"
-					clearable
-				></l-input>
-			</div>
-			<div class="item">
-				<div class="label">详细介绍</div>
-				<l-input
-					class="edit"
-					v-model="formData.detailDesc"
-					:ipt-value="formData.detailDesc"
-					type="textarea"
-					placeholder="请输入详细介绍"
-					maxlength="200"
-                    rows="10"
-					clearable
-				></l-input>
-			</div>
-			<div class="item item-btn">
-				<l-botton type="primary" @click="submit()">提交</l-botton>
-				<l-botton type="info" class="reset" @click="reset">重置</l-botton>
-			</div>
-		</div>
+      </el-form-item>
+			<el-form-item label="简介" prop="conciseDesc" class="conciseDesc">
+        <el-input type="textarea" :rows="1" maxlength="20" show-word-limit v-model="formData.conciseDesc" placeholder="请输入简介" clearable></el-input>
+      </el-form-item>
+			<el-form-item label="详细介绍" prop="detailDesc">
+        <el-input type="textarea" :rows="10" maxlength="200" show-word-limit v-model="formData.detailDesc" placeholder="请输入详细介绍" clearable></el-input>
+      </el-form-item>
+      <el-form-item>
+				<el-button type="info" @click="reset('formData')">重置</el-button>
+        <el-button type="primary" @click="submit('formData')">提交</el-button>
+      </el-form-item>
+    </el-form>
 
 		<div class="dialog" v-show="dialogVisible">
 			<i class="iconfont icon-error" title="关闭" @click="dialogVisible = false"></i>
@@ -76,18 +48,29 @@ import LUploadImage from "@/components/uploadImage.vue";
 import LBotton from "@/components/botton.vue";
 import cropper from "../../components/cropper.vue"
 
-import local from "@/utils/local";
 import { modifyBlogger } from "@/api/user"
 
 export default {
 	data() {
 		return {
 			formData: {
-                bloggerId: 0,
+        bloggerId: 0,
 				name: "",
 				avatar: "",
 				conciseDesc: "",
 				detailDesc: "",
+			},
+			rules: {
+				name: [
+          { required: true, message: '请输入博主名', trigger: 'blur' },
+        ],
+				avatar: [
+          { required: true, message: '请选择头像', trigger: 'blur' },
+        ],
+				conciseDesc: [
+          { required: true, message: '请输入简介', trigger: 'blur' },
+          { min: 1, max: 20, message: '长度在 1 到 20 个字符', trigger: 'blur' }
+        ]
 			},
 			dialogVisible: false
 		};
@@ -100,7 +83,8 @@ export default {
 	},
 	methods: {
 		getData() {
-			this.formData = local.get("blog_userinfo");
+			this.$store.commit('GET_USERINFO')
+			this.formData = {...this.$store.state.userinfo}
 		},
 		handleAvatarSuccess(data) {
 			this.formData.avatar = data;
@@ -118,23 +102,31 @@ export default {
 			}
 			return isJPG && isLt2M;
 		},
-        submit() {
-            modifyBlogger(this.formData).then(res => {
-                if(res.status === 200) {
-										this.$modal.msgSuccess(res.data.message);
-                    local.set("blog_userinfo", this.formData);
-                    this.$EventBus.$emit('changeAvatar', this.formData.avatar)
-                }
-            })
-        },
-        reset() {
-            this.formData = local.get("blog_userinfo");
-        }
+    submit() {
+			this.$refs.formData.validate((valid) => {
+        if (valid) {
+					modifyBlogger(this.formData).then(res => {
+						if(res.status === 200) {
+							this.$modal.msgSuccess(res.data.message);
+							this.$store.dispatch('set_userinfo', this.formData)
+						} else {
+							this.getData()
+						}
+					}).catch((err) => {
+						this.$modal.msgError('修改失败');
+						this.getData()
+					})
+				}
+			})
+    },
+    reset() {
+			this.$refs.formData.resetFields();
+      this.getData()
+    }
 	},
 	created() {
 		this.getData();
 	},
-	mounted() {},
 };
 </script>
 
@@ -154,33 +146,46 @@ export default {
 		border-bottom: 1px dashed #ccc;
 	}
 
-	.edit-section {
+	.el-form {
 		width: 50%;
 
-		.item {
-			display: flex;
-			margin-bottom: 20px;
+		.upload-avatar{
+			position: relative;
+			width: 120px;
+			height: 120px;
+			border-radius: 6px;
+			overflow: hidden;
+			cursor: pointer;
 
-			.label {
-				margin-right: 20px;
-				width: 80px;
-				line-height: 38px;
-				text-align: right;
+			.add-wrap{
+				position: absolute;
+				top: 0;
+				left: 0;
+				width: 100%;
+				height: 100%;
+				text-align: center;
+				line-height: 120px;
+				border: 1px dashed #ccc;
+				
+				&:hover {
+					border-color: #409EFF;
+				}
 			}
 
-			.edit {
-				flex: 1;
-			}
+			.img-wrap{
+				position: absolute;
+				top: 0;
+				left: 0;
+				width: 100%;
+				height: 100%;
 
-			.upload-avatar{
-				position: relative;
-				width: 120px;
-				height: 120px;
-				border-radius: 6px;
-				overflow: hidden;
-				cursor: pointer;
+				img{
+					width: 100%;
+					height: 100%;
+				}
 
-				.add-wrap{
+				.remove{
+					display: none;
 					position: absolute;
 					top: 0;
 					left: 0;
@@ -188,47 +193,31 @@ export default {
 					height: 100%;
 					text-align: center;
 					line-height: 120px;
-					border: 1px dashed #ccc;
-					
+					background-color: rgba(255, 255, 255, .3);
 				}
 
-				.img-wrap{
-					position: absolute;
-					top: 0;
-					left: 0;
-					width: 100%;
-					height: 100%;
-
-					img{
-						width: 100%;
-						height: 100%;
-					}
-
-					.remove{
-						display: none;
-						position: absolute;
-						top: 0;
-						left: 0;
-						width: 100%;
-						height: 100%;
-						text-align: center;
-						line-height: 120px;
-						background-color: rgba(255, 255, 255, .3);
-					}
-
-					&:hover .remove{
-						display: block;
-					}
+				&:hover .remove{
+					display: block;
 				}
 			}
 		}
-		.item-btn {
-            margin-top: 50px;
-			margin-left: 100px;
 
-			.reset {
-				margin-left: 20px;
+		.conciseDesc {
+			.el-textarea {
+				height: 40px;
+				line-height: 40px;
+
+				/deep/.el-textarea__inner {
+					height: 40px;
+					line-height: 28px;
+				}
 			}
+		}
+
+		/deep/.el-input__count {
+			bottom: 10px;
+			height: 20px;
+			line-height: 20px;
 		}
 	}
 }

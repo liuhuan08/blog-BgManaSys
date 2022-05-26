@@ -18,9 +18,9 @@
 				<span>{{ title }}</span>
 			</div>
 			<div class="user">
-				<img :src="avatar" />
+				<img :src="$store.state.userinfo.avatar" />
 				<div class="user-item" @click="isShow = !isShow">
-					欢迎您，<span class="user-item">{{ name }}</span>
+					欢迎您，<span class="user-item">{{ $store.state.userinfo.name }}</span>
 				</div>
 				<transition name="fade">
 					<div class="top-sel" v-if="isShow">
@@ -68,11 +68,7 @@ export default {
 	},
 	methods: {
 		getData() {
-			this.name = local.get("blog_userinfo").name;
-			this.avatar = local.get("blog_userinfo").avatar;
-			this.$EventBus.$on("changeAvatar", (data) => {
-				this.avatar = data;
-			});
+			this.$store.commit('GET_USERINFO')
 		},
 		showTitle() {
 			let titleList = [
