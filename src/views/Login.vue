@@ -114,6 +114,7 @@ export default {
         color: #fff;
 
         .title{
+            margin-bottom: 20px;
             font-size: 20px;
             line-height: 30px;
         }

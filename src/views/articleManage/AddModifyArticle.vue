@@ -1,123 +1,79 @@
 <template>
 	<div class="add-article-page" ref="addArticePage">
 		<div class="title">{{ pageTitle }}</div>
-		<div class="form-wrap">
-			<div class="item-wrap">
-				<div class="item">
-					<div class="label">文章标题</div>
-					<l-input
-						class="edit"
-						v-model="articleForm.title"
-						:ipt-value="articleForm.title"
-						type="text"
-						placeholder="请输入文章标题"
-						clearable
+		<el-form :model="articleForm" :rules="rules" ref="articleForm" label-width="100px">
+      <el-form-item label="文章标题" prop="title" class="article-title">
+        <el-input v-model="articleForm.title" placeholder="请输入文章标题" clearable></el-input>
+      </el-form-item>
+      <el-form-item label="文章副标题" prop="subTitle" class="article-subTitle">
+        <el-input type="textarea" :rows="1" maxlength="50" show-word-limit v-model="articleForm.subTitle" placeholder="请输入文章副标题" clearable></el-input>
+      </el-form-item>
+			<el-form-item label="文章封面" prop="coverUrl" class="article-coverUrl">
+        <div class="upload-avatar">
+					<div class="add-wrap" v-if="!articleForm.coverUrl" @click="dialogVisible_clip = true">
+						<i class="iconfont icon-add"></i>
+					</div>
+					<div
+						class="img-wrap"
+						v-if="articleForm.coverUrl"
+						title="更换"
 					>
-					</l-input>
-				</div>
-				<div class="item item-subTitle">
-					<div class="label">文章副标题</div>
-					<l-input
-						class="edit"
-						v-model="articleForm.subTitle"
-						:ipt-value="articleForm.subTitle"
-						type="textarea"
-						placeholder="请输入文章副标题"
-						maxlength="50"
-						clearable
-					></l-input>
-				</div>
-				<div class="item">
-					<div class="label">文章封面</div>
-					<div class="upload-avatar">
-						<div class="add-wrap" v-if="!articleForm.coverUrl" @click="dialogVisible_clip = true">
-							<i class="iconfont icon-add"></i>
-						</div>
-						<div
-							class="img-wrap"
-							v-if="articleForm.coverUrl"
-							title="更换"
-						>
-							<img :src="articleForm.coverUrl" class="img" v-if="articleForm.coverUrl" />
-							<div class="remove" @click="dialogVisible_clip = true">
-								<i class="iconfont icon-change"></i>
-							</div>
+						<img :src="articleForm.coverUrl" class="img" v-if="articleForm.coverUrl" />
+						<div class="remove" @click="dialogVisible_clip = true">
+							<i class="iconfont icon-change"></i>
 						</div>
 					</div>
 				</div>
-				<div class="item item-select">
-					<div class="label">文章标签</div>
-					<div class="select-wrap" @mouseenter="toggleShow" @mouseleave="toggleHide">
-						<p v-if="tagSelList.length > 0" class="sel-tags">
-							<span class="text"
-								>{{ tagSelList[0].tagName }}
-							</span>
-							<span class="text more" v-if="tagSelList.length > 1"
-								>+{{ tagSelList.length - 1 }}</span
-							>
-						</p>
-						<p v-else class="placeholder">请选择</p>
-						<i class="iconfont icon-down"></i>
-						<div ref="optionWrap" class="option-wrap">
-							<ul class="option" ref="option" id="option">
-								<li class="add-tag" @click.stop="handelAddTag">
-									新增标签<i class="iconfont icon-addtag"></i>
-								</li>
-								<li
-									:class="v.active ? 'active' : ''"
-									v-for="v in tags"
-									:key="v.tagId"
-									@click.stop="handelChoose(v)"
-								>
-									{{ v.tagName }}
-								</li>
-							</ul>
-						</div>
-					</div>
-				</div>
-			</div>
-			<div class="item item-content">
-				<div class="label">文章内容</div>
-				<div class="content">
-    			<mavon-editor v-model="articleForm.content" ref="md" @imgAdd="handleImgUpload"></mavon-editor>
-				</div>
-			</div>
-			<div class="item item-btn">
-				<l-botton type="primary" @click="submit">提交</l-botton>
-				<l-botton type="info" class="reset" @click="reset"
-					>重置</l-botton
+      </el-form-item>
+			<el-form-item label="文章标签" prop="articleTagList">
+				<el-select
+					v-model="articleForm.articleTagList"
+					multiple
+					collapse-tags
+					filterable
+					allow-create
+					default-first-option
+					placeholder="请选择"
 				>
-			</div>
-		</div>
+					<p class="add-tag" prefix @click="handelAddTag">
+						<span>添加标签</span>
+						<i class="iconfont icon-addtag"></i>
+					</p>
+					<el-option
+						v-for="tag in tags"
+						:key="tag.tagId"
+						:label="tag.tagName"
+						:value="tag.tagId"
+					>
+					</el-option>
+				</el-select>
+      </el-form-item>
+			<el-form-item label="文章内容" prop="content" class="article-content">
+        <mavon-editor v-model="articleForm.content" ref="md" @imgAdd="handleImgUpload"></mavon-editor>
+      </el-form-item>
+      <el-form-item class="btns-group">
+				<el-button type="info" @click="reset('articleForm')">重置</el-button>
+        <el-button type="primary" @click="submit('articleForm')">提交</el-button>
+      </el-form-item>
+    </el-form>
 
-		<div class="dialog" v-if="dialogVisible">
-			<div class="title">添加标签</div>
-			<div class="add-ipt">
-				<div class="label">文章标签</div>
-				<l-input
-					class="edit"
-					v-model="addTagName"
-					:ipt-value="addTagName"
-					type="text"
-					placeholder="请输入文章标签"
-					clearable
-				>
-				</l-input>
-			</div>
-			<div class="btn-group">
-				<l-botton
-					type="primary"
-					size="mini"
-					@click="confirm"
-					style="margin-right: 10px"
-					>添加</l-botton
-				>
-				<l-botton type="info" size="mini" class="reset" @click="cancle"
-					>取消</l-botton
-				>
-			</div>
-			<i class="iconfont icon-closeCard" @click="cancle"></i>
-		</div>
+		<!-- 添加标签dialog -->
+		<el-dialog
+			title="添加标签"
+			:visible.sync="dialogVisible"
+			width="30%"
+			@close="cancle('addTagForm')">
+			<el-form :model="addTagForm" :rules="addTagRules" ref="addTagForm" label-width="100px" style="width: 100%">
+				<el-form-item label="文章标签" prop="addTagName" style="width: 100%">
+					<el-input v-model="addTagForm.addTagName" placeholder="请输入文章标签" clearable style="width: 100%"></el-input>
+				</el-form-item>
+			</el-form>
+			<span slot="footer" class="dialog-footer">
+				<el-button @click="dialogVisible = false">取消</el-button>
+				<el-button type="primary" @click="confirm('addTagForm')">添加</el-button>
+			</span>
+		</el-dialog>
+
 
 		<div class="dialog-clip" v-if="dialogVisible_clip">
 			<i class="iconfont icon-error" title="关闭" @click="dialogVisible_clip = false"></i>
@@ -157,9 +113,34 @@ export default {
 				bloggerId: "",
 				articleTagList: [],
 			},
+			rules: {
+        title: [
+          { required: true, message: '请输入文章标题', trigger: 'blur' },
+        ],
+        subTitle: [
+          { required: true, message: '请输入文章副标题', trigger: 'blur' },
+          { min: 1, max: 50, message: '长度在 1 到 50 个字符', trigger: 'blur' }
+        ],
+        coverUrl: [
+          { required: true, message: '请选择文章封面', trigger: 'blur' },
+        ],
+        articleTagList: [
+          { required: true, message: '请选择文章副标签', trigger: 'blur' },
+        ],
+        content: [
+          { required: true, message: '请输入文章内容', trigger: 'blur' },
+        ]
+      },
 			tags: [],
 			tagSelList: [],
-			addTagName: "",
+			addTagForm: {
+				addTagName: ""
+			},
+			addTagRules: {
+				addTagName:[
+					{ required: true, message: '请输入文章标签', trigger: 'blur' }
+				]
+			},
 			show: false,
 			dialogVisible: false,
 			dialogVisible_clip: false
@@ -172,6 +153,7 @@ export default {
 		cropper
 	},
 	methods: {
+		// 编辑文章-获取文章内容
 		getArticleInfo() {
 			if (this.$route.query.id) {
 				this.pageTitle = "修改文章";
@@ -179,12 +161,11 @@ export default {
 				getArticleInfoData(id).then((res) => {
 					if (res.status === 200) {
 						let data = res.data.data;
-						(this.articleForm.title = data.title),
-							(this.articleForm.subTitle = data.subTitle),
-							(this.articleForm.coverUrl = data.coverUrl),
-							(this.articleForm.content = data.content),
-							(this.articleForm.articleTagList = data.tags),
-							(this.tagSelList = data.tags);
+						this.articleForm.title = data.title;
+						this.articleForm.subTitle = data.subTitle;
+						this.articleForm.coverUrl = data.coverUrl;
+						this.articleForm.content = data.content;
+						this.articleForm.articleTagList = data.tags;
 					}
 				});
 			} else {
@@ -197,9 +178,9 @@ export default {
 					bloggerId: "",
 					articleTagList: [],
 				};
-				this.tagSelList = [];
 			}
 		},
+		// 获取文章标签
 		getTags() {
 			let bloggerId = local.get("blog_userinfo").bloggerId;
 			this.articleForm.bloggerId = bloggerId;
@@ -211,6 +192,38 @@ export default {
 					})
 				}
 			});
+		},
+		// 添加文章标签
+		handelAddTag() {
+			this.dialogVisible = !this.dialogVisible;
+		},
+		confirm(formName) {
+			this.$refs[formName].validate((valid) => {
+        if (valid) {
+					addArticleTagList({
+						bloggerId: this.articleForm.bloggerId,
+						tagName: this.addTagForm.addTagName,
+					})
+						.then((res) => {
+							if (res.status === 200) {
+								this.$modal.msgSuccess('添加成功 ~');
+								this.getTags();
+								this.dialogVisible = false;
+							}
+						})
+						.catch((err) => {
+							this.$modal.msgError('添加失败...');
+							console.log(err);
+						});
+        } else {
+          console.log('error');
+          return false;
+        }
+      });
+		},
+		cancle(formName) {
+			this.$refs[formName].resetFields();
+			this.dialogVisible = false;
 		},
 		handleImgUpload(pos, $file) {
 			let formData = new FormData();
@@ -243,61 +256,55 @@ export default {
 			}
 			return isJPG && isLt2M;
 		},
-		submit() {
+		submit(formName) {
 			let bloggerId = local.get("blog_userinfo").bloggerId;
 			this.articleForm.bloggerId = bloggerId;
-			this.tagSelList.forEach((v) => {
-				this.articleForm.articleTagList.push(v.tagId);
-			});
-			let flag = true;
-			for (let key in this.articleForm) {
-				if (this.articleForm[key].length <= 0) {
-					flag = false;
+			console.log(this.articleForm);
+			this.$refs[formName].validate((valid) => {
+        if (valid) {
+					if (this.$route.query.id) {
+						let data = {
+							title: this.articleForm.title,
+							subTitle: this.articleForm.subTitle,
+							coverUrl: this.articleForm.coverUrl,
+							content: this.articleForm.content,
+							articleTagList: this.articleForm.articleTagList,
+							articleId: this.$route.query.id * 1,
+						};
+						editArticle(data).then((res) => {
+							console.log(res);
+							if (res.status === 200) {
+								this.$modal.msgSuccess('修改成功 ~');
+								this.articleForm = {
+									title: "",
+									subTitle: "",
+									coverUrl: "",
+									content: "",
+									bloggerId: "",
+									articleTagList: [],
+								};
+							}
+						});
+					} else {
+						addArticle(this.articleForm).then((res) => {
+							if (res.status === 200) {
+								this.$modal.msgSuccess('发表成功 ~');
+								this.articleForm = {
+									title: "",
+									subTitle: "",
+									coverUrl: "",
+									content: "",
+									bloggerId: "",
+									articleTagList: [],
+								};
+							}
+						});
+					}
 				}
-			}
-			if (!flag) return;
-			if (this.$route.query.id) {
-				let data = {
-					title: this.articleForm.title,
-					subTitle: this.articleForm.subTitle,
-					coverUrl: this.articleForm.coverUrl,
-					content: this.articleForm.content,
-					articleTagList: this.articleForm.articleTagList,
-					articleId: this.$route.query.id * 1,
-				};
-				editArticle(data).then((res) => {
-					console.log(res);
-					if (res.status === 200) {
-						this.$modal.msgSuccess('修改成功 ~');
-						this.articleForm = {
-							title: "",
-							subTitle: "",
-							coverUrl: "",
-							content: "",
-							bloggerId: "",
-							articleTagList: [],
-						};
-						this.tagSelList = [];
-					}
-				});
-			} else {
-				addArticle(this.articleForm).then((res) => {
-					if (res.status === 200) {
-						this.$modal.msgSuccess('发表成功 ~');
-						this.articleForm = {
-							title: "",
-							subTitle: "",
-							coverUrl: "",
-							content: "",
-							bloggerId: "",
-							articleTagList: [],
-						};
-						this.tagSelList = [];
-					}
-				});
-			}
+			})
 		},
-		reset() {
+		reset(formName) {
+			this.$refs[formName].resetFields();
 			this.articleForm = {
 				title: "",
 				subTitle: "",
@@ -306,49 +313,6 @@ export default {
 				bloggerId: "",
 				articleTagList: [],
 			};
-		},
-		toggleShow() {
-			this.$refs.optionWrap.style.height = (30 + 12) * (this.tags.length + 1) + 5 + "px";
-			this.$refs.optionWrap.style.opacity = 1;
-		},
-		toggleHide() {
-			this.$refs.optionWrap.style.height = 0;
-			this.$refs.optionWrap.style.opacity = 0;
-		},
-		handelAddTag() {
-			this.dialogVisible = !this.dialogVisible;
-		},
-		handelChoose(val) {
-			if (this.tagSelList.indexOf(val) === -1) {
-				this.tagSelList.push(val);
-				val.active = true;
-			} else {
-				this.tagSelList.splice(this.tagSelList.indexOf(val), 1);
-				val.active = false;
-			}
-		},
-		confirm() {
-			if (this.addTagName.length > 0) {
-				addArticleTagList({
-					bloggerId: this.articleForm.bloggerId,
-					tagName: this.addTagName,
-				})
-					.then((res) => {
-						if (res.status === 200) {
-							this.$modal.msgSuccess('添加成功 ~');
-							this.getTags();
-							this.$refs.optionWrap.style.height = 30 + 12 + 12 + this.$refs.optionWrap.style.height + "px";
-							this.dialogVisible = false;
-						}
-					})
-					.catch((err) => {
-						this.$modal.msgError('添加失败...');
-						console.log(err);
-					});
-			}
-		},
-		cancle() {
-			this.dialogVisible = false;
 		}
 	},
 	created() {
@@ -356,14 +320,27 @@ export default {
 		this.getTags();
 	},
 	mounted() {
-		// this.editorInit.height = this.$refs.addArticePage.offsetHeight - 61 - 202 - 80;
 	},
 };
 </script>
 
-<style>
+<style lang="less">
 body {
 	margin: 0px !important;
+}
+.add-tag {
+	display: flex;
+	justify-content: space-between;
+	padding-right: 20px;
+	margin-bottom: 5px;
+	line-height: 36px;
+	text-indent: 20px;
+	border-bottom: 1px dashed #ccc;
+	cursor: pointer;
+
+	&:hover {
+		color: #409EFF;
+	}
 }
 </style>
 <style lang="less" scoped>
@@ -383,30 +360,38 @@ body {
 		border-bottom: 1px dashed #ccc;
 	}
 
-	.form-wrap {
+	.el-form {
 		display: flex;
-		flex-direction: column;
+		flex-wrap: wrap;
 
-		.item-wrap{
-			display: flex;
-			flex-wrap: wrap;
+		.article-title {
+			margin-right: 20px;
+			width: 30%;
 		}
 
-		.item {
-			display: flex;
-			margin-bottom: 20px;
+		.article-subTitle {
+			width: calc(100% - 30% - 20px);
+
+			.el-textarea {
+				height: 40px;
+
+				/deep/.el-textarea__inner {
+					height: 40px;
+					line-height: 28px;
+				}
+
+				/deep/.el-input__count {
+					bottom: 10px;
+					height: 20px;
+					line-height: 20px;
+					background-color: transparent;
+				}
+			}
+		}
+
+		.article-coverUrl {
+			margin-right: 20px;
 			width: 30%;
-
-			.label {
-				margin-right: 20px;
-				width: 80px;
-				line-height: 38px;
-				text-align: right;
-			}
-
-			.edit {
-				flex: 1;
-			}
 
 			.upload-avatar{
 				position: relative;
@@ -426,6 +411,9 @@ body {
 					line-height: 120px;
 					border: 1px dashed #ccc;
 					
+					&:hover {
+						border-color: #409EFF;
+					}
 				}
 
 				.img-wrap{
@@ -459,189 +447,13 @@ body {
 			}
 		}
 
-		.item-subTitle {
-			margin-left: 20px;
-			width: 50%;
+		.icon-addtag {
+			color: #999;
 		}
 
-		.item-select {
-			margin-left: 20px;
-			height: 40px;
-
-			.select-wrap {
-				position: relative;
-				padding: 0 20px;
-				width: 200px;
-				line-height: 40px;
-				border: 1px solid #dcdfe6;
-				border-radius: 6px;
-				cursor: pointer;
-
-				.sel-tags {
-					display: flex;
-					align-items: center;
-					height: 40px;
-
-					.text {
-						display: flex;
-						align-items: center;
-						justify-content: space-between;
-						padding: 0 12px 0 12px;
-						height: 24px;
-						font-size: 12px;
-						line-height: 24px;
-						background-color: #f4f4f5;
-						border-radius: 4px;
-					}
-
-					.more{
-						margin-left: 10px;
-					}
-				}
-
-				.placeholder {
-					user-select: none;
-					color: #c0c4cc;
-				}
-
-				.icon-down {
-					position: absolute;
-					top: 50%;
-					right: 20px;
-					transform: translateY(-50%);
-					color: #c0c4cc;
-				}
-
-				.option-wrap {
-					position: absolute;
-					top: 45px;
-					left: 0;
-					width: 100%;
-					height: 0;
-					transition: all 0.1s linear;
-					opacity: 0;
-					overflow: hidden;
-					z-index: 9998;
-
-					.option {
-						position: absolute;
-						top: 5px;
-						left: 0;
-						width: 100%;
-						border: 1px solid #e4e7ed;
-						border-radius: 6px;
-						box-shadow: -1px 2px 5px #e4e7ed;
-						background-color: #fff;
-						z-index: 9998;
-
-						.active{
-							color: #409eff;
-							background-color: #f5f7fa;
-						}
-
-						&::before {
-							position: absolute;
-							top: -5px;
-							left: 20px;
-							transform: rotateZ(45deg);
-							width: 8px;
-							height: 8px;
-							content: "";
-							background-color: #fff;
-							border-left: 1px solid #eee;
-							border-top: 1px solid #eee;
-						}
-
-						.add-tag {
-							display: flex;
-							justify-content: space-between;
-							align-items: center;
-							border-bottom: 1px dashed #ccc;
-
-							.icon-addtag {
-								color: #999;
-							}
-						}
-
-						li {
-							padding: 0 20px;
-							margin: 6px 0;
-							line-height: 30px;
-
-							&:hover {
-								background-color: #f5f7fa;
-							}
-						}
-					}
-				}
-			}
-		}
-
-		.item-content {
-			flex: 1;
-			position: relative;
+		.article-content, .btns-group {
 			width: 100%;
-			z-index: 98;
-
-			.content {
-				flex: 1;
-			}
 		}
-
-		.item-btn {
-			margin-top: 20px;
-			margin-left: 100px;
-
-			.reset {
-				margin-left: 20px;
-			}
-		}
-	}
-}
-
-.dialog {
-	position: absolute;
-	top: 30%;
-	left: 50%;
-	transform: translate(-50%, -50%);
-	width: 400px;
-	background-color: #fff;
-	border: 1px solid #e4e7ed;
-	border-radius: 6px;
-	z-index: 9999;
-
-	.title {
-		margin: 0;
-		font-size: 14px;
-		line-height: 30px;
-	}
-
-	.add-ipt {
-		display: flex;
-		align-items: center;
-		padding: 0 20px;
-		height: 60px;
-
-		.label {
-			width: 80px;
-		}
-
-		.edit {
-			flex: 1;
-		}
-	}
-
-	.btn-group {
-		display: flex;
-		justify-content: flex-end;
-		padding: 0 20px 10px;
-	}
-
-	.icon-closeCard {
-		position: absolute;
-		top: 4px;
-		right: 8px;
-		cursor: pointer;
 	}
 }
 
