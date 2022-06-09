@@ -20,14 +20,14 @@
 			<div class="refresh-bg" title="换肤" @click="changeBg"><i class="el-icon-refresh"></i></div>
 			<div class="user">
 				<img :src="$store.state.userinfo.avatar" />
-				<div class="user-item" @click="isShow = !isShow">
-					欢迎您，<span class="user-item">{{ $store.state.userinfo.name }}</span>
-				</div>
-				<transition name="fade">
-					<div class="top-sel" v-if="isShow">
-						<p class="item" @click="logout">退出登录</p>
+				<el-dropdown @command="handleCommand">
+					<div class="user-item" @click="isShow = !isShow">
+						欢迎您，<span class="user-item">{{ $store.state.userinfo.name }}</span>
 					</div>
-				</transition>
+					<el-dropdown-menu slot="dropdown">
+						<el-dropdown-item command="logout">退出登录</el-dropdown-item>
+					</el-dropdown-menu>
+				</el-dropdown>
 			</div>
 		</div>
 
@@ -171,14 +171,17 @@ export default {
 			local.set("cardList", list);
 			this.cardList = list;
 		},
-		logout() {
-			local.clear();
-			this.$modal.msgSuccess('成功退出 ~');
-			setTimeout(() => {
-				this.$router.push({ path: "/login" });
-				location.reload()
-			}, 500);
-		},
+		handleCommand(command) {
+			if (command === 'logout') {
+				local.clear();
+				this.$modal.msgSuccess('成功退出 ~');
+				setTimeout(() => {
+					this.$router.push({ path: "/login" });
+					location.reload()
+				}, 500);
+			}
+    }
+		
 	},
 	watch: {
 		$route() {
