@@ -155,11 +155,14 @@ export default {
 				getArticleInfoData(id).then((res) => {
 					if (res.status === 200) {
 						let data = res.data.data;
+						this.articleForm.articleTagList = []
 						this.articleForm.title = data.title;
 						this.articleForm.subTitle = data.subTitle;
 						this.articleForm.coverUrl = data.coverUrl;
 						this.articleForm.content = data.content;
-						this.articleForm.articleTagList = data.tags;
+						data.tags.forEach((tag) => {
+							this.articleForm.articleTagList.push(tag.tagId)
+						})
 					}
 				});
 			} else {
