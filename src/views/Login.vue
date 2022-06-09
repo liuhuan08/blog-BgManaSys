@@ -22,8 +22,8 @@
 </template>
 
 <script>
+import Cookies from 'js-cookie'
 import { Login } from "../api/Login";
-import local from "../utils/local"
 
 export default {
     data() {
@@ -57,7 +57,7 @@ export default {
                     Login(this.loginForm).then(res => {
                         if(res.status === 200) {
                             let data = res.data.data;
-                            local.set("blog_t&k", data.token);
+                            Cookies.set('blog_t&k', data.token)
                             let info = {
                                 bloggerId: data.id,
                                 name: data.name,

@@ -1,7 +1,9 @@
 import axios from 'axios'
+import Cookies from 'js-cookie'
 import local from '@/utils/local'
+import router from "@/router/index"
 
-import { Message } from 'element-ui';
+import { Message, MessageBox } from 'element-ui';
 
 axios.defaults.baseURL = 'http://api.excellentlld.com';
 axios.defaults.timeout = 10000; // 请求超时时间
@@ -10,7 +12,7 @@ axios.defaults.timeout = 10000; // 请求超时时间
 // 添加请求拦截器
 axios.interceptors.request.use(function (config) {
     // 在发送请求之前做些什么
-    let token = local.get('blog_t&k')
+    let token = Cookies.get('blog_t&k')
 
     if (token) {
         config.headers.Authorization = 'Bearer ' + token
@@ -41,8 +43,22 @@ axios.interceptors.response.use(function (response) {
     return response;
 }, function (error) {
     // 对响应错误做点什么
-    if (error.response.status === 500) {
-        Message.error('服务器异常')
+    console.log(error);
+    if (error.response.status === 401) {
+        const res = error.response.data
+        if (res.code === 401) {
+            MessageBox.alert('登录已过期，请重新登录！', '系统提示', {
+                confirmButtonText: '确定',
+                callback: action => {
+                    Cookies.remove('blog_t&k')
+                    local.clear()
+                    router.push({ path: "/login" })
+                    location.reload()
+                }
+            });
+        }
+    } else if (error.response.status === 500) {
+        MessageBox.alert('服务器异常')
     }
     return Promise.reject(error);
 });

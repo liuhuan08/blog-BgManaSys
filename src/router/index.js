@@ -1,7 +1,7 @@
 import Vue from "vue";
 import VueRouter from "vue-router";
 
-import local from "../utils/local"
+import Cookies from 'js-cookie'
 
 import Index from "../views/layout/Index.vue"
 import Login from "../views/Login.vue"
@@ -122,7 +122,7 @@ routes.forEach(v => {
 /* 全局前置路由守卫 */
 router.beforeEach((to, from, next) => {
 	// 登录状态  
-	let isLogin = local.get('blog_t&k') ? true : false;
+	let isLogin = Cookies.get('blog_t&k') ? true : false;
 	
 	if (isLogin) {
 		if(pathArr.indexOf(to.path) === -1) {
