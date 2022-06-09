@@ -453,6 +453,10 @@ body {
 			color: #999;
 		}
 
+		.article-content .v-note-wrapper:not(.fullscreen){
+			max-height: 460px;
+		}
+
 		.article-content, .btns-group {
 			width: 100%;
 		}
