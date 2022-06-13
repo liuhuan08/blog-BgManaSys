@@ -198,23 +198,32 @@ export default {
 	methods: {
 		// 获取相册列表
 		getAlbum() {
-			let bloggerId = local.get("blog_userinfo").bloggerId;
-			let sendData = {
-				bloggerId,
-				sort: this.sort,
-				page: this.page,
-				size: this.size,
-			};
-			getAlbumsList(sendData).then((res) => {
-				if (res.status === 200) {
-					this.total = res.data.data.total;
-					this.albumsList = [...res.data.data.records];
-					this.albumsList.forEach((v, i) => {
-						this.$set(this.albumsList[i], "showInfo", false);
-						this.$set(this.albumsList[i], "showOperation", false);
-					});
-				}
-			});
+			if (local.get("blog_userinfo")) {
+				let bloggerId = local.get("blog_userinfo").bloggerId;
+				let sendData = {
+					bloggerId,
+					sort: this.sort,
+					page: this.page,
+					size: this.size,
+				};
+				getAlbumsList(sendData).then((res) => {
+					if (res.status === 200) {
+						this.total = res.data.data.total;
+						this.albumsList = [...res.data.data.records];
+						this.albumsList.forEach((v, i) => {
+							this.$set(this.albumsList[i], "showInfo", false);
+							this.$set(this.albumsList[i], "showOperation", false);
+						});
+					}
+				});
+			} else {
+				this.$alert('登录信息已失效，请重新登录！', '系统提示', {
+            confirmButtonText: '确定',
+            callback: action => {
+              this.$store.dispatch('FedLogOut')
+            }
+        });
+			}
 		},
 		handelSizeChange(val) {
 			this.size = val;

@@ -2,6 +2,8 @@ import Vue from "vue";
 import Vuex from "vuex";
 
 import local from "../utils/local"
+import Cookies from 'js-cookie'
+import router from "@/router/index"
 
 Vue.use(Vuex);
 
@@ -25,7 +27,18 @@ export default new Vuex.Store({
 		// 保存个人信息
 		set_userinfo({ commit }, params) {
 			commit('SET_USERINFO', params)
-		}
+		},
+		// 前端 登出
+    FedLogOut() {
+      console.log(555555555)
+      return new Promise((resolve) => {
+        Cookies.remove('blog_t&k')
+        local.clear()
+				router.push({ path: "/login" })
+        location.reload()
+        resolve()
+      })
+    }
 	},
 	modules: {},
 });

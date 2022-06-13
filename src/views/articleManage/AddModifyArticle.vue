@@ -179,16 +179,25 @@ export default {
 		},
 		// 获取文章标签
 		getTags() {
-			let bloggerId = local.get("blog_userinfo").bloggerId;
-			this.articleForm.bloggerId = bloggerId;
-			getArticleTagList(bloggerId).then((res) => {
-				if (res.status === 200) {
-					this.tags = [...res.data.data];
-					this.tags.forEach((v, i) => {
-						this.$set(this.tags[i], "active", false);
-					})
-				}
-			});
+			if (local.get("blog_userinfo")) {
+				let bloggerId = local.get("blog_userinfo").bloggerId;
+				this.articleForm.bloggerId = bloggerId;
+				getArticleTagList(bloggerId).then((res) => {
+					if (res.status === 200) {
+						this.tags = [...res.data.data];
+						this.tags.forEach((v, i) => {
+							this.$set(this.tags[i], "active", false);
+						})
+					}
+				});
+			} else {
+				this.$alert('登录信息已失效，请重新登录！', '系统提示', {
+            confirmButtonText: '确定',
+            callback: action => {
+              this.$store.dispatch('FedLogOut')
+            }
+        });
+			}
 		},
 		// 添加文章标签
 		handelAddTag() {

@@ -93,40 +93,49 @@ export default {
 				};
 			}
 		},
-        getData() {
+    getData() {
 			let today = new Date().getTime()
-            for(let i = 0; i < 7; i++) {
-                let month = (new Date(today - i*24*60*60*1000).getMonth() + 1);
-                let day = (new Date(today - i*24*60*60*1000).getDate()) < 10 ? ('0' + (new Date(today - i*24*60*60*1000).getDate())) : new Date(today - i*24*60*60*1000).getDate();
-                let date = month + '-' + day
-                this.dateArr.unshift(date)
-            }
+      for(let i = 0; i < 7; i++) {
+          let month = (new Date(today - i*24*60*60*1000).getMonth() + 1);
+          let day = (new Date(today - i*24*60*60*1000).getDate()) < 10 ? ('0' + (new Date(today - i*24*60*60*1000).getDate())) : new Date(today - i*24*60*60*1000).getDate();
+          let date = month + '-' + day
+          this.dateArr.unshift(date)
+      }
 
-			let bloggerId = local.get('blog_userinfo').bloggerId
-			getNumData(bloggerId).then(res => {
-				if(res.status === 200) {
-					let data = res.data.data;
-					
-					this.cardList[0].num = data.articles.total;
-					this.cardList[1].num = data.articles.recently;
-					this.cardList[2].num = data.albumImages.total;
-					this.cardList[3].num = data.albumImages.recently;
-
-					for(let key in data.albumImages.recentList) {
-						if(this.dateArr.indexOf(key) !== -1) {
-							this.$set(this.imgsData, this.dateArr.indexOf(key), data.albumImages.recentList[key]);
+			if (local.get('blog_userinfo')) {
+				let bloggerId = local.get('blog_userinfo').bloggerId
+				getNumData(bloggerId).then(res => {
+					if(res.status === 200) {
+						let data = res.data.data;
+						
+						this.cardList[0].num = data.articles.total;
+						this.cardList[1].num = data.articles.recently;
+						this.cardList[2].num = data.albumImages.total;
+						this.cardList[3].num = data.albumImages.recently;
+	
+						for(let key in data.albumImages.recentList) {
+							if(this.dateArr.indexOf(key) !== -1) {
+								this.$set(this.imgsData, this.dateArr.indexOf(key), data.albumImages.recentList[key]);
+							}
 						}
+						for(let key in data.articles.recentList) {
+							if(this.dateArr.indexOf(key) !== -1) {
+								this.$set(this.articleData, this.dateArr.indexOf(key), data.articles.recentList[key]);
+							}
+						};
+						this.getDesc();
+						this.drawCharts();
 					}
-					for(let key in data.articles.recentList) {
-						if(this.dateArr.indexOf(key) !== -1) {
-							this.$set(this.articleData, this.dateArr.indexOf(key), data.articles.recentList[key]);
-						}
-					};
-					this.getDesc();
-					this.drawCharts();
-				}
-			})
-        },
+				})
+			} else {
+				this.$alert('登录信息已失效，请重新登录！', '系统提示', {
+            confirmButtonText: '确定',
+            callback: action => {
+              this.$store.dispatch('FedLogOut')
+            }
+        });
+			}
+    },
 		drawCharts() {
 			this.chart = echarts.init(this.$refs.chartContainer);
 			var option;

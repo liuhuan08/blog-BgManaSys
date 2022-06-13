@@ -125,22 +125,31 @@ export default {
 	},
 	methods: {
 		getData() {
-			let bloggerId = local.get("blog_userinfo").bloggerId;
-			let data = {
-				bloggerId,
-				limit: this.pageSize,
-				page: this.currentPage,
-				articleTitle: "",
-				sortType: this.sortType,
-			};
-			getArticleList(data).then((res) => {
-				if (res.status === 200) {
-					this.tableData = res.data.data.records;
-					this.total = res.data.data.total;
+			if (local.get("blog_userinfo")) {
+				let bloggerId = local.get("blog_userinfo").bloggerId;
+				let data = {
+					bloggerId,
+					limit: this.pageSize,
+					page: this.currentPage,
+					articleTitle: "",
+					sortType: this.sortType,
+				};
+				getArticleList(data).then((res) => {
+					if (res.status === 200) {
+						this.tableData = res.data.data.records;
+						this.total = res.data.data.total;
 
-					this.handelResize();
-				}
-			});
+						this.handelResize();
+					}
+				});
+			} else {
+				this.$alert('登录信息已失效，请重新登录！', '系统提示', {
+            confirmButtonText: '确定',
+            callback: action => {
+              this.$store.dispatch('FedLogOut')
+            }
+        });
+			}
 		},
 		handelSearch() {},
 		// 按时间排序
