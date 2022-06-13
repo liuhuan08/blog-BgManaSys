@@ -90,6 +90,9 @@ export default {
 		Name: {},
 		proportion: {
 			type: Array
+		},
+		path: {
+			type: String,
 		}
 	},
 	data() {
@@ -180,7 +183,7 @@ export default {
 		},
 		// 上传图片限制
 		beforeAvatarUpload(file) {
-            return new Promise((resolve, reject) => {
+      return new Promise((resolve, reject) => {
 				let isLt200Kb = file.size / 1024 / 1024 < 0.2; // 判定图片大小是否小于200kb
 				if (isLt200Kb) {
 					resolve(file);
@@ -195,15 +198,39 @@ export default {
 		uploadImg(type) {
 			if (type === "blob") {
 				//获取截图的blob数据
-				this.$refs.cropper.getCropBlob(async (data) => {
-					let ret =await this.beforeAvatarUpload(data);
-					let formData = new FormData();
-					formData.append("file", ret, "DX.jpg");
+				this.$refs.cropper.getCropBlob(async (file) => {
+					let ret =await this.beforeAvatarUpload(file);
+					let data = new FormData();
+					if (this.$store.state.bloggerId || this.$store.state.bloggerId === 0) {
+						let path = ''
+						switch (this.$store.state.bloggerId) {
+							case 1:
+								path = 'lf/blog'
+								break
+
+							case 2:
+								path = 'lh/blog'
+								break
+
+							case 3:
+								path = 'dy/blog'
+								break
+
+							default:
+								path = ''
+								break
+						}
+						if (path) {
+							const pathStr = this.path ? `${path}/${this.path}` : path
+							data.append("path", pathStr);
+						}
+					}
+					data.append("data", ret, "DX.jpg");
 					// 调用axios上传
-					axios.post("http://api.excellentlld.com/blog/back/upload-image", formData, {headers: {"Content-Type": "multipart/form-data"}})
+					axios.post("http://api.excellentlld.com/blog/back/upload-single", data, {headers: {"Content-Type": "multipart/form-data"}})
 						.then((res) => {
 							if (res.status === 200) {
-								this.$emit("on-success", res.data.data[0]);
+								this.$emit("on-success", res.data.data.url);
 							}
 						});
 				});

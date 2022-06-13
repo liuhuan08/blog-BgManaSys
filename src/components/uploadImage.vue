@@ -28,6 +28,7 @@
 						type="file"
 						class="ipt"
 						:multiple="multiple"
+						accept="image/*"
 						@change="upload"
 					/>
 					<div class="add-wrap">
@@ -75,6 +76,9 @@ export default {
 		},
 		multiple: {
 			type: Boolean
+		},
+		path: {
+			type: String,
 		}
 	},
 	methods: {
@@ -84,33 +88,63 @@ export default {
 			} else {
 				if (this.file) return;
 				this.showLoading = true;
-				let formData = new FormData();
+				let path = ''
+				if (this.$store.state.bloggerId || this.$store.state.bloggerId === 0) {
+					switch (this.$store.state.bloggerId) {
+						case 1:
+							path = 'lf/blog/album'
+							break
+
+						case 2:
+							path = 'lh/blog/album'
+							break
+
+						case 3:
+							path = 'dy/blog/album'
+							break
+
+						default:
+							path = ''
+							break
+					}
+				}
+				let promiseArr = []
 				for (let i = 0; i < e.target.files.length; i++) {
 					if (!this.beforeUpload(e.target.files[i])) {
 						return;
 					}else {
+						let data = new FormData();
 						let ret = await this.beforeUpload(e.target.files[i]);
-						formData.append("images", ret, "DX.jpg");
+						if (path) {
+							data.append("path", `${path}/${this.path}`);
+						}
+						data.append("images", ret, "DX.jpg");
+						const p = new Promise((rel, rej) => {
+							axios.post(this.action, data, {headers: {"Content-Type": "multipart/form-data"}}).then(res => {
+								if (res.status === 200) {
+									rel(res.data.data.url)
+								}
+							}).catch(err => {
+								rej(err);
+							})
+						})
+						promiseArr.push(p)
 					};
 				}
 
-				axios.post(this.action, formData, { headers: { "Content-Type": "multipart/form-data" }, }).then((res) => {
-					if (res.status === 200) {
-						if(this.multiple) {
-							this.url = res.data.data;
-						}else {
-							this.url = res.data.data[0];
-						}
-						this.$emit("on-success", res.data.data);
-						this.showLoading = false;
-					}
-				});
+				Promise.all(promiseArr).then(res => {
+					this.url = res
+					this.$emit("on-success", res);
+					this.showLoading = false;
+				}).catch(err => {
+					console.log(err);
+				})
 			}
 		},
-        removeImg(i) {
-            this.url.splice(i, 1);
-            this.$emit("on-remove", i);
-        }
+    removeImg(i) {
+      this.url.splice(i, 1);
+      this.$emit("on-remove", i);
+    }
 	},
 	watch: {
 		src(newval) {

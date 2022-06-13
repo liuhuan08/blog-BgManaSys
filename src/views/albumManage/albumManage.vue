@@ -85,14 +85,8 @@
 			<div class="title" v-if="!isAdd">修改相册</div>
 			<div class="item">
 				<div class="label">相册名称</div>
-				<l-input
-					class="ipt"
-					v-model="dialogForm.name"
-					:ipt-value="dialogForm.name"
-					type="text"
-					placeholder="请输入相册名称"
-					clearable
-				></l-input>
+				<el-input class="ipt" v-model="dialogForm.name" placeholder="请输入相册名称" clearable>
+        </el-input>
 			</div>
 			<div class="item">
 				<div class="label">相册封面</div>
@@ -123,14 +117,8 @@
 			<transition name="slide-fade">
 				<div class="item" v-if="dialogForm.isPrivate">
 					<div class="label">进入密码</div>
-					<l-input
-						class="ipt"
-						v-model="dialogForm.password"
-						:ipt-value="dialogForm.password"
-						type="password"
-						placeholder="请输入进入密码"
-						clearable
-					></l-input>
+					<el-input class="ipt" v-model="dialogForm.password" placeholder="请输入进入密码" clearable show-password>
+          </el-input>
 				</div>
 			</transition>
 			<div class="bottom">
@@ -151,7 +139,7 @@
 		<div class="dialog-clip" v-if="dialogVisible_clip">
 			<i class="iconfont icon-error" title="关闭" @click="dialogVisible_clip = false"></i>
 			<div class="dialog-title">裁剪图片</div>
-			<cropper :proportion="[5, 7]" @on-success="handleAvatarSuccess"></cropper>
+			<cropper :proportion="[5, 7]" :path="'album/covers'" @on-success="handleAvatarSuccess"></cropper>
 		</div>
 	</div>
 </template>

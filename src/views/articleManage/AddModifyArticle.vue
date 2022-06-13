@@ -79,14 +79,14 @@
 		<div class="dialog-clip" v-if="dialogVisible_clip">
 			<i class="iconfont icon-error" title="关闭" @click="dialogVisible_clip = false"></i>
 			<div class="dialog-title">裁剪图片</div>
-			<cropper :proportion="[1, 1]" @on-success="handleAvatarSuccess"></cropper>
+			<cropper :proportion="[1, 1]" :path="'article/covers'" @on-success="handleAvatarSuccess"></cropper>
 		</div>
 	</div>
 </template>
 
 <script>
 import LUploadImage from "@/components/uploadImage.vue";
-import cropper from "../../components/cropper.vue"
+import cropper from "@/components/cropper.vue"
 
 import axios from "axios";
 import {
@@ -95,9 +95,9 @@ import {
 	addArticleTagList,
 	editArticle,
 	addArticle,
-} from "../../api/article";
+} from "@/api/article";
 
-import local from "../../utils/local";
+import local from "@/utils/local";
 
 export default {
 	data() {
@@ -235,12 +235,35 @@ export default {
 		},
 		// md编辑器上传图片
 		handleImgUpload(pos, $file) {
-			let formData = new FormData();
-			formData.append("image", $file);
+			let data = new FormData();
+			if (this.$store.state.bloggerId || this.$store.state.bloggerId === 0) {
+				let path = ''
+				switch (this.$store.state.bloggerId) {
+					case 1:
+						path = 'lf/blog/article/imgs'
+						break
+
+					case 2:
+						path = 'lh/blog/article/imgs'
+						break
+
+					case 3:
+						path = 'dy/blog/article/imgs'
+						break
+
+					default:
+						path = ''
+						break
+				}
+				if (path) {
+					data.append("path", path);
+				}
+			}
+			data.append("image", $file);
 			axios
 				.post(
 					"http://api.excellentlld.com/blog/back/upload-image",
-					formData,
+					data,
 					{ headers: { "Content-Type": "multipart/form-data" } }
 				)
 				.then((res) => {

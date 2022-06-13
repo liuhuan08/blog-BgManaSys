@@ -31,7 +31,7 @@
 			</div>
 		</div>
 		<ul class="list" ref="imgsListDom" @mousewheel="initImgsList">
-            <li v-if="imgsList.length === 0">这个相册是空的！</li>
+      <li v-if="imgsList.length === 0">这个相册是空的！</li>
 			<li class="item" v-for="(v, i) in imgsList" :key="v.id">
 				<img :src="v.url" @click="showBigImg(v.url, i)" referrerPolicy="no-referrer" />
 				<!-- <p class="info">创建时间：{{v.createTime | handelData}}</p> -->
@@ -64,7 +64,8 @@
 				<l-upload-image
 					:src="[]"
 					:multiple="true"
-					action="http://api.excellentlld.com/blog/back/upload-image"
+					action="http://api.excellentlld.com/blog/back/upload-single"
+					:path="title"
 					@on-success="handleAvatarSuccess"
 					@on-remove="handleAvatarRemove"
 					:before-upload="beforeAvatarUpload"

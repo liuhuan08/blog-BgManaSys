@@ -10,17 +10,20 @@ Vue.use(Vuex);
 export default new Vuex.Store({
 	state: {
 		isCollapse: false,
-		userinfo: {}
+		userinfo: {},
+		bloggerId: ''
 	},
 	mutations: {
 		// 保存个人信息
 		SET_USERINFO(state, params) {
 			state.userinfo = {...params}
+			state.bloggerId = params.bloggerId
 			local.set("blog_userinfo", state.userinfo);
 		},
 		// 更新个人信息
 		GET_USERINFO(state) {
 			state.userinfo = local.get("blog_userinfo") || {}
+			state.bloggerId = local.get("blog_userinfo").bloggerId || ''
 		}
 	},
 	actions: {
@@ -30,7 +33,6 @@ export default new Vuex.Store({
 		},
 		// 前端 登出
     FedLogOut() {
-      console.log(555555555)
       return new Promise((resolve) => {
         Cookies.remove('blog_t&k')
         local.clear()
