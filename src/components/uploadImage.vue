@@ -116,7 +116,7 @@ export default {
 						let data = new FormData();
 						let ret = await this.beforeUpload(e.target.files[i]);
 						if (path) {
-							data.append("path", `${path}/${this.path}`);
+							data.append("path", `blog/bgImages`);
 						}
 						data.append("images", ret, "DX.jpg");
 						const p = new Promise((rel, rej) => {
@@ -133,6 +133,7 @@ export default {
 				}
 
 				Promise.all(promiseArr).then(res => {
+					console.log(res);
 					this.url = res
 					this.$emit("on-success", res);
 					this.showLoading = false;
