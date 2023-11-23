@@ -3,7 +3,7 @@ import local from '@/utils/local'
 
 // import Msg from "../utils/msg"
 
-axios.defaults.baseURL = 'http://api.excellentlld.com';
+axios.defaults.baseURL = 'https://api.excellentlld.com';
 axios.defaults.timeout = 10000; // 请求超时时间
 
 
