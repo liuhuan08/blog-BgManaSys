@@ -5,7 +5,7 @@ import router from "@/router/index"
 
 import { Message, MessageBox } from 'element-ui';
 
-axios.defaults.baseURL = 'http://api.excellentlld.com';
+axios.defaults.baseURL = 'https://api.excellentlld.com';
 axios.defaults.timeout = 10000; // 请求超时时间
 
 
