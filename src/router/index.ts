@@ -1,6 +1,8 @@
 import { createRouter, createWebHashHistory, RouteRecordRaw } from 'vue-router';
 import Index from '../views/layout/index.vue';
 
+import local from '../utils/local';
+
 const routes: Array<RouteRecordRaw> = [
   {
     path: '/',
@@ -23,22 +25,22 @@ const routes: Array<RouteRecordRaw> = [
     path: '/login',
     component: () => import('../views/login.vue')
   },
-	{
-		path: '/blogger',
-		redirect: '/blogger/blogger-info',
-		name: 'Blogger',
-		component: Index,
-		children: [{
-				path: '/blogger/blogger-info',
-				name: 'BloggerInfo',
-				meta: {
-					title: '博主信息',
-					path: '/blogger/blogger-info'
-				},
-				component: () => import('../views/bloggerInfo/index.vue')
-			}
-		]
-	},
+  {
+    path: '/blogger',
+    redirect: '/blogger/blogger-info',
+    name: 'Blogger',
+    component: Index,
+    children: [{
+      path: '/blogger/blogger-info',
+      name: 'BloggerInfo',
+      meta: {
+        title: '博主信息',
+        path: '/blogger/blogger-info'
+      },
+      component: () => import('../views/bloggerInfo/index.vue')
+    }
+    ]
+  },
   {
     path: '/articles',
     redirect: '/articles/articles-list',
@@ -96,5 +98,39 @@ const router = createRouter({
   history: createWebHashHistory(),
   routes
 })
+
+let pathArr: string[] = [];
+routes.forEach(v => {
+  pathArr.push(v.path);
+  if (v.children) {
+    v.children.forEach(item => {
+      pathArr.push(item.path);
+    })
+  };
+});
+
+/* 全局前置路由守卫 */
+router.beforeEach((to, from, next) => {
+  // 登录状态  
+  let isLogin = local.get('blog_t&k') ? true : false;
+
+  if (isLogin) {
+    if (pathArr.indexOf(to.path) === -1) {
+      next({
+        path: '/404'
+      });
+    } else {
+      next();
+    };
+  } else {
+    if (to.path === '/login') {
+      next();
+    } else {
+      next({
+        path: '/login'
+      });
+    };
+  };
+});
 
 export default router
