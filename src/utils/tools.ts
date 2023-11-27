@@ -3,13 +3,13 @@
 */
 
 /* 补零 */
-export const padZero = (n) => {
+export const padZero = (n: number): string | number => {
     return n < 10 ? '0' + n : n
 }
 
 
 /* 日期处理 */
-export const normalizeDate = (time, split) => {
+export const normalizeDate = (time: any, split: string): string => {
     let date = new Date(time)
 
     let year = date.getFullYear()
@@ -23,7 +23,7 @@ export const normalizeDate = (time, split) => {
 
 
 // 时间处理
-export const normalizeTime = (time) => {
+export const normalizeTime = (time: any): string => {
     let date = new Date(time)
 
     let h = date.getHours()
@@ -36,7 +36,7 @@ export const normalizeTime = (time) => {
 }
 
 // 获取当前日期
-export const getCurDate = () => {
+export const getCurDate = (): string => {
     const date = new Date()
     let year = date.getFullYear()
     let month = date.getMonth() + 1
