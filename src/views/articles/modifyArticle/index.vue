@@ -1,0 +1,3 @@
+<template>
+  modify-article
+</template>

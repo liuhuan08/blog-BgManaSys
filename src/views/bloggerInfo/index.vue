@@ -1,0 +1,3 @@
+<template>
+  blogger-info
+</template>
