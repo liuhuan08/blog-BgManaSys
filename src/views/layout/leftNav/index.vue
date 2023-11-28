@@ -1,16 +1,19 @@
 <template>
-  <div class="left_nav">
+  <div class="left_nav" :class="store.state.isCollapse ? 'collapse' : ''">
     <div class="nav_top">
       <img class="logo" src="@/assets/imgs/logo.jpg" alt="logo">
-      <span class="text">程序员的快乐小屋</span>
+      <Transition name="toggleShowTitle">
+        <span class="text" v-show="!store.state.isCollapse">程序员的快乐小屋</span>
+      </Transition>
     </div>
 
     <el-menu
       active-text-color="#ffd04b"
       background-color="#545c64"
-      default-active="/home"
+      :default-active="defaultActive"
       text-color="#fff"
       router
+      :collapse="store.state.isCollapse"
     >
       <el-menu-item index="/home">
         <el-icon><icon-menu /></el-icon>
@@ -43,6 +46,7 @@
 </template>
 
 <script setup lang="ts">
+import { ref, watch } from 'vue';
 import {
   Menu as IconMenu,
   UserFilled as IconUser,
@@ -51,6 +55,17 @@ import {
   Files as IconFiles,
   PictureFilled as IconPictureFilled
 } from '@element-plus/icons-vue'
+import { useStore } from 'vuex'
+import { useRoute } from 'vue-router';
+
+const store = useStore();
+const route = useRoute();
+
+let defaultActive = ref('/home');
+
+watch(route, (newVal) => {
+  defaultActive.value = newVal.path;
+}, {immediate: true, deep: true})
 </script>
 
 <style lang="scss" scoped>
@@ -59,6 +74,8 @@ import {
   width: 240px;
   height: 100%;
   background-color: #545c64;
+  transition: all .3s;
+  overflow-x: hidden;
 
   .nav_top {
     display: flex;
@@ -82,5 +99,22 @@ import {
     height: calc(100% - 60px);
     border-right: 0;
   }
+}
+
+.left_nav.collapse {
+  width: 64px;
+}
+
+.toggleShowTitle-enter-active{
+  transition: opacity 0.2s ease .1s;
+}
+
+.toggleShowTitle-leave-active {
+  transition: opacity 0.1s ease;
+}
+
+.toggleShowTitle-enter-from,
+.toggleShowTitle-leave-to {
+  opacity: 0;
 }
 </style>

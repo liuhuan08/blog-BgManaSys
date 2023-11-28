@@ -2,7 +2,7 @@ interface LocalType {
 	get(key: string): any;
 	set(key: string, val: any): void;
 	remove(key: string): void;
-	clear(key: string): void;
+	clear(): void;
 }
 /* 
 		操作本地存储
