@@ -148,7 +148,6 @@ initMenuList();
 .right_header {
   height: 80px;
   width: 100%;
-  border-bottom: 1px solid #ebeef5;
 
   .right_header_top {
     display: flex;
@@ -202,7 +201,7 @@ initMenuList();
     .menu_item {
       position: relative;
       padding: 0 30px;
-      line-height: 28px;
+      line-height: 29px;
       border-right: 1px solid #ebeef5;
       cursor: pointer;
       user-select: none;
