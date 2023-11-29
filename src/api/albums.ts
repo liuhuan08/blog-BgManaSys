@@ -1,5 +1,15 @@
 import request from './Request'
 
+// 上传图片
+export const uploadImgApi = (data: object) => {
+    return request({
+        method: 'post',
+        url: '/blog/back/upload-image',
+        headers: { "Content-Type": "multipart/form-data" },
+        data
+    })
+}
+
 // 获取相册列表
 export const getAlbumsList = (data: object) => {
     return request({
