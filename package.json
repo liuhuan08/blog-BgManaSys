@@ -12,7 +12,9 @@
     "core-js": "^3.8.3",
     "echarts": "^5.4.3",
     "element-plus": "^2.4.2",
+    "image-conversion": "^2.1.1",
     "vue": "^3.2.13",
+    "vue-cropper": "^1.1.1",
     "vue-router": "^4.0.3",
     "vuex": "^4.0.0"
   },
