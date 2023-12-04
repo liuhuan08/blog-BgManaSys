@@ -1,0 +1,3 @@
+<template>
+  album-list
+</template>
