@@ -22,7 +22,7 @@
         </div>
       </el-form-item>
       <el-form-item label="文章标签" prop="articleTagList" class="form_item_tag">
-        <el-select v-model="articleForm.articleTagList" multiple filterable placeholder="请选择文章标签">
+        <el-select v-model="articleForm.articleTagList" multiple collapse-tags filterable placeholder="请选择文章标签">
           <el-option v-for="item in tagsList" :key="item.tagId" :label="item.tagName" :value="item.tagId" />
           <template #footer>
             <el-button v-if="!isAdding" text bg size="small" @click="onAddOption">
@@ -58,10 +58,11 @@
 </template>
 
 <script lang="ts" setup>
-import { onMounted, reactive, ref } from 'vue'
+import { reactive, ref } from 'vue'
+import { useRoute, useRouter } from 'vue-router'
 import { ElMessage } from 'element-plus'
 import { Plus, Close, Refresh } from '@element-plus/icons-vue'
-import type { FormInstance, FormRules, UploadProps, CheckboxValueType } from 'element-plus'
+import type { FormInstance, FormRules, CheckboxValueType } from 'element-plus'
 import cropper from '@/components/cropper.vue'
 import tinymce from 'tinymce/tinymce'
 import Editor from '@tinymce/tinymce-vue'
@@ -100,7 +101,7 @@ import 'tinymce/plugins/visualblocks'
 import 'tinymce/plugins/visualchars'
 import 'tinymce/plugins/wordcount' // 字数统计插件
 import local from '@/utils/local';
-import { getArticleTagList, addArticleTagList, addArticle } from '@/api/article';
+import { getArticleInfoData, getArticleTagList, addArticleTagList, addArticle, editArticle } from '@/api/article';
 import { uploadImgApi } from '@/api/albums';
 
 interface RuleForm {
@@ -112,7 +113,11 @@ interface RuleForm {
   content: string
 }
 
+const route = useRoute();
+const router = useRouter();
+
 const articleFormRef = ref<FormInstance>()
+
 const articleForm = reactive<RuleForm>(
   {
     bloggerId: local.get("blog_userinfo").bloggerId,
@@ -134,26 +139,42 @@ const rules = reactive<FormRules<RuleForm>>({
     { required: true, message: '请输入文章标题', trigger: 'blur' },
     { min: 2, max: 15, message: '长度在 2 到 15 之间', trigger: 'blur' },
   ],
-  subTitle: [
-    { required: true, message: '请输入文章副标题', trigger: 'blur' },
-  ],
   coverUrl: [
     { required: true, message: '请选择您要设置的文章封面图片', trigger: 'blur' },
-  ],
-  articleTagList: [
-    { required: true, message: '请选择您要设置的文章标签', trigger: 'blur' },
   ],
   content: [
     { required: true, message: '请输入文章内容', trigger: 'blur' },
   ],
 })
 
+const getArticleInfo = () => {
+  if (route.query.id) {
+    let id = Number(route.query.id);
+    getArticleInfoData(id).then((res) => {
+      if (res.status === 200) {
+        let data = res.data.data;
+        articleForm.title = data.title;
+        articleForm.subTitle = data.subTitle;
+        articleForm.coverUrl = data.coverUrl;
+        articleForm.content = data.content;
+        articleForm.articleTagList = data.tags.map((item: any) => item.tagId);
+      }
+    });
+  } else {
+    articleForm.title = '';
+    articleForm.subTitle = '';
+    articleForm.coverUrl = '';
+    articleForm.content = '';
+    articleForm.articleTagList = [];
+  }
+}
+
 const getTags = () => {
   let bloggerId = local.get("blog_userinfo").bloggerId;
   articleForm.bloggerId = bloggerId;
   getArticleTagList(bloggerId).then((res) => {
     if (res.status === 200) {
-      tagsList.value = reactive(res.data.data);
+      tagsList.value = res.data.data;
     }
   });
 }
@@ -235,12 +256,22 @@ const submitForm = async (form: FormInstance | undefined) => {
   if (!form) return
   await form.validate((valid, fields) => {
     if (valid) {
-      addArticle(articleForm).then((res: any) => {
-        if (res.status === 200) {
-          ElMessage({ message: '保存成功', type: 'success'})
-          resetForm(form);
-        }
-      })
+      if (route.query.id) {
+        editArticle(articleForm).then((res: any) => {
+          if (res.status === 200) {
+            ElMessage({ message: '保存成功', type: 'success' })
+            resetForm(form);
+            router.go(-1);
+          }
+        })
+      } else {
+        addArticle(articleForm).then((res: any) => {
+          if (res.status === 200) {
+            ElMessage({ message: '保存成功', type: 'success' })
+            resetForm(form);
+          }
+        })
+      }
     } else {
       console.log('error submit!', fields)
     }
@@ -257,6 +288,7 @@ const resetForm = (form: FormInstance | undefined) => {
   articleForm.content = ''
 }
 
+getArticleInfo();
 getTags();
 </script>
 
