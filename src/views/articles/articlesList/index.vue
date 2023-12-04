@@ -1,3 +1,3 @@
 <template>
-  article-list
+  article-list123
 </template>
