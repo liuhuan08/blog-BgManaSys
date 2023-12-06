@@ -105,7 +105,7 @@ const handleCommand = (command: string | number | object) => {
 
 const addMenu = (data: any) => {
   const hasCurrentRoute = menuList.some((item: any) => item.path === route.path)
-  if (!hasCurrentRoute) {
+  if (!hasCurrentRoute && route.meta.title) {
     menuList.push(data);
   }
 }

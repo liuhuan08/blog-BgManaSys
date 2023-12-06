@@ -1,7 +1,8 @@
 import axios from 'axios'
 import local from '@/utils/local'
-
-// import Msg from "../utils/msg"
+import { ElMessageBox } from 'element-plus'
+import type { Action } from 'element-plus'
+import router from '../router';
 
 axios.defaults.baseURL = 'https://api.excellentlld.com';
 axios.defaults.timeout = 10000; // 请求超时时间
@@ -42,6 +43,15 @@ axios.interceptors.response.use(function (response: any) {
 
 	return response;
 }, function (error: any) {
+	if (error.response.status === 401) {
+		ElMessageBox.alert('您的登录状态已失效，请重新登录', '系统提示', {
+			confirmButtonText: 'OK',
+			callback: (action: Action) => {
+				local.clear();
+				router.push('/login')
+			},
+		})
+	}
 	// 对响应错误做点什么
 	return Promise.reject(error);
 });
