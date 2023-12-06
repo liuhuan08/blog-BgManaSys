@@ -65,7 +65,7 @@ const getData = () => {
   let today = new Date().getTime()
   for (let i = 0; i < 7; i++) {
     let month = (new Date(today - i * 24 * 60 * 60 * 1000).getMonth() + 1);
-    let day = (new Date(today - i * 24 * 60 * 60 * 1000).getDate()) < 10 ? ('0' + (new Date(today - i * 24 * 60 * 60 * 1000).getDate())) : new Date(today - i * 24 * 60 * 60 * 1000).getDate();
+    let day = new Date(today - i * 24 * 60 * 60 * 1000).getDate();
     let date = month + '-' + day
     dateArr.unshift(date)
   }
@@ -90,6 +90,7 @@ const getData = () => {
       };
 
       getTitle();
+      drawLine();
     }
   })
 }
@@ -157,10 +158,8 @@ const handleResize = () => {
   }, 100)
 }
 
-getData();
-
 onMounted(() => {
-  drawLine();
+  getData();
   window.addEventListener('resize', handleResize);
 });
 onUnmounted(() => {
