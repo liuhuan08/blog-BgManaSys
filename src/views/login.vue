@@ -8,7 +8,7 @@
           <el-input v-model="loginForm.name" :prefix-icon="User" />
         </el-form-item>
         <el-form-item prop="password">
-          <el-input v-model="loginForm.password" :prefix-icon="Lock" type="password" />
+          <el-input v-model="loginForm.password" :prefix-icon="Lock" @keyup.enter="submitForm(loginFormInstance)" type="password" />
         </el-form-item>
         <el-form-item>
           <el-button type="primary" @click="submitForm(loginFormInstance)">登陆</el-button>
